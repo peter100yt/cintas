@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cintas v0.1</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f3f4f6;--ok:#0a7d33;--warn:#b45309;--bad:#b91c1c;--line:#d1d5db}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#eee;--mut:#9ca3af;--card:#1f2937;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--line:#374151}}
+body{margin:0;padding:12px;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+h1{font-size:18px;margin:0 0 4px}.m{color:var(--mut);font-size:13px}
+button{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.c{background:var(--card);border-radius:10px;padding:10px}
+.c input{font:inherit;width:100%;box-sizing:border-box;padding:6px;margin:2px 0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.bpm{font-size:44px;font-weight:700;line-height:1}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.r{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-top:1px solid var(--line);font-size:14px}
+canvas{width:100%;height:50px;color:var(--fg)}
+</style></head><body>
+<h1>Monitor de cintas · v0.1 (teste)</h1>
+<div class="m">Abra no <b>Bluefy</b> (iPhone/iPad). Vista a cinta com os eletrodos úmidos e desconecte-a de relógios e outros apps antes de parear.</div>
+<div class="bar"><button id="add">+ Adicionar cinta</button><button id="exp">Exportar CSV</button><button id="cp">Copiar CSV</button></div>
+<div id="msg" class="m"></div><div id="g"></div>
+<p class="m">Ferramenta de teste de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
+<script>
+// Porte em JS do hr_core (Dart). Mesma lógica, testada contra os mesmos valores de referência.
+const HR = (() => {
+  const UNIT = 1000 / 1024;
+  const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+  const sstd = a => { const m = mean(a); return Math.sqrt(a.reduce((s, v) => s + (v - m) * (v - m), 0) / (a.length - 1)); };
+  const median = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+  function parseHrm(b) {
+    if (!b.length) throw new Error('pacote vazio');
+    const f = b[0], cb = (f >> 1) & 3;
+    let i = 1;
+    const need = n => { if (i + n > b.length) throw new Error('pacote truncado'); };
+    let bpm;
+    if (f & 1) { need(2); bpm = b[i] | (b[i + 1] << 8); i += 2; } else { need(1); bpm = b[i]; i += 1; }
+    let energy = null;
+    if (f & 8) { need(2); energy = b[i] | (b[i + 1] << 8); i += 2; }
+    const rr = [];
+    if (f & 16) while (i < b.length) { need(2); rr.push((b[i] | (b[i + 1] << 8)) * UNIT); i += 2; }
+    return { bpm, contact: cb === 3 ? 'detected' : cb === 2 ? 'notDetected' : 'notSupported', rrFlag: !!(f & 16), rr, energy };
+  }
+
+  function cleanRr(raw, o = {}) {
+    const mn = o.min ?? 300, mx = o.max ?? 2000, half = (o.win ?? 11) >> 1, dev = o.dev ?? 0.20, minN = o.minN ?? 3, n = raw.length;
+    const rng = raw.map(v => !Number.isFinite(v) || v < mn || v > mx), fl = [...rng];
+    for (let i = 0; i < n; i++) {
+      if (rng[i]) continue;
+      const nb = [];
+      for (let j = Math.max(0, i - half); j <= Math.min(n - 1, i + half); j++) if (j !== i && !rng[j]) nb.push(raw[j]);
+      if (nb.length < minN) continue;
+      const m = median(nb);
+      if (Math.abs(raw[i] - m) / m > dev) fl[i] = true;
+    }
+    const out = [...raw];
+    if (fl.some(f => !f)) for (let i = 0; i < n; i++) {
+      if (!fl[i]) continue;
+      let l = i - 1; while (l >= 0 && fl[l]) l--;
+      let r = i + 1; while (r < n && fl[r]) r++;
+      out[i] = l >= 0 && r < n ? raw[l] + (i - l) / (r - l) * (raw[r] - raw[l]) : l >= 0 ? raw[l] : raw[r];
+    }
+    return { raw, cleaned: out, flags: fl, valid: fl.map(f => !f), ratio: n ? fl.filter(Boolean).length / n : 0 };
+  }
+
+  function timeMetrics(rr, valid) {
+    const ok = i => !valid || valid[i], v = [], d = [];
+    rr.forEach((x, i) => { if (ok(i)) v.push(x); if (i > 0 && ok(i) && ok(i - 1)) d.push(x - rr[i - 1]); });
+    const rmssd = d.length ? Math.sqrt(d.reduce((s, x) => s + x * x, 0) / d.length) : null;
+    const sdnn = v.length >= 2 ? sstd(v) : null, sdsd = d.length >= 2 ? sstd(d) : null;
+    let sd1 = null, sd2 = null;
+    if (sdnn !== null && sdsd !== null) { sd1 = Math.SQRT1_2 * sdsd; sd2 = Math.sqrt(Math.max(0, 2 * sdnn * sdnn - 0.5 * sdsd * sdsd)); }
+    return { n: v.length, nd: d.length, mean: v.length ? mean(v) : NaN, rmssd, sdnn, sdsd, sd1, sd2 };
+  }
+
+  function spTrend(z, lam) {
+    const n = z.length, p = 2, l2 = lam * lam;
+    if (n < 3) return [...z];
+    const a = Array.from({ length: n }, () => [0, 0, 0]), L = Array.from({ length: n }, () => [0, 0, 0]), c = [1, -2, 1];
+    for (let r = 0; r < n - 2; r++) for (let u = 0; u < 3; u++) for (let v = u; v < 3; v++) a[r + u][v - u] += l2 * c[u] * c[v];
+    for (let i = 0; i < n; i++) a[i][0] += 1;
+    for (let j = 0; j < n; j++) {
+      let d = a[j][0];
+      for (let k = Math.max(0, j - p); k < j; k++) d -= L[j][j - k] ** 2;
+      const ljj = Math.sqrt(d); L[j][0] = ljj;
+      for (let i = j + 1; i <= Math.min(n - 1, j + p); i++) {
+        let s = a[j][i - j];
+        for (let k = Math.max(0, i - p); k < j; k++) s -= L[i][i - k] * L[j][j - k];
+        L[i][i - j] = s / ljj;
+      }
+    }
+    const w = new Array(n).fill(0), x = new Array(n).fill(0);
+    for (let i = 0; i < n; i++) { let s = z[i]; for (let k = Math.max(0, i - p); k < i; k++) s -= L[i][i - k] * w[k]; w[i] = s / L[i][0]; }
+    for (let i = n - 1; i >= 0; i--) { let s = w[i]; for (let k = i + 1; k <= Math.min(n - 1, i + p); k++) s -= L[k][k - i] * x[k]; x[i] = s / L[i][0]; }
+    return x;
+  }
+
+  function dfa(rr, o = {}) {
+    const lo = o.lo ?? 4, hi = o.hi ?? 16, lam = o.lam === undefined ? 500 : o.lam, n = rr.length;
+    if (n < hi * 4) return { status: 'insufficient', n };
+    if (rr.some(v => !Number.isFinite(v))) return { status: 'degenerate', n };
+    let x = rr;
+    if (lam !== null) { const t = spTrend(rr, lam); x = rr.map((v, i) => v - t[i]); }
+    const m = mean(x);
+    if (Math.sqrt(x.reduce((s, v) => s + (v - m) * (v - m), 0) / n) < 0.01) return { status: 'degenerate', n };
+    const y = []; let acc = 0;
+    for (const v of x) { acc += v - m; y.push(acc); }
+    const lx = [], ly = [];
+    for (let s = lo; s <= hi; s++) {
+      const boxes = Math.floor(n / s), tm = (s - 1) / 2;
+      let stt = 0; for (let t = 0; t < s; t++) stt += (t - tm) ** 2;
+      let ss = 0;
+      for (let b = 0; b < boxes; b++) {
+        const st = b * s; let ym = 0;
+        for (let t = 0; t < s; t++) ym += y[st + t];
+        ym /= s;
+        let sty = 0; for (let t = 0; t < s; t++) sty += (t - tm) * (y[st + t] - ym);
+        const sl = sty / stt;
+        for (let t = 0; t < s; t++) { const r = y[st + t] - (ym + sl * (t - tm)); ss += r * r; }
+      }
+      const f = Math.sqrt(ss / (boxes * s));
+      if (!(f > 0) || !Number.isFinite(f)) return { status: 'degenerate', n };
+      lx.push(Math.log10(s)); ly.push(Math.log10(f));
+    }
+    const mx = mean(lx), my = mean(ly);
+    let sxy = 0, sxx = 0;
+    lx.forEach((v, i) => { sxy += (v - mx) * (ly[i] - my); sxx += (v - mx) ** 2; });
+    return { status: 'ok', n, alpha1: sxy / sxx };
+  }
+
+  class Analyzer {
+    constructor(o = {}) { this.winMs = (o.windowSec ?? 120) * 1000; this.maxArt = o.maxArt ?? 0.05; this.rr = []; this.sum = 0; }
+    add(list) { for (const v of list) { this.rr.push(v); this.sum += v; while (this.rr.length > 1 && this.sum - this.rr[0] >= this.winMs) this.sum -= this.rr.shift(); } }
+    reset() { this.rr = []; this.sum = 0; }
+    snapshot() {
+      const n = this.rr.length;
+      if (!n) return { n: 0, durSec: 0, full: false, ratio: 0, time: timeMetrics([]), avail: 'noRr', alpha1: null };
+      const c = cleanRr(this.rr), time = timeMetrics(c.raw, c.valid);
+      const base = { n, durSec: this.sum / 1000, full: this.sum >= this.winMs, ratio: c.ratio, time, alpha1: null };
+      if (n < 64) return { ...base, avail: 'fewBeats' };
+      if (c.ratio > this.maxArt) return { ...base, avail: 'artifacts' };
+      const d = dfa(c.cleaned);
+      if (d.status === 'ok') return { ...base, avail: 'ok', alpha1: d.alpha1 };
+      return { ...base, avail: d.status === 'insufficient' ? 'fewBeats' : 'degenerate' };
+    }
+  }
+
+  return { parseHrm, cleanRr, timeMetrics, spTrend, dfa, Analyzer };
+})();
+if (typeof module !== 'undefined') module.exports = HR;
+
+const $=id=>document.getElementById(id),cards=new Map();let seq=0;
+const msg=t=>{$('msg').textContent=t};
+const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
+function mk(dev){
+  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,gaps:0,retry:0,state:'conectando',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,removed:false,timer:null};
+  const e=document.createElement('div');e.className='c';
+  e.innerHTML='<input placeholder="Paciente (nome ou identificação)"><div class="m" data-k="dev"></div><div class="bpm" data-k="bpm">—</div><div class="m">bpm <span data-k="pct"></span></div><canvas width="300" height="60"></canvas>'
+   +['st:Conexão','ct:Contato','bt:Bateria','rr:RR','mt:VFC (ms)','al:DFA-α1'].map(s=>{const[k,l]=s.split(':');return '<div class="r"><span>'+l+'</span><span data-k="'+k+'"></span></div>'}).join('')
+   +'<input type="number" placeholder="FC máx (bpm), opcional" data-k="max"><button data-k="rm" style="margin-top:6px">Remover</button>';
+  c.el=e;c.q=k=>e.querySelector('[data-k="'+k+'"]');c.lab=e.querySelector('input');
+  c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
+  c.q('rm').onclick=()=>{c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  dev.addEventListener('gattserverdisconnected',()=>{if(c.removed)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
+  $('g').appendChild(e);return c;
+}
+function retry(c){if(c.timer||c.removed)return;const w=Math.min(1000*2**c.retry,15000);c.retry++;c.timer=setTimeout(()=>{c.timer=null;conn(c)},w)}
+async function conn(c){
+  c.state='conectando';draw(c);
+  try{
+    const s=await c.dev.gatt.connect(),sv=await s.getPrimaryService('heart_rate'),ch=await sv.getCharacteristic('heart_rate_measurement');
+    ch.addEventListener('characteristicvaluechanged',e=>onHr(c,e.target.value));
+    await ch.startNotifications();
+    try{const b=await(await s.getPrimaryService('battery_service')).getCharacteristic('battery_level');c.bat=(await b.readValue()).getUint8(0)}catch(_){c.bat=null}
+    c.state='conectado';c.retry=0;c.t=Date.now();
+  }catch(e){c.state='falha: '+(e.message||e);retry(c)}
+  draw(c);
+}
+function onHr(c,dv){
+  let m;try{m=HR.parseHrm(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){c.bad++;return}
+  const t=Date.now();c.pk++;c.t=t;c.bpm=m.bpm;c.contact=m.contact;
+  if(m.rr.length){c.rrSeen=true;c.an.add(m.rr)}
+  c.log.push([t,c.lab.value,c.id,m.bpm,m.contact,m.rr.map(v=>v.toFixed(1)).join(' ')]);
+  c.hist.push(m.bpm);if(c.hist.length>180)c.hist.shift();
+}
+function draw(c){
+  const now=Date.now(),age=c.t?(now-c.t)/1000:0,stale=c.state==='conectado'&&c.t&&age>5;
+  const set=(k,t,cl)=>{const x=c.q(k);x.textContent=t;x.className=cl||''};
+  set('st',stale?'sem dados há '+Math.round(age)+' s':c.state+(c.gaps?' · quedas: '+c.gaps:''),c.state==='conectado'&&!stale?'ok':'bad');
+  c.q('bpm').textContent=c.bpm===null?'—':c.bpm;
+  const mx=parseFloat(c.q('max').value);c.q('pct').textContent=mx>0&&c.bpm!==null?'· '+Math.round(c.bpm/mx*100)+'% da FC máx':'';
+  set('ct',{detected:'ok',notDetected:'SEM CONTATO',notSupported:'não informado'}[c.contact]||'—',c.contact==='notDetected'?'bad':'');
+  set('bt',c.bat===null?'—':c.bat+'%',c.bat!==null&&c.bat<20?'warn':'');
+  set('rr',c.pk<10&&!c.rrSeen?'verificando…':c.rrSeen?'disponível':'AUSENTE: VFC desabilitada',c.pk>=10&&!c.rrSeen?'warn':'');
+  if(now-c.snapAt>=5000){c.snapAt=now;c.snap=c.rrSeen?c.an.snapshot():null}
+  const s=c.snap;
+  set('mt',!s?'—':'RMSSD '+f1(s.time.rmssd)+' · SD1 '+f1(s.time.sd1)+' · SD2 '+f1(s.time.sd2)+' · art. '+(s.ratio*100).toFixed(1)+'%');
+  set('al',!s?'—':s.avail==='ok'?s.alpha1.toFixed(2)+' (experimental)':{noRr:'sem RR',fewBeats:'coletando '+s.n+'/64 batimentos',artifacts:'inconclusivo: muitos artefatos',degenerate:'sem variabilidade mensurável'}[s.avail],s&&s.avail==='ok'?'':'warn');
+  const cv=c.el.querySelector('canvas'),x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
+  if(c.hist.length>1){const lo=Math.min(...c.hist)-3,hi=Math.max(...c.hist)+3;x.strokeStyle=getComputedStyle(cv).color;x.beginPath();c.hist.forEach((v,i)=>{const X=i/(c.hist.length-1)*cv.width,Y=cv.height-(v-lo)/(hi-lo)*cv.height;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}
+}
+$('add').onclick=async()=>{
+  if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
+  let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service']})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
+  const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
+  msg('');const c=mk(dev);cards.set(c.id,c);conn(c);
+};
+function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5]].join(','))));return rows.join('\n')}
+$('exp').onclick=async()=>{const t=csv(),f=new File([t],'cintas.csv',{type:'text/csv'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(_){}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='cintas.csv';a.click()};
+$('cp').onclick=async()=>{try{await navigator.clipboard.writeText(csv());msg('CSV copiado.')}catch(e){msg('Não foi possível copiar: '+e.message)}};
+setInterval(()=>cards.forEach(draw),1000);
+</script></body></html>
