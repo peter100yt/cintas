@@ -64,6 +64,10 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .c:not(.x) .zc{height:26px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
 .ph{visibility:hidden}
+.ecg{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px}
+.ehd{display:flex;align-items:center;justify-content:space-between;gap:8px}.ehd button{min-height:40px;font-size:14px}
+.ecg canvas.ecv{flex:none;width:100%;height:150px;background:var(--sf2);border-radius:8px;color:var(--fg)}
+.grp .c:not(.x) .ecg{display:none}
 .c[data-za="1"] .zc{outline:1.5px dashed currentColor;outline-offset:-1.5px}
 .c[data-z="p"] .zc{background:linear-gradient(90deg,var(--z2bg),var(--z3bg));color:var(--fg)}.c[data-z="p"] .bpmbox{border-left:6px solid var(--z2)}
 .grp .c.x{position:fixed;inset:12px;margin:0 auto;max-width:640px;overflow:auto;z-index:30;box-shadow:0 12px 40px rgba(0,0,0,.35)}
@@ -349,6 +353,31 @@ const HR = (() => {
     }
     return { r1, r2, zones, locks: nl, note };
   }
+  // ECG de 1 derivação da cinta Polar H10 pelo serviço proprietário "PMD" (não é o serviço padrão de FC).
+  // Valores do protocolo conforme a documentação pública do SDK BLE da Polar; NÃO verificados em hardware neste projeto.
+  // Quadro de dados: [0x00 = tipo ECG][8 bytes de timestamp][0x00 = amostras brutas][amostras de 3 bytes, µV, little-endian com sinal].
+  const PMD = {
+    SERVICE: 'fb005c80-02e7-f387-1cad-8acd2d8df0c8', CTRL: 'fb005c81-02e7-f387-1cad-8acd2d8df0c8', DATA: 'fb005c82-02e7-f387-1cad-8acd2d8df0c8',
+    START_ECG: [0x02, 0x00, 0x00, 0x01, 0x82, 0x00, 0x01, 0x01, 0x0e, 0x00],   // iniciar ECG: 130 Hz, 14 bits
+    STOP_ECG: [0x03, 0x00], FS: 130,
+  };
+  // Retorna { samples: [µV...] } para quadro de ECG bruto, null para outro tipo de quadro; lança erro se o quadro for inválido.
+  function parsePmdEcg(b) {
+    if (!b.length || b[0] !== 0x00) return null;
+    if (b.length < 10) throw new Error('quadro PMD truncado');
+    if (b[9] !== 0x00) return null;
+    const n = b.length - 10;
+    if (n % 3) throw new Error('quadro PMD com amostras incompletas');
+    const samples = [];
+    for (let i = 10; i < b.length; i += 3) { let v = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16); if (v & 0x800000) v -= 0x1000000; samples.push(v); }
+    return { samples };
+  }
+  // Resposta do ponto de controle: [0xF0][operação][tipo de medida][erro]; erro 0 = sucesso. Outro pacote: null.
+  function parsePmdResponse(b) {
+    if (b.length < 4 || b[0] !== 0xf0) return null;
+    return { op: b[1], type: b[2], error: b[3], ok: b[3] === 0 };
+  }
+
   // Só o VT1 estimado (VT2 não identificado): descreve a FC atual em relação ao primeiro limiar. Igual a `zone`,
   // exatamente no VT1 vale "acima". Não diz nada sobre o VT2 e não é uma zona completa.
   function firstThresholdState(bpm, vt1) {
@@ -373,7 +402,7 @@ const HR = (() => {
     return 'VT1 (α1 0,75): ' + protoText(s.r1) + ' · VT2 (α1 0,50): ' + protoText(s.r2) + (s.note ? ' · ' + s.note : '');
   }
 
-  return { parseHrm, cleanRr, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -382,12 +411,13 @@ const msg=t=>{$('msg').textContent=t};
 const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
 const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function mk(dev){
-  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,auto:{pts:[],locks:null,st:null},outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
+  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,srv:null,ecg:{on:false,starting:false,buf:new Float32Array(780),n:0,msg:'',data:null,ctrl:null,onData:null,onCtrl:null,stamps:[],dirty:false},proto:null,auto:{pts:[],locks:null,st:null},outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
   e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="mu2" data-k="mu2" aria-label="Silenciar o alerta sonoro por 60 segundos" title="Silenciar som por 60 s">🔔</button><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
+   +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria da cinta; só uma cinta por vez.</div><div class="m">25 mm/s · 10 mm/mV · 1 derivação pela cinta de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
    +'<details><summary>Protocolo progressivo (experimental)</summary><div class="in"><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button data-k="pr">Iniciar protocolo progressivo</button></div></details>'
    +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional; não há valores padrão. VT1 e VT2 em branco: o app tenta estimar por VFC (DFA-α1), de forma experimental e sempre rotulada como estimativa. O que você digitar substitui a estimativa.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
    +'<div class="lim"><label>FC máx. (opcional)<input type="number" inputmode="numeric" placeholder="bpm" data-k="max"></label></div><div class="lim"><label>FC no VT1<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt1"></label><label>FC no VT2<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt2"></label></div>'
@@ -397,7 +427,8 @@ function mk(dev){
   // trocar a identificação descarta a estimativa automática: ela não pode misturar dados de pacientes diferentes
   c.lab.addEventListener('input',()=>{c.auto={pts:[],locks:null,st:null}});
   c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
-  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  c.q('eb').onclick=()=>{if(c.ecg.on||c.ecg.starting)stopEcg(c,'Desligado.');else startEcg(c)};
+  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
     if(!c.rrSeen){msg('Esta cinta não envia RR: protocolo de VFC indisponível.');return}
@@ -409,9 +440,73 @@ function mk(dev){
   c.q('mu').onclick=c.q('mu2').onclick=()=>{c.mutedUntil=Date.now()+60000;draw(c)};
   c.q('rc').onclick=()=>recover(c);
   c.q('ex').onclick=()=>toggleX(c);
-  dev.addEventListener('gattserverdisconnected',()=>{if(c.removed||c.quiet)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
+  dev.addEventListener('gattserverdisconnected',()=>{ecgDown(c,'ECG interrompido: conexão perdida. Toque em Iniciar ECG depois que reconectar.');if(c.removed||c.quiet)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
   $('g').appendChild(e);return c;
 }
+// ---- ECG ao vivo de 1 derivação (serviço PMD da Polar). Opt-in por cinta, uma cinta por vez, nunca gravado. ----
+// Protocolo conforme a documentação pública da Polar; NÃO verificado em hardware neste projeto.
+const ECG_N=780;   // 6 s a 130 Hz
+const writeCtl=(k,arr)=>{const v=Uint8Array.from(arr);return k.writeValueWithResponse?k.writeValueWithResponse(v):k.writeValue(v)};
+function ecgDown(c,msg){const E=c.ecg;if(!E.on&&!E.starting)return;E.on=false;E.starting=false;E.msg=msg;E.data=E.ctrl=E.onData=E.onCtrl=null;E.dirty=true}   // enlace já caiu: sem operações GATT
+async function stopEcg(c,msg){
+  const E=c.ecg,d=E.data,k=E.ctrl,hd=E.onData,hc=E.onCtrl,was=E.on||E.starting;
+  E.on=false;E.starting=false;E.msg=msg||'Desligado.';E.data=E.ctrl=E.onData=E.onCtrl=null;E.dirty=true;
+  if(!was)return;
+  try{if(k){await writeCtl(k,HR.PMD.STOP_ECG);k.removeEventListener('characteristicvaluechanged',hc)}}catch(_){}
+  try{if(d){d.removeEventListener('characteristicvaluechanged',hd);await d.stopNotifications()}}catch(_){}
+}
+async function startEcg(c){
+  const E=c.ecg;if(E.on||E.starting)return;
+  if(c.state!=='conectado'||!c.srv){E.msg='Conecte a cinta antes de iniciar o ECG.';E.dirty=true;return}
+  cards.forEach(o=>{if(o!==c)stopEcg(o,'Desligado (outra cinta iniciou o ECG).')});
+  E.starting=true;E.msg='Iniciando ECG…';E.n=0;E.buf.fill(0);E.stamps=[];E.lastData=0;E.first=0;E.dirty=true;
+  try{
+    await withTimeout(serial(async()=>{   // não disputa o enlace com tentativas de conexão
+      const svc=await c.srv.getPrimaryService(HR.PMD.SERVICE),ctrl=await svc.getCharacteristic(HR.PMD.CTRL),data=await svc.getCharacteristic(HR.PMD.DATA);
+      E.ctrl=ctrl;E.data=data;
+      E.onCtrl=ev=>{const v=ev.target.value,r=HR.parsePmdResponse(new Uint8Array(v.buffer,v.byteOffset,v.byteLength));
+        if(r&&r.op===2&&!r.ok)ecgDown(c,'A cinta recusou o ECG (código '+r.error+'). Toque em Iniciar ECG para tentar de novo.')};
+      E.onData=ev=>onEcg(c,ev.target.value);
+      ctrl.addEventListener('characteristicvaluechanged',E.onCtrl);data.addEventListener('characteristicvaluechanged',E.onData);
+      await ctrl.startNotifications();await data.startNotifications();
+      await writeCtl(ctrl,HR.PMD.START_ECG);
+    }),15000,'ECG');
+    if(E.starting){E.on=true;E.starting=false;E.msg='Aguardando dados do ECG…'}
+  }catch(e){
+    const m=String(e&&e.message||e);
+    stopEcg(c,'Não foi possível iniciar o ECG: '+m.slice(0,80)+(/not found|no services|security/i.test(m)?' (este modelo de cinta ou o navegador pode não oferecer o ECG)':''));
+  }
+}
+function onEcg(c,dv){
+  let r;try{r=HR.parsePmdEcg(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){return}
+  if(!r)return;const E=c.ecg;
+  for(const v of r.samples){E.buf[E.n%ECG_N]=v;E.n++}
+  const now=Date.now();if(!E.first)E.first=now;E.lastData=now;E.stamps.push([now,r.samples.length]);while(E.stamps.length&&now-E.stamps[0][0]>2000)E.stamps.shift();E.dirty=true;
+}
+function drawEcg(c){
+  const cv=c.q('ecv');if(!cv||!cv.offsetParent)return;   // oculto na visão compacta
+  const dpr=window.devicePixelRatio||1,w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);
+  if(!w||!h)return;if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+  const x=cv.getContext('2d'),cs=getComputedStyle(document.documentElement),line=cs.getPropertyValue('--line').trim()||'#ccc',fg=cs.getPropertyValue('--fg').trim()||'#000',bad=cs.getPropertyValue('--bad').trim()||'#b91c1c',mut=cs.getPropertyValue('--mut').trim()||'#666';
+  const E=c.ecg,mm=w/150;   // 25 mm/s em 6 s = 150 mm de largura; 1 mV = 10 mm de altura
+  x.clearRect(0,0,w,h);
+  x.lineWidth=1;
+  for(let i=0;i*mm<=w;i++){x.strokeStyle=line;x.globalAlpha=i%5?0.35:0.9;x.beginPath();x.moveTo(Math.round(i*mm)+.5,0);x.lineTo(Math.round(i*mm)+.5,h);x.stroke()}
+  for(let j=0;j*mm<=h;j++){x.strokeStyle=line;x.globalAlpha=j%5?0.35:0.9;x.beginPath();x.moveTo(0,Math.round(j*mm)+.5);x.lineTo(w,Math.round(j*mm)+.5);x.stroke()}
+  x.globalAlpha=1;
+  const len=Math.min(E.n,ECG_N);
+  if(E.on&&len>1){
+    let mean=0;for(let i=0;i<len;i++)mean+=E.buf[(E.n-len+i)%ECG_N];mean/=len;   // linha de base só para exibição
+    x.strokeStyle=fg;x.lineWidth=Math.max(1.5,dpr*1.5);x.lineJoin='round';x.beginPath();
+    for(let i=0;i<len;i++){const v=E.buf[(E.n-len+i)%ECG_N]-mean,X=(ECG_N-len+i)/(ECG_N-1)*w,Y=Math.max(0,Math.min(h,h/2-v/1000*10*mm));i?x.lineTo(X,Y):x.moveTo(X,Y)}
+    x.stroke();
+  }
+  x.font=Math.round(11*dpr)+'px system-ui,sans-serif';x.fillStyle=mut;x.fillText('25 mm/s · 10 mm/mV',6*dpr,h-6*dpr);
+  if(E.on&&c.contact==='notDetected'){x.fillStyle=bad;x.font='bold '+Math.round(14*dpr)+'px system-ui,sans-serif';x.fillText('SEM CONTATO: traçado sem valor',10*dpr,22*dpr)}
+  else if(!E.on){x.fillStyle=mut;x.font='bold '+Math.round(14*dpr)+'px system-ui,sans-serif';x.fillText('ECG desligado',10*dpr,22*dpr)}
+}
+let ecgLast=0;
+(function ecgLoop(t){if(t-ecgLast>=50){ecgLast=t;cards.forEach(c=>{if(c.ecg.on&&c.ecg.dirty){c.ecg.dirty=false;drawEcg(c)}})}requestAnimationFrame(ecgLoop)})(0);
 function retry(c){if(c.timer||c.removed)return;const w=Math.min(1000*2**c.retry,15000);c.retry++;c.timer=setTimeout(()=>{c.timer=null;conn(c)},w)}
 // Várias cintas: as tentativas de conexão entram numa fila (uma por vez) e cada uma tem tempo limite de 15 s,
 // para uma conexão travada não prender a cinta nem as outras. c.cid invalida tentativas abandonadas.
@@ -421,6 +516,7 @@ const withTimeout=(p,ms,what)=>Promise.race([p,new Promise((_,rj)=>setTimeout(()
 function quietDisconnect(c){c.quiet=true;try{c.dev.gatt.disconnect()}catch(_){}setTimeout(()=>{c.quiet=false},500)}
 async function link(c,id){
   const s=await c.dev.gatt.connect(),sv=await s.getPrimaryService('heart_rate'),ch=await sv.getCharacteristic('heart_rate_measurement');
+  c.srv=s;
   if(c.cid!==id)return;
   ch.addEventListener('characteristicvaluechanged',e=>onHr(c,e.target.value));
   await ch.startNotifications();
@@ -438,7 +534,7 @@ async function conn(c){
 }
 // Reconexão forçada (botão ou vigia): descarta tentativa em andamento e começa de novo.
 function recover(c){
-  if(c.removed)return;clearTimeout(c.timer);c.timer=null;c.retry=0;c.gaps++;c.state='reconectando';c.an.reset();
+  if(c.removed)return;ecgDown(c,'ECG interrompido na reconexão. Toque em Iniciar ECG depois que reconectar.');clearTimeout(c.timer);c.timer=null;c.retry=0;c.gaps++;c.state='reconectando';c.an.reset();
   c.cid++;c.busy=false;quietDisconnect(c);conn(c);
 }
 function onHr(c,dv){
@@ -462,6 +558,13 @@ function draw(c){
   set('st',stTxt+(c.gaps?' · quedas: '+c.gaps:'')+(c.err&&!live?' · '+c.err:''),live?'ok':'bad');
   const pill=c.q('pill');const pfull=live?'Ao vivo':stale?'Sem dados':c.state==='reconectando'?'Reconectando…':c.state==='conectado'?'Ao vivo':'Conectando…',pcmp=document.body.classList.contains('grp')&&!c.el.classList.contains('x');
   pill.textContent=pcmp?{'Reconectando…':'Reconect.','Conectando…':'Conect.'}[pfull]||pfull:pfull;pill.title=pfull;pill.className='pill '+(live?'ok':stale?'bad':'warn');
+  {const E=c.ecg,eb=c.q('eb'),es=c.q('est'),tn=Date.now();
+   if(E.on&&c.state!=='conectado')ecgDown(c,'ECG interrompido: conexão perdida. Toque em Iniciar ECG depois que reconectar.');
+   eb.textContent=E.on||E.starting?'Parar ECG':'Iniciar ECG';eb.disabled=!(live||E.on||E.starting);
+   if(E.on&&E.lastData){const el=E.first?(tn-E.first)/1000:0;   // média desde o início (os pacotes chegam em rajadas)
+     es.textContent=tn-E.lastData>3000?'Sem dados de ECG há '+Math.round((tn-E.lastData)/1000)+' s':'Ao vivo · ~'+(el>=3?Math.round(E.n/el):'…')+' amostras/s (esperado: 130)'+(c.contact==='notDetected'?' · SEM CONTATO':'')}
+   else es.textContent=E.msg||'Desligado. O ECG aumenta o uso de Bluetooth e da bateria da cinta; só uma cinta por vez.';
+   if(!E.on)drawEcg(c)}
   c.q('bpm').textContent=live&&c.bpm!==null?c.bpm:'—';
   const mx=parseFloat(c.q('max').value);c.q('pct').textContent=live&&mx>0&&c.bpm!==null?'· '+Math.round(c.bpm/mx*100)+'% da FC máx':'';
   set('ct',{detected:'detectado',notDetected:'SEM CONTATO: leitura ignorada',notSupported:'não informado'}[c.contact]||'—',c.contact==='notDetected'?'bad':c.contact==='detected'?'ok':'');
@@ -578,7 +681,7 @@ $('snd').onclick=()=>{
 async function keepAwake(){try{if(navigator.wakeLock)await navigator.wakeLock.request('screen')}catch(_){}}
 $('add').onclick=async()=>{
   if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
-  let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service']})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
+  let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service',HR.PMD.SERVICE]})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
   const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
   msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;applyMode();conn(c);
 };
