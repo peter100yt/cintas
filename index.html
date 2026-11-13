@@ -71,6 +71,7 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .view{display:none}
 body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
 #v-home{min-height:50vh}
+body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca só na Home */
 .vh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.vh h2{margin:0;font-size:22px}
 .emptyv{background:var(--sf);border:1px dashed var(--line);border-radius:18px;padding:28px 20px;text-align:center}.emptyv .ei{font-size:38px;line-height:1}.emptyv h3{margin:8px 0 4px;font-size:18px}.emptyv p{margin:0 0 16px}
 #ag-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:12px;align-items:start}
@@ -150,6 +151,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </section>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
+<div class="vh"><h2 id="run-t">Sessão de exercício</h2></div>
 <div class="tools"><button class="chip pri" id="add">＋ Adicionar cinta</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
 <div id="g"></div>
@@ -783,6 +785,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   document.querySelectorAll('#nav .nb').forEach(n=>{const on=n.dataset.v===TAB[v];n.classList.toggle('on',on);n.setAttribute('aria-current',on?'page':'false')});
   $('ver').textContent=(SUB[v]||'Monitor de cintas cardíacas')+' · v0.3 (teste)';
+  if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
   msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
 }
 document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>setView(n.dataset.v));
