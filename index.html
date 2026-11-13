@@ -49,14 +49,25 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .ex{display:inline-flex}
 .grp #g{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
 .grp .c{padding:12px;gap:8px;border-radius:16px}
-.grp .c.x{grid-column:1/-1}
 .grp .c:not(.x) .kv,.grp .c:not(.x) details,.grp .c:not(.x) .zl,.grp .c:not(.x) [data-k="zo"],.grp .c:not(.x) [data-k="dev"]{display:none}
-.grp .c:not(.x) .acts{display:none}.grp .c.alb:not(.x) .acts{display:flex}.grp .c.alb:not(.x) .acts button:not([data-k="mu"]){display:none}
-.grp .c:not(.x) .hd{flex-wrap:wrap;gap:6px}.grp .c:not(.x) .nm{flex:1 1 100%;font-size:16px}.grp .c:not(.x) .ex{margin-left:auto}
+.grp .c:not(.x) .acts{display:none}
+.mu2{display:none;min-height:36px;width:36px;padding:0;border-radius:10px;flex:none;align-items:center;justify-content:center;font-size:16px}
+.grp .c:not(.x) .mu2{display:inline-flex;margin:0}.grp .c:not(.x) .ex{margin:0}.grp .c:not(.x):not(.alb) .mu2{visibility:hidden}
+.grp .c:not(.x) .hd{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center}.grp .c:not(.x) .nm{grid-column:1/-1;font-size:16px;min-width:0}
+.grp .c:not(.x) .pill{justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .grp .c:not(.x) .hero{flex-direction:column;align-items:stretch;gap:6px}.grp .c:not(.x) .bpm{font-size:48px;letter-spacing:-1px}
 .grp .c:not(.x) canvas{width:100%;height:60px}.grp .c:not(.x) .zc{font-size:13px;padding:4px 10px}
-.grp .c:not(.x) .al2 div{padding:6px 10px;font-size:13px}
+.al2 .ic{margin-right:8px}
+.grp .c:not(.x) .al2{flex-direction:row;flex-wrap:nowrap;align-items:center;gap:6px;height:32px;overflow:hidden}.grp .c:not(.x) .al2:empty{display:flex}
+.grp .c:not(.x) .al2 div{padding:3px 8px;border-radius:10px;font-size:15px;line-height:1.3;flex:none}.grp .c:not(.x) .al2 .at{display:none}.grp .c:not(.x) .al2 .ic{margin:0}
+.grp .c:not(.x) .nm{height:36px}.grp .c:not(.x) .pill{white-space:nowrap}.grp .c:not(.x) .bpmbox{height:68px}.grp .c:not(.x) [data-k="pct"]{display:none}
+.grp .c:not(.x) .zc{height:26px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
+.ph{visibility:hidden}
+.grp .c.x{position:fixed;inset:12px;margin:0 auto;max-width:640px;overflow:auto;z-index:30;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+body.mx::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
 .c{min-width:0}.grp .c canvas{min-width:0;max-width:100%}
+@media(max-width:520px){.grp .c:not(.x) .mu2,.grp .c:not(.x) .ex{width:32px;min-height:32px}.grp .c:not(.x) .pill{font-size:11px;padding:4px 7px}}
 @media(max-width:520px){.grp #g{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.grp .c{padding:10px}.grp .c:not(.x) .bpm{font-size:40px}.grp .c:not(.x) .bpmbox{min-width:0}}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .t{background:var(--sf2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}.t.w{grid-column:1/-1}
@@ -328,7 +339,7 @@ const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padSt
 function mk(dev){
   const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
-  e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
+  e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="mu2" data-k="mu2" aria-label="Silenciar o alerta sonoro por 60 segundos" title="Silenciar som por 60 s">🔔</button><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
@@ -339,7 +350,7 @@ function mk(dev){
    +'<div class="acts"><button data-k="sv">Salvar sessão</button><button data-k="mu">Silenciar 60 s</button><button data-k="rc">Reconectar</button><button data-k="rm" class="danger">Remover</button></div>';
   c.el=e;c.q=k=>e.querySelector('[data-k="'+k+'"]');c.lab=e.querySelector('input');
   c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
-  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
     if(!c.rrSeen){msg('Esta cinta não envia RR: protocolo de VFC indisponível.');return}
@@ -348,9 +359,9 @@ function mk(dev){
     if(!c.cnt){msg('Nada para salvar: ainda não há leituras válidas.');return}
     try{await tx('readwrite',s=>s.add(sessionOf(c)));msg('Sessão salva neste aparelho'+(c.lab.value.trim()?'':' (sem identificação)')+'.');renderHist()}
     catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Exporte o CSV.')}};
-  c.q('mu').onclick=()=>{c.mutedUntil=Date.now()+60000;draw(c)};
+  c.q('mu').onclick=c.q('mu2').onclick=()=>{c.mutedUntil=Date.now()+60000;draw(c)};
   c.q('rc').onclick=()=>recover(c);
-  c.q('ex').onclick=()=>{e.classList.toggle('x')};
+  c.q('ex').onclick=()=>toggleX(c);
   dev.addEventListener('gattserverdisconnected',()=>{if(c.removed||c.quiet)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
   $('g').appendChild(e);return c;
 }
@@ -393,6 +404,8 @@ function onHr(c,dv){
   if(m.rr.length){c.rrSeen=true;c.an.add(m.rr)}
   c.hist.push(m.bpm);if(c.hist.length>180)c.hist.shift();
 }
+const ZS={1:'Zona 1 · abaixo VT1',2:'Zona 2 · VT1 a VT2',3:'Zona 3 · acima VT2'};
+const AIC={conexao:'📶',semdados:'⏳',contato:'🚫',fcalta:'▲',fcbaixa:'▼',limites:'⚙️',sinal:'〰️',semrr:'❔',bateria:'🔋'};
 const ZL={1:'Zona 1 (abaixo do VT1)',2:'Zona 2 (entre VT1 e VT2)',3:'Zona 3 (acima do VT2)'};
 function draw(c){
   const now=Date.now(),age=c.t?(now-c.t)/1000:0,stale=c.state==='conectado'&&c.t&&age>5;
@@ -400,7 +413,8 @@ function draw(c){
   const live=c.state==='conectado'&&!stale;
   const stTxt=stale?'sem dados há '+Math.round(age)+' s':c.state==='conectado'?'conectado':c.state+(c.retry?' (tentativa '+c.retry+')':'')+(c.t?' · última leitura há '+Math.round(age)+' s':'');
   set('st',stTxt+(c.gaps?' · quedas: '+c.gaps:'')+(c.err&&!live?' · '+c.err:''),live?'ok':'bad');
-  const pill=c.q('pill');pill.textContent=live?'Ao vivo':stale?'Sem dados':c.state==='reconectando'?'Reconectando…':c.state==='conectado'?'Ao vivo':'Conectando…';pill.className='pill '+(live?'ok':stale?'bad':'warn');
+  const pill=c.q('pill');const pfull=live?'Ao vivo':stale?'Sem dados':c.state==='reconectando'?'Reconectando…':c.state==='conectado'?'Ao vivo':'Conectando…',pcmp=document.body.classList.contains('grp')&&!c.el.classList.contains('x');
+  pill.textContent=pcmp?{'Reconectando…':'Reconect.','Conectando…':'Conect.'}[pfull]||pfull:pfull;pill.title=pfull;pill.className='pill '+(live?'ok':stale?'bad':'warn');
   c.q('bpm').textContent=live&&c.bpm!==null?c.bpm:'—';
   const mx=parseFloat(c.q('max').value);c.q('pct').textContent=live&&mx>0&&c.bpm!==null?'· '+Math.round(c.bpm/mx*100)+'% da FC máx':'';
   set('ct',{detected:'detectado',notDetected:'SEM CONTATO: leitura ignorada',notSupported:'não informado'}[c.contact]||'—',c.contact==='notDetected'?'bad':c.contact==='detected'?'ok':'');
@@ -416,9 +430,11 @@ function draw(c){
   {const zok=v1>0&&v2>v1&&!!org,zz=zok&&live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null,zb=c.q('zb');
    c.el.dataset.z=zz||'';zb.hidden=!zok;
    if(zok){const sp=v2-v1,lo=v1-sp,p=live&&c.bpm!==null?Math.max(0,Math.min(1,(c.bpm-lo)/(3*sp))):null;
-    c.q('zc').textContent=zz?ZL[zz]:'Zona: sem leitura ao vivo';
+    const cmp=document.body.classList.contains('grp')&&!c.el.classList.contains('x');
+    c.q('zc').textContent=zz?(cmp?ZS[zz]:ZL[zz]):'Zona: sem leitura ao vivo';
     const mk=c.q('mk');mk.style.display=p===null?'none':'block';if(p!==null)mk.style.left=(p*100)+'%';
-    c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent='Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}}
+    c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent='Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}
+   else{c.q('zc').textContent='Zonas não configuradas';c.q('mk').style.display='none'}}
   if(now-c.snapAt>=5000){c.snapAt=now;c.snap=c.rrSeen?c.an.snapshot():null;
     // um ponto por análise; α1 só entra com qualidade suficiente (avail==='ok') e cinta ao vivo
     if(c.proto&&c.proto.on)c.proto.pts.push({tSec:(now-c.proto.t0)/1000,bpm:live&&c.bpm!==null?c.bpm:0,alpha1:live&&c.snap&&c.snap.avail==='ok'?c.snap.alpha1:null})}
@@ -439,10 +455,13 @@ function draw(c){
   if(out){if(!c.outSince)c.outSince=now}else c.outSince=0;
   const al=HR.alerts({state:c.state,ageSec:age,contact:c.contact,bpm:b,minBpm:lo,maxBpm:hi,outSec:c.outSince?(now-c.outSince)/1000:0,rrSeen:c.rrSeen,nSamples:c.cnt,artRatio:s?s.ratio:0,bat:c.bat});
   const box=c.q('al2');box.textContent='';
-  al.forEach(a=>{const d=document.createElement('div');d.className=a.level;d.textContent=(a.level==='bad'?'⚠ ':'• ')+a.text;box.appendChild(d)});
+  // Um ícone por alerta (a faixa tem altura fixa na visão de grupo); o texto completo só aparece no cartão expandido.
+  al.forEach(a=>{const d=document.createElement('div');d.className=a.level;d.title=a.text;d.setAttribute('aria-label',a.text);
+    const i=document.createElement('span');i.className='ic';i.textContent=AIC[a.code]||'⚠';const t=document.createElement('span');t.className='at';t.textContent=a.text;
+    d.appendChild(i);d.appendChild(t);box.appendChild(d)});
   const hasBad=al.some(a=>a.level==='bad');
   c.el.classList.toggle('alb',hasBad);c.el.classList.toggle('alw',!hasBad&&al.length>0);
-  const muted=now<c.mutedUntil;c.q('mu').textContent=muted?'Silenciado ('+Math.ceil((c.mutedUntil-now)/1000)+' s)':'Silenciar 60 s';
+  const muted=now<c.mutedUntil;c.q('mu2').textContent=muted?'🔕':'🔔';c.q('mu').textContent=muted?'Silenciado ('+Math.ceil((c.mutedUntil-now)/1000)+' s)':'Silenciar 60 s';
   if(hasBad&&!muted&&now-c.lastBeep>=10000){c.lastBeep=now;beep()}
   const cv=c.el.querySelector('canvas'),x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
   if(c.hist.length>1){
@@ -509,8 +528,19 @@ $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(csv());msg('CS
 $('add2').onclick=()=>$('add').click();
 // Visão: automática (grupo com 2 ou mais cintas); o botão alterna entre grupo e detalhada.
 let mode='auto';
+// Detalhe de um paciente na visão de grupo: o cartão abre sobre a tela e um espaço reservado mantém o lugar na grade,
+// então os outros quadrados não se mexem.
+function toggleX(c){
+  const e=c.el;
+  if(e.classList.contains('x')){e.classList.remove('x');if(c.ph){c.ph.remove();c.ph=null}c.q('ex').textContent='⤢'}
+  else{closeAllX();c.ph=document.createElement('div');c.ph.className='ph';c.ph.style.height=e.offsetHeight+'px';e.before(c.ph);e.classList.add('x');c.q('ex').textContent='✕';e.scrollTop=0}
+  document.body.classList.toggle('mx',!!document.querySelector('.c.x'));
+}
+function closeAllX(){cards.forEach(c=>{if(c.el.classList.contains('x'))toggleX(c)})}
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeAllX()});
+document.addEventListener('click',ev=>{if(ev.target===document.body&&document.body.classList.contains('mx'))closeAllX()});
 function applyMode(){
-  const g=mode==='grp'||(mode==='auto'&&cards.size>=2);
+  const g=mode==='grp'||(mode==='auto'&&cards.size>=2);if(!g)closeAllX();
   document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1;$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
 }
 $('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';applyMode()};
