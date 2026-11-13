@@ -45,6 +45,19 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .zbar i{flex:1;display:block}.zbar .z1{background:var(--z1);border-radius:7px 0 0 7px}.zbar .z2{background:var(--z2)}.zbar .z3{background:var(--z3);border-radius:0 7px 7px 0}
 .zbar .mk{position:absolute;top:-5px;width:6px;height:24px;margin-left:-3px;border-radius:3px;background:var(--fg);box-shadow:0 0 0 2px var(--sf);left:0}
 .zl{display:grid;grid-template-columns:1fr 1fr 1fr;font-size:12px;color:var(--mut);font-weight:600;text-align:center}.zl span{overflow-wrap:anywhere}
+.ex{display:none;min-height:36px;width:36px;padding:0;border-radius:10px;flex:none;align-items:center;justify-content:center}
+.grp .ex{display:inline-flex}
+.grp #g{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.grp .c{padding:12px;gap:8px;border-radius:16px}
+.grp .c.x{grid-column:1/-1}
+.grp .c:not(.x) .kv,.grp .c:not(.x) details,.grp .c:not(.x) .zl,.grp .c:not(.x) [data-k="zo"],.grp .c:not(.x) [data-k="dev"]{display:none}
+.grp .c:not(.x) .acts{display:none}.grp .c.alb:not(.x) .acts{display:flex}.grp .c.alb:not(.x) .acts button:not([data-k="mu"]){display:none}
+.grp .c:not(.x) .hd{flex-wrap:wrap;gap:6px}.grp .c:not(.x) .nm{flex:1 1 100%;font-size:16px}.grp .c:not(.x) .ex{margin-left:auto}
+.grp .c:not(.x) .hero{flex-direction:column;align-items:stretch;gap:6px}.grp .c:not(.x) .bpm{font-size:48px;letter-spacing:-1px}
+.grp .c:not(.x) canvas{width:100%;height:60px}.grp .c:not(.x) .zc{font-size:13px;padding:4px 10px}
+.grp .c:not(.x) .al2 div{padding:6px 10px;font-size:13px}
+.c{min-width:0}.grp .c canvas{min-width:0;max-width:100%}
+@media(max-width:520px){.grp #g{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.grp .c{padding:10px}.grp .c:not(.x) .bpm{font-size:40px}.grp .c:not(.x) .bpmbox{min-width:0}}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .t{background:var(--sf2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}.t.w{grid-column:1/-1}
 .t .k{font-size:12px;color:var(--mut);font-weight:600}.t [data-k]{font-size:15px;font-weight:600;overflow-wrap:anywhere}
@@ -68,7 +81,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </style></head><body>
 <header class="top"><div><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1><div class="ver">Monitor de cintas cardíacas · v0.3 (teste)</div></div><button class="pri" id="add">＋ Adicionar cinta</button></header>
 <main class="wrap">
-<div class="tools"><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="hb">🗂 Histórico</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
+<div class="tools"><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="hb">🗂 Histórico</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
 <div id="msg" role="status"></div>
 <div id="hist" class="card2" hidden><strong>Histórico neste aparelho</strong><div class="m" style="margin:4px 0 8px">Sessões salvas só aqui; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
@@ -259,6 +272,12 @@ const HR = (() => {
     return { state: 'notIdentified', thr, bpm: null, tSec: null, reason: 'α1 não ficou abaixo de ' + thr + ' de forma sustentada' };
   }
 
+  // Vigia de conexão: cinta "conectada" mas sem pacote algum por mais de RECOVER_SEC (as notificações pararam
+  // sem o aparelho avisar a queda) deve ser reconectada sozinha. A cinta continua enviando pacotes mesmo sem
+  // contato com a pele, então silêncio longo é falha de enlace, não "paciente parado". Parâmetro não validado.
+  const RECOVER_SEC = 10;
+  function needsRecovery(s) { return s.state === 'conectado' && !s.busy && s.ageSec > RECOVER_SEC; }
+
   // Relatório da sessão (fragmento HTML). Texto digitado pelo usuário é sempre escapado. Valor ausente vira "—",
   // nunca um número inventado. Estimativas por VFC são rotuladas como tal.
   const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -298,7 +317,7 @@ const HR = (() => {
     return o;
   }
 
-  return { parseHrm, cleanRr, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
+  return { parseHrm, cleanRr, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -307,9 +326,9 @@ const msg=t=>{$('msg').textContent=t};
 const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
 const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function mk(dev){
-  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
+  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
-  e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
+  e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
@@ -330,22 +349,39 @@ function mk(dev){
     try{await tx('readwrite',s=>s.add(sessionOf(c)));msg('Sessão salva neste aparelho'+(c.lab.value.trim()?'':' (sem identificação)')+'.');renderHist()}
     catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Exporte o CSV.')}};
   c.q('mu').onclick=()=>{c.mutedUntil=Date.now()+60000;draw(c)};
-  c.q('rc').onclick=()=>{clearTimeout(c.timer);c.timer=null;c.retry=0;try{dev.gatt.disconnect()}catch(_){}conn(c)};
-  dev.addEventListener('gattserverdisconnected',()=>{if(c.removed)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
+  c.q('rc').onclick=()=>recover(c);
+  c.q('ex').onclick=()=>{e.classList.toggle('x')};
+  dev.addEventListener('gattserverdisconnected',()=>{if(c.removed||c.quiet)return;c.state='reconectando';c.an.reset();c.gaps++;retry(c);draw(c)});
   $('g').appendChild(e);return c;
 }
 function retry(c){if(c.timer||c.removed)return;const w=Math.min(1000*2**c.retry,15000);c.retry++;c.timer=setTimeout(()=>{c.timer=null;conn(c)},w)}
+// Várias cintas: as tentativas de conexão entram numa fila (uma por vez) e cada uma tem tempo limite de 15 s,
+// para uma conexão travada não prender a cinta nem as outras. c.cid invalida tentativas abandonadas.
+let connQ=Promise.resolve();
+const serial=fn=>{const r=connQ.then(fn,fn);connQ=r.catch(()=>{});return r};
+const withTimeout=(p,ms,what)=>Promise.race([p,new Promise((_,rj)=>setTimeout(()=>rj(new Error(what+': tempo esgotado')),ms))]);
+function quietDisconnect(c){c.quiet=true;try{c.dev.gatt.disconnect()}catch(_){}setTimeout(()=>{c.quiet=false},500)}
+async function link(c,id){
+  const s=await c.dev.gatt.connect(),sv=await s.getPrimaryService('heart_rate'),ch=await sv.getCharacteristic('heart_rate_measurement');
+  if(c.cid!==id)return;
+  ch.addEventListener('characteristicvaluechanged',e=>onHr(c,e.target.value));
+  await ch.startNotifications();
+  try{const b=await(await s.getPrimaryService('battery_service')).getCharacteristic('battery_level');c.bat=(await b.readValue()).getUint8(0)}catch(_){c.bat=null}
+  if(c.cid!==id)return;
+  c.state='conectado';c.everConn=true;c.retry=0;c.err='';c.t=Date.now();
+}
 async function conn(c){
-  if(c.busy||c.removed)return;c.busy=true;
+  if(c.busy||c.removed)return;c.busy=true;const id=++c.cid;c.busyId=id;
   c.state=c.everConn?'reconectando':'conectando';draw(c);
-  try{
-    const s=await c.dev.gatt.connect(),sv=await s.getPrimaryService('heart_rate'),ch=await sv.getCharacteristic('heart_rate_measurement');
-    ch.addEventListener('characteristicvaluechanged',e=>onHr(c,e.target.value));
-    await ch.startNotifications();
-    try{const b=await(await s.getPrimaryService('battery_service')).getCharacteristic('battery_level');c.bat=(await b.readValue()).getUint8(0)}catch(_){c.bat=null}
-    c.state='conectado';c.everConn=true;c.retry=0;c.err='';c.t=Date.now();
-  }catch(e){c.err=String(e.message||e).slice(0,60);retry(c)}
-  c.busy=false;draw(c);
+  try{await serial(()=>withTimeout(link(c,id),15000,'conexão'))}
+  catch(e){if(c.cid===id){c.cid++;c.err=String(e.message||e).slice(0,60);quietDisconnect(c);retry(c)}}
+  if(c.busyId===id)c.busy=false;
+  draw(c);
+}
+// Reconexão forçada (botão ou vigia): descarta tentativa em andamento e começa de novo.
+function recover(c){
+  if(c.removed)return;clearTimeout(c.timer);c.timer=null;c.retry=0;c.gaps++;c.state='reconectando';c.an.reset();
+  c.cid++;c.busy=false;quietDisconnect(c);conn(c);
 }
 function onHr(c,dv){
   let m;try{m=HR.parseHrm(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){c.bad++;return}
@@ -409,7 +445,14 @@ function draw(c){
   const muted=now<c.mutedUntil;c.q('mu').textContent=muted?'Silenciado ('+Math.ceil((c.mutedUntil-now)/1000)+' s)':'Silenciar 60 s';
   if(hasBad&&!muted&&now-c.lastBeep>=10000){c.lastBeep=now;beep()}
   const cv=c.el.querySelector('canvas'),x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
-  if(c.hist.length>1){const lo=Math.min(...c.hist)-3,hi=Math.max(...c.hist)+3;x.strokeStyle=getComputedStyle(cv).color;x.beginPath();c.hist.forEach((v,i)=>{const X=i/(c.hist.length-1)*cv.width,Y=cv.height-(v-lo)/(hi-lo)*cv.height;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}
+  if(c.hist.length>1){
+    // Linha do tempo da FC; com VT1/VT2 e origem informados, o fundo mostra as faixas das zonas.
+    const cs=getComputedStyle(document.documentElement),zk=v1>0&&v2>v1&&!!org;
+    let lo=Math.min(...c.hist)-3,hi=Math.max(...c.hist)+3;if(zk){lo=Math.min(lo,v1-8);hi=Math.max(hi,v2+8)}
+    const Y=v=>cv.height-(v-lo)/(hi-lo)*cv.height;
+    if(zk){[[lo,v1,'--z1'],[v1,v2,'--z2'],[v2,hi,'--z3']].forEach(([a,b,k])=>{x.globalAlpha=.25;x.fillStyle=cs.getPropertyValue(k).trim();x.fillRect(0,Y(b),cv.width,Y(a)-Y(b))});x.globalAlpha=1}
+    x.strokeStyle=zk?cs.getPropertyValue('--fg').trim():getComputedStyle(cv).color;x.lineWidth=2;x.lineJoin='round';
+    x.beginPath();c.hist.forEach((v,i)=>{const X=i/(c.hist.length-1)*cv.width;i?x.lineTo(X,Y(v)):x.moveTo(X,Y(v))});x.stroke()}
 }
 // Histórico local (IndexedDB). A sessão guarda a identificação digitada AGORA e não guarda o ID da cinta:
 // nada liga uma cinta a um paciente entre sessões, para não atribuir dados ao paciente errado.
@@ -456,7 +499,7 @@ $('add').onclick=async()=>{
   if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
   let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service']})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
   const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
-  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;conn(c);
+  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;applyMode();conn(c);
 };
 function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,valido,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5],r[6]].join(','))));return rows.join('\n')}
 $('exp').onclick=async()=>{const t=csv(),f=new File([t],'pulsys.csv',{type:'text/csv'});
@@ -464,5 +507,16 @@ $('exp').onclick=async()=>{const t=csv(),f=new File([t],'pulsys.csv',{type:'text
   const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='pulsys.csv';a.click()};
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(csv());msg('CSV copiado.')}catch(e){msg('Não foi possível copiar: '+e.message)}};
 $('add2').onclick=()=>$('add').click();
-setInterval(()=>{$('empty').hidden=cards.size>0;cards.forEach(draw)},1000);
+// Visão: automática (grupo com 2 ou mais cintas); o botão alterna entre grupo e detalhada.
+let mode='auto';
+function applyMode(){
+  const g=mode==='grp'||(mode==='auto'&&cards.size>=2);
+  document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1;$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
+}
+$('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';applyMode()};
+setInterval(()=>{
+  const now=Date.now();$('empty').hidden=cards.size>0;
+  cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
+  applyMode();cards.forEach(draw);
+},1000);
 </script></body></html>
