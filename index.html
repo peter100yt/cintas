@@ -18,8 +18,8 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 .pri{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .chip{min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
 .danger{color:var(--bad)}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--sf);border-bottom:1px solid var(--line)}
-.top h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}.top .logo{color:var(--acc);flex:none}.top .ver{font-size:12px;color:var(--mut);font-weight:500}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 16px;background:var(--sf);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}.top .logo{color:var(--acc);flex:none}
 .wrap{max-width:1180px;margin:0 auto;padding:12px 16px 32px}
 .tools{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}.tools::-webkit-scrollbar{display:none}
 #msg{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--accbg);color:var(--fg);font-size:14px}#msg:empty{display:none}
@@ -129,7 +129,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 @media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
 @media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff;padding:0}#rep .doc{border:0;padding:0}#rep .np{display:none}}
 </style></head><body data-view="home">
-<header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1><div class="ver" id="ver">Monitor de cintas cardíacas · v0.3 (teste)</div></header>
+<header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
 <div id="msg" role="status"></div>
 
@@ -784,7 +784,6 @@ function setView(v){
   view=v;const b=document.body;closeAllX();b.dataset.view=v;
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   document.querySelectorAll('#nav .nb').forEach(n=>{const on=n.dataset.v===TAB[v];n.classList.toggle('on',on);n.setAttribute('aria-current',on?'page':'false')});
-  $('ver').textContent=(SUB[v]||'Monitor de cintas cardíacas')+' · v0.3 (teste)';
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
   msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
 }
