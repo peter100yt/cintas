@@ -65,10 +65,12 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
 .ph{visibility:hidden}
 .c[data-za="1"] .zc{outline:1.5px dashed currentColor;outline-offset:-1.5px}
+.c[data-z="p"] .zc{background:linear-gradient(90deg,var(--z2bg),var(--z3bg));color:var(--fg)}.c[data-z="p"] .bpmbox{border-left:6px solid var(--z2)}
 .grp .c.x{position:fixed;inset:12px;margin:0 auto;max-width:640px;overflow:auto;z-index:30;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 body.mx::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
 .c{min-width:0}.grp .c canvas{min-width:0;max-width:100%}
-@media(max-width:520px){.grp .c:not(.x) .mu2,.grp .c:not(.x) .ex{width:32px;min-height:32px}.grp .c:not(.x) .pill{font-size:11px;padding:4px 7px}}
+@media(max-width:520px){.grp .c:not(.x) .mu2,.grp .c:not(.x) .ex{width:32px;min-height:32px}.grp .c:not(.x) .pill{font-size:11px;padding:4px 7px}
+.grp .c:not(.x) .zc{height:38px;display:flex;align-items:center;white-space:normal;line-height:15px;font-size:12px;border-radius:14px;padding:3px 10px;text-overflow:clip;max-width:100%}}
 @media(max-width:520px){.grp #g{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.grp .c{padding:10px}.grp .c:not(.x) .bpm{font-size:40px}.grp .c:not(.x) .bpmbox{min-width:0}}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .t{background:var(--sf2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}.t.w{grid-column:1/-1}
@@ -323,6 +325,7 @@ const HR = (() => {
       o += row('Estimativa α1 0,75', esc(protoText(p.e1)));
       o += row('Estimativa α1 0,50', esc(protoText(p.e2)));
     }
+    if (s.vt1Est > 0 && !s.zones) o += row('Primeiro limiar (VT1)', '≈ ' + nf(s.vt1Est) + ' bpm, estimado por VFC (experimental; não é limiar ventilatório medido); VT2 não identificado');
     o += row('Zonas', s.zones ? 'VT1 ' + nf(s.zones.vt1) + ' · VT2 ' + nf(s.zones.vt2) + ' bpm · origem: ' + esc(s.zones.origin) : 'não informadas');
     o += row('Limites de alerta de FC', (L.min > 0 || L.max > 0) ? 'mín ' + nf(L.min > 0 ? L.min : null) + ' · máx ' + nf(L.max > 0 ? L.max : null) + ' bpm (definidos pelo profissional)' : 'não informados');
     o += '</table><p class="m">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. Estimativas por VFC são experimentais e não são limiares ventilatórios medidos. Parâmetros não validados em cardiopatas, pneumopatas nem sob betabloqueador.</p>';
@@ -346,6 +349,16 @@ const HR = (() => {
     }
     return { r1, r2, zones, locks: nl, note };
   }
+  // Só o VT1 estimado (VT2 não identificado): descreve a FC atual em relação ao primeiro limiar. Igual a `zone`,
+  // exatamente no VT1 vale "acima". Não diz nada sobre o VT2 e não é uma zona completa.
+  function firstThresholdState(bpm, vt1) {
+    if (!(bpm > 0) || !(vt1 > 0)) return null;
+    return bpm >= vt1 ? 'above' : 'below';
+  }
+  function firstThresholdText(bpm, vt1) {
+    const s = firstThresholdState(bpm, vt1);
+    return s === 'above' ? 'acima do primeiro limiar' : s === 'below' ? 'abaixo do primeiro limiar' : null;
+  }
   // Texto curto do estado quando ainda não há zonas (cabe em um cartão compacto).
   function autoZoneText(s, rrAvailable, nPts) {
     if (!rrAvailable) return 'Sem RR: sem zonas por VFC';
@@ -360,7 +373,7 @@ const HR = (() => {
     return 'VT1 (α1 0,75): ' + protoText(s.r1) + ' · VT2 (α1 0,50): ' + protoText(s.r2) + (s.note ? ' · ' + s.note : '');
   }
 
-  return { parseHrm, cleanRr, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
+  return { parseHrm, cleanRr, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -462,18 +475,24 @@ function draw(c){
   const typed=!!(c.q('vt1').value||c.q('vt2').value),AS=c.auto.st;
   if(!typed&&AS&&AS.zones){v1=AS.zones.vt1;v2=AS.zones.vt2;org=AS.zones.origin;auto=true}
   if(auto){const z=live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null;set('zn',z?ZL[z]+' · '+org:'—','warn')}
-  else if(!typed)set('zn',!c.rrSeen?'Sem RR: zonas por VFC indisponíveis. Informe VT1 e VT2.':AS?HR.autoZoneDetail(AS):'Estimando por VFC (α1)… ou informe VT1 e VT2','warn');
+  else if(!typed){const f1s=AS&&!AS.zones&&AS.r1.state==='estimated'&&live&&c.bpm!==null?HR.firstThresholdText(c.bpm,AS.r1.bpm):null;
+    set('zn',!c.rrSeen?'Sem RR: zonas por VFC indisponíveis. Informe VT1 e VT2.':f1s?f1s.charAt(0).toUpperCase()+f1s.slice(1)+' · VT1 ≈ '+AS.r1.bpm+' bpm (estimado por VFC, experimental); VT2 ainda não identificado':AS?HR.autoZoneDetail(AS):'Estimando por VFC (α1)… ou informe VT1 e VT2','warn')}
   else if(!(v1>0&&v2>v1))set('zn','VT1 deve ser menor que VT2','warn');
   else if(!org)set('zn','escolha a origem de VT1/VT2','warn');
   else{const z=live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null;set('zn',z?ZL[z]+' · '+org:'—')}
   {const zok=v1>0&&v2>v1&&!!org,zz=zok&&live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null,zb=c.q('zb');
-   c.el.dataset.z=zz||'';c.el.dataset.za=auto?'1':'';zb.hidden=!zok;
+   // só VT1 estimado por VFC (VT2 não identificado): descreve como acima/abaixo do primeiro limiar
+   const only1=!typed&&AS&&!AS.zones&&AS.r1.state==='estimated',fp=only1&&live&&c.bpm!==null?HR.firstThresholdState(c.bpm,AS.r1.bpm):null;
+   c.el.dataset.z=zz||(fp==='below'?'1':fp==='above'?'p':'');c.el.dataset.za=(auto||fp)?'1':'';zb.hidden=!zok;
    if(zok){const sp=v2-v1,lo=v1-sp,p=live&&c.bpm!==null?Math.max(0,Math.min(1,(c.bpm-lo)/(3*sp))):null;
     const cmp=document.body.classList.contains('grp')&&!c.el.classList.contains('x');
     c.q('zc').textContent=zz?(auto?'≈ ':'')+(cmp?ZS[zz]:ZL[zz]):'Zona: sem leitura ao vivo';
     const mk=c.q('mk');mk.style.display=p===null?'none':'block';if(p!==null)mk.style.left=(p*100)+'%';
     c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent=auto?'ZONAS ESTIMADAS POR VFC (automático, experimental): VT1 ≈ '+v1+' bpm e VT2 ≈ '+v2+' bpm, a partir do cruzamento do DFA-α1 por 0,75 e 0,50 (hipóteses de pesquisa). Não são limiares ventilatórios medidos, e a FC está atrasada pela janela de 120 s. Informe VT1 e VT2 em "Limites e zonas do paciente" para substituir. O profissional define a conduta.':'Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}
-   else{c.q('zc').textContent=typed?'Zonas não configuradas':HR.autoZoneText(AS,c.rrSeen,c.auto.pts.length);c.q('mk').style.display='none'}}
+   else{const zc=c.q('zc');
+     zc.textContent=typed?'Zonas não configuradas':fp?'≈ '+(fp==='above'?'Acima':'Abaixo')+' do primeiro limiar':HR.autoZoneText(AS,c.rrSeen,c.auto.pts.length);
+     zc.title=fp?'VT1 ≈ '+AS.r1.bpm+' bpm, estimado por VFC (experimental; não é limiar ventilatório medido). VT2 ainda não identificado.':'';
+     c.q('mk').style.display='none'}}
   if(now-c.snapAt>=5000){c.snapAt=now;c.snap=c.rrSeen?c.an.snapshot():null;
     // série contínua para a estimativa automática de VT1/VT2 por DFA-α1 (experimental; só vale como "estimado por VFC")
     if(c.rrSeen&&c.t0){c.auto.pts.push({tSec:(now-c.t0)/1000,bpm:live&&c.bpm!==null?c.bpm:0,alpha1:live&&c.snap&&c.snap.avail==='ok'?c.snap.alpha1:null});
@@ -526,6 +545,7 @@ function sessionOf(c){
   return{label:c.lab.value.trim(),startedAt:c.t0||null,endedAt:now,nValid:c.cnt,nInvalid:c.inv,minBpm:c.mn,meanBpm:c.cnt?c.sum/c.cnt:null,maxBpm:c.mx,rrAvailable:c.rrSeen,
     hrv:sn?{rmssd:sn.time.rmssd,sd1:sn.time.sd1,sd2:sn.time.sd2,artRatio:sn.ratio,avail:sn.avail,alpha1:sn.alpha1}:null,
     protocol:P&&P.pts.length?{durSec:((P.on?now:P.end)-P.t0)/1000,nPoints:P.pts.length,e1:HR.thresholdEstimate(P.pts,HR.THR_VT1_HYP),e2:HR.thresholdEstimate(P.pts,HR.THR_VT2_HYP)}:null,
+    vt1Est:!(c.q('vt1').value||c.q('vt2').value)&&c.auto.st&&!c.auto.st.zones&&c.auto.st.r1.state==='estimated'?c.auto.st.r1.bpm:null,
     zones:v1>0&&v2>v1&&org?{vt1:v1,vt2:v2,origin:org}:(!(c.q('vt1').value||c.q('vt2').value)&&c.auto.st&&c.auto.st.zones?{...c.auto.st.zones}:null),limits:{min:lo>0?lo:null,max:hi>0?hi:null},
     log:c.log.map(r=>[r[0],r[3],r[4],r[5],r[6]])};
 }
