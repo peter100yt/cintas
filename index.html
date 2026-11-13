@@ -17,6 +17,11 @@ button{min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius
 button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .pri{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .chip{min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
+.chip.swr{display:inline-flex;align-items:center;gap:10px;padding:0 8px 0 14px}
+.swr .tg{position:relative;flex:none;width:46px;height:28px;border-radius:999px;background:var(--line);transition:background .2s ease}
+.swr .tg i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s ease}
+.swr[aria-checked="true"] .tg{background:var(--acc)}.swr[aria-checked="true"] .tg i{transform:translateX(18px)}
+@media(prefers-reduced-motion:reduce){.swr .tg,.swr .tg i{transition:none}}
 .danger{color:var(--bad)}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 16px;background:var(--sf);border-bottom:1px solid var(--line)}
 .top h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}.top .logo{color:var(--acc);flex:none}
@@ -168,7 +173,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 
 <section class="view" id="v-run" aria-label="Monitoramento">
 <div class="vh"><h2 id="run-t">Sessão de exercício</h2></div>
-<div class="tools"><button class="chip pri" id="add">＋ Adicionar cinta</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
+<div class="tools"><button class="chip" id="sw">‹ Modos</button><button class="chip pri" id="add" hidden>＋ Adicionar cinta</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
@@ -765,10 +770,11 @@ $('hx').onclick=async()=>{if(!confirm('Apagar TODO o histórico deste aparelho? 
 $('rc2').onclick=()=>{$('rep').style.display='none'};$('rp').onclick=()=>window.print();
 let actx=null;
 function beep(){if(!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=0.2;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+0.4)}catch(_){}}
+const setSnd=on=>{$('snd').setAttribute('aria-checked',on?'true':'false')};
 $('snd').onclick=()=>{
-  if(actx){actx=null;$('snd').textContent='🔔 Ativar sons de alerta';msg('Sons de alerta desativados. Os alertas visuais continuam.');return}
-  try{actx=new(window.AudioContext||window.webkitAudioContext)();actx.resume();beep();$('snd').textContent='🔊 Sons ativos (tocar para desativar)';msg('Sons ativos. Mantenha o volume ligado e o aparelho sem modo silencioso; no iPhone o som pode não tocar com a tela bloqueada.')}
-  catch(e){actx=null;msg('Não foi possível ativar o som: '+e.message)}
+  if(actx){actx=null;setSnd(false);msg('Sons de alerta desligados. Os alertas visuais continuam.');return}
+  try{actx=new(window.AudioContext||window.webkitAudioContext)();actx.resume();beep();setSnd(true);msg('Sons de alerta ligados. Mantenha o volume ligado e o aparelho sem modo silencioso; no iPhone o som pode não tocar com a tela bloqueada.')}
+  catch(e){actx=null;setSnd(false);msg('Não foi possível ligar o som: '+e.message)}
 };
 async function keepAwake(){try{if(navigator.wakeLock)await navigator.wakeLock.request('screen')}catch(_){}}
 $('add').onclick=async()=>{
@@ -875,6 +881,8 @@ $('lang').onchange=()=>{$('lang').value='pt-BR'};   // por enquanto só portugu�
 $('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';applyMode()};
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
+  // "Adicionar cinta" do topo só depois da primeira cinta (antes, o botão do meio já cobre); exportar/copiar CSV só com dados de sessão
+  $('add').hidden=cards.size===0;const temDados=[...cards.values()].some(c=>c.cnt>0);$('exp').hidden=$('cp').hidden=!temDados;
   cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
   applyMode();cards.forEach(draw);renderAgora();
 },1000);
