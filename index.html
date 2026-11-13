@@ -69,7 +69,7 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .ph{visibility:hidden}
 /* telas e menu inferior */
 .view{display:none}
-body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
+body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
 #v-home{min-height:50vh}
 body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca só na Home */
 .vh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.vh h2{margin:0;font-size:22px}
@@ -88,11 +88,21 @@ body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca 
 #nav .fab .fi{width:54px;height:54px;border-radius:50%;background:var(--acc);color:var(--accfg);display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 5px var(--sf)}
 #nav .fab svg{width:28px;height:28px;stroke-width:2.6}
 #nav .fab.on .fi{outline:3px solid var(--accbg)}
-#v-novo .hh{margin:4px 0 14px;font-size:22px}
-#v-novo .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;max-width:760px}
-.hmb{min-height:170px;padding:20px;border-radius:18px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px;text-align:left;font-weight:500;box-shadow:var(--sh)}
-.hmb strong{font-size:19px}.hmb .hi{font-size:34px;line-height:1}.hmb .m{font-size:14px;font-weight:500}
-.hmb:hover{border-color:var(--acc)}
+/* menu flutuante do + (aparece sobre a tela atual, sem trocar de tela) */
+#scrim{position:fixed;inset:0;z-index:18;background:rgba(0,0,0,.38);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}
+#scrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
+#fabm{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));z-index:19;width:min(92vw,340px);transform:translateX(-50%);display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.fmb{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:12px 16px;min-height:64px;border-radius:18px;background:var(--sf);border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.28);font-weight:500;
+ opacity:0;visibility:hidden;transform:translateY(36px) scale(.85);transform-origin:50% 100%;transition:opacity .2s ease,transform .28s cubic-bezier(.2,.9,.3,1.25),visibility 0s linear .28s}
+.fmb .hi{font-size:26px;line-height:1}.fmb .ft{display:flex;flex-direction:column;gap:1px}.fmb strong{font-size:16px}.fmb .m{font-size:13px}
+#fabm.open{pointer-events:auto}
+#fabm.open .fmb{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease,transform .32s cubic-bezier(.2,.9,.3,1.25)}
+#fabm.open .fmb:nth-child(2){transition-delay:0s}#fabm.open .fmb:nth-child(1){transition-delay:.06s}
+#fabm:not(.open) .fmb:nth-child(1){transition-delay:0s}#fabm:not(.open) .fmb:nth-child(2){transition-delay:0s}
+.fmb:active{transform:scale(.98)}
+#nav .fab .fi{transition:transform .25s ease,background .2s ease}#nav .fab .fi svg{transition:transform .28s cubic-bezier(.2,.9,.3,1.25)}
+#nav .fab.open .fi svg{transform:rotate(45deg)}
+@media(prefers-reduced-motion:reduce){#scrim,.fmb,#nav .fab .fi svg,#nav .fab .fi{transition:none!important}}
 .pp{display:none}
 body.mod-proto .pp{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px}
 body.mod-proto .ecg,body.mod-proto details,body.mod-proto .zb,body.mod-proto #vm,body.mod-proto .kv .t:not(.tk-al):not(.tk-mt):not(.tk-fc){display:none}
@@ -142,14 +152,6 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem.</p>
 </section>
 
-<section class="view" id="v-novo" aria-label="Novo">
-<h2 class="hh">O que você quer fazer?</h2>
-<div class="opts">
-<button class="hmb" id="go-s"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
-<button class="hmb" id="go-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
-</div>
-</section>
-
 <section class="view" id="v-run" aria-label="Monitoramento">
 <div class="vh"><h2 id="run-t">Sessão de exercício</h2></div>
 <div class="tools"><button class="chip pri" id="add">＋ Adicionar cinta</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
@@ -174,10 +176,15 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <nav id="nav" aria-label="Navegação principal">
 <button class="nb on" data-v="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>
 <button class="nb" data-v="agora" aria-label="Agora"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h5l3-8 4 16 3-8h5"/></svg><span>Agora</span></button>
-<button class="nb fab" data-v="novo" aria-label="Novo: sessão de exercício ou protocolo progressivo"><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>
+<button class="nb fab" data-v="novo" aria-label="Novo: sessão de exercício ou protocolo progressivo" aria-haspopup="menu" aria-expanded="false" aria-controls="fabm"><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>
 <button class="nb" data-v="hist" aria-label="Histórico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Histórico</span></button>
 <button class="nb" data-v="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
 </nav>
+<div id="scrim"></div>
+<div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
+<button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
+<button class="fmb" role="menuitem" id="go-p" tabindex="-1"><span class="hi">📈</span><span class="ft"><strong>Protocolo progressivo</strong><span class="m">Teste de carga crescente (experimental)</span></span></button>
+</div>
 <div id="rep"><div class="doc"><div class="acts np" style="margin-bottom:12px"><button class="pri" id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div></div>
 <script>
 // Porte em JS do hr_core (Dart). Mesma lógica, testada contra os mesmos valores de referência.
@@ -778,7 +785,7 @@ document.addEventListener('click',ev=>{if(ev.target===document.body&&document.bo
 // Telas (menu inferior): home, agora, novo (+), sessao e proto (escolhidas no +), hist e ajustes.
 // As cintas continuam conectadas ao trocar de tela; só muda o que aparece.
 let view='home';
-const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};
+const TAB={home:'home',agora:'agora',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
 const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
 function setView(v){
   view=v;const b=document.body;closeAllX();b.dataset.view=v;
@@ -787,8 +794,23 @@ function setView(v){
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
   msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
 }
-document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>setView(n.dataset.v));
-$('go-s').onclick=()=>setView('sessao');$('go-p').onclick=()=>setView('proto');$('sw').onclick=()=>setView('novo');
+// Botão "+": abre um menu flutuante animado sobre a tela atual (a tela só muda quando uma opção é escolhida).
+function toggleMenu(open){
+  const m=$('fabm'),f=document.querySelector('#nav .fab'),o=open===undefined?!m.classList.contains('open'):open;
+  m.classList.toggle('open',o);$('scrim').classList.toggle('open',o);f.classList.toggle('open',o);
+  f.setAttribute('aria-expanded',o?'true':'false');m.setAttribute('aria-hidden',o?'false':'true');
+  m.querySelectorAll('.fmb').forEach(b=>b.tabIndex=o?0:-1);
+  if(o)closeAllX();
+}
+document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>{
+  if(n.dataset.v==='novo'){toggleMenu();return}
+  toggleMenu(false);setView(n.dataset.v);
+});
+$('scrim').onclick=()=>toggleMenu(false);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('fabm').classList.contains('open'))toggleMenu(false)});
+$('go-s').onclick=()=>{toggleMenu(false);setView('sessao')};
+$('go-p').onclick=()=>{toggleMenu(false);setView('proto')};
+$('sw').onclick=()=>toggleMenu(true);   // "‹ Modos": abre o mesmo menu para trocar de modo
 function applyMode(){
   const g=view==='sessao'&&(mode==='grp'||(mode==='auto'&&cards.size>=2));if(!g)closeAllX();
   document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1||view!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
