@@ -64,6 +64,7 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .c:not(.x) .zc{height:26px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
 .ph{visibility:hidden}
+.c[data-za="1"] .zc{outline:1.5px dashed currentColor;outline-offset:-1.5px}
 .grp .c.x{position:fixed;inset:12px;margin:0 auto;max-width:640px;overflow:auto;z-index:30;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 body.mx::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
 .c{min-width:0}.grp .c canvas{min-width:0;max-width:100%}
@@ -328,7 +329,38 @@ const HR = (() => {
     return o;
   }
 
-  return { parseHrm, cleanRr, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
+  // Zonas automáticas por VFC (EXPERIMENTAL): usa o estimador de cruzamento do DFA-α1 sobre a série contínua de
+  // análises da cinta, sem protocolo definido pelo profissional. Só vale como "estimado por VFC": não é limiar
+  // ventilatório medido, e o valor informado pelo profissional sempre prevalece (decisão do app, não daqui).
+  // Zonas só existem com VT1 e VT2 estimados e VT2 > VT1; um estimado já obtido é mantido (locks) mesmo que a
+  // qualidade caia depois. Sem cruzamento ou sem qualidade, não há número.
+  const AUTO_ORIGIN = 'estimado por VFC (automático, experimental)';
+  function autoZoneState(pts, locks) {
+    const l = locks || {};
+    const r1 = l.r1 || thresholdEstimate(pts, THR_VT1_HYP), r2 = l.r2 || thresholdEstimate(pts, THR_VT2_HYP);
+    const nl = { r1: r1.state === 'estimated' ? r1 : null, r2: r2.state === 'estimated' ? r2 : null };
+    let zones = null, note = '';
+    if (r1.state === 'estimated' && r2.state === 'estimated') {
+      if (r2.bpm > r1.bpm) zones = { vt1: r1.bpm, vt2: r2.bpm, origin: AUTO_ORIGIN };
+      else note = 'inconsistente: o VT2 estimado não é maior que o VT1 estimado';
+    }
+    return { r1, r2, zones, locks: nl, note };
+  }
+  // Texto curto do estado quando ainda não há zonas (cabe em um cartão compacto).
+  function autoZoneText(s, rrAvailable, nPts) {
+    if (!rrAvailable) return 'Sem RR: sem zonas por VFC';
+    if (!s || !nPts) return 'Estimando zonas (α1)…';
+    if (s.note) return 'Zonas por VFC: inconsistentes';
+    if (s.r1.state === 'estimated') return 'VT1 ≈ ' + s.r1.bpm + ' bpm · VT2 pendente';
+    if (s.r1.state === 'inconclusive') return 'Zonas por VFC: inconclusivo';
+    return 'Zonas por VFC: ainda não identificadas';
+  }
+  function autoZoneDetail(s) {
+    if (!s) return '—';
+    return 'VT1 (α1 0,75): ' + protoText(s.r1) + ' · VT2 (α1 0,50): ' + protoText(s.r2) + (s.note ? ' · ' + s.note : '');
+  }
+
+  return { parseHrm, cleanRr, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -337,18 +369,20 @@ const msg=t=>{$('msg').textContent=t};
 const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
 const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function mk(dev){
-  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
+  const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,auto:{pts:[],locks:null,st:null},outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
   e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="mu2" data-k="mu2" aria-label="Silenciar o alerta sonoro por 60 segundos" title="Silenciar som por 60 s">🔔</button><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
    +'<details><summary>Protocolo progressivo (experimental)</summary><div class="in"><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button data-k="pr">Iniciar protocolo progressivo</button></div></details>'
-   +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional. Não há valores padrão.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
+   +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional; não há valores padrão. VT1 e VT2 em branco: o app tenta estimar por VFC (DFA-α1), de forma experimental e sempre rotulada como estimativa. O que você digitar substitui a estimativa.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
    +'<div class="lim"><label>FC máx. (opcional)<input type="number" inputmode="numeric" placeholder="bpm" data-k="max"></label></div><div class="lim"><label>FC no VT1<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt1"></label><label>FC no VT2<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt2"></label></div>'
    +'<select data-k="org" aria-label="Origem de VT1/VT2"><option value="">Origem de VT1/VT2…</option><option>medido (CPET/teste)</option><option>estimado (VFC/equação)</option><option>prescrito</option></select></div></details>'
    +'<div class="acts"><button data-k="sv">Salvar sessão</button><button data-k="mu">Silenciar 60 s</button><button data-k="rc">Reconectar</button><button data-k="rm" class="danger">Remover</button></div>';
   c.el=e;c.q=k=>e.querySelector('[data-k="'+k+'"]');c.lab=e.querySelector('input');
+  // trocar a identificação descarta a estimativa automática: ela não pode misturar dados de pacientes diferentes
+  c.lab.addEventListener('input',()=>{c.auto={pts:[],locks:null,st:null}});
   c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
   c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
@@ -422,20 +456,28 @@ function draw(c){
   set('rr',c.cnt<10&&!c.rrSeen?'verificando…':c.rrSeen?'disponível':'AUSENTE: VFC desabilitada',c.cnt>=10&&!c.rrSeen?'warn':'');
   set('ss',c.t0?dur(now-c.t0):'—');
   set('fc',c.cnt?c.mn+' · '+Math.round(c.sum/c.cnt)+' · '+c.mx+(c.inv?' ('+c.inv+' leituras inválidas)':''):'—');
-  const v1=parseFloat(c.q('vt1').value),v2=parseFloat(c.q('vt2').value),org=c.q('org').value;
-  if(!c.q('vt1').value&&!c.q('vt2').value)set('zn','informe VT1 e VT2');
+  // Zonas efetivas: o que o profissional digitou sempre prevalece; sem nada digitado, usa a estimativa automática
+  // por VFC (rotulada "estimado por VFC"). Digitou só parte: mostra o aviso e NÃO usa a estimativa.
+  let v1=parseFloat(c.q('vt1').value),v2=parseFloat(c.q('vt2').value),org=c.q('org').value,auto=false;
+  const typed=!!(c.q('vt1').value||c.q('vt2').value),AS=c.auto.st;
+  if(!typed&&AS&&AS.zones){v1=AS.zones.vt1;v2=AS.zones.vt2;org=AS.zones.origin;auto=true}
+  if(auto){const z=live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null;set('zn',z?ZL[z]+' · '+org:'—','warn')}
+  else if(!typed)set('zn',!c.rrSeen?'Sem RR: zonas por VFC indisponíveis. Informe VT1 e VT2.':AS?HR.autoZoneDetail(AS):'Estimando por VFC (α1)… ou informe VT1 e VT2','warn');
   else if(!(v1>0&&v2>v1))set('zn','VT1 deve ser menor que VT2','warn');
   else if(!org)set('zn','escolha a origem de VT1/VT2','warn');
   else{const z=live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null;set('zn',z?ZL[z]+' · '+org:'—')}
   {const zok=v1>0&&v2>v1&&!!org,zz=zok&&live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null,zb=c.q('zb');
-   c.el.dataset.z=zz||'';zb.hidden=!zok;
+   c.el.dataset.z=zz||'';c.el.dataset.za=auto?'1':'';zb.hidden=!zok;
    if(zok){const sp=v2-v1,lo=v1-sp,p=live&&c.bpm!==null?Math.max(0,Math.min(1,(c.bpm-lo)/(3*sp))):null;
     const cmp=document.body.classList.contains('grp')&&!c.el.classList.contains('x');
-    c.q('zc').textContent=zz?(cmp?ZS[zz]:ZL[zz]):'Zona: sem leitura ao vivo';
+    c.q('zc').textContent=zz?(auto?'≈ ':'')+(cmp?ZS[zz]:ZL[zz]):'Zona: sem leitura ao vivo';
     const mk=c.q('mk');mk.style.display=p===null?'none':'block';if(p!==null)mk.style.left=(p*100)+'%';
-    c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent='Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}
-   else{c.q('zc').textContent='Zonas não configuradas';c.q('mk').style.display='none'}}
+    c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent=auto?'ZONAS ESTIMADAS POR VFC (automático, experimental): VT1 ≈ '+v1+' bpm e VT2 ≈ '+v2+' bpm, a partir do cruzamento do DFA-α1 por 0,75 e 0,50 (hipóteses de pesquisa). Não são limiares ventilatórios medidos, e a FC está atrasada pela janela de 120 s. Informe VT1 e VT2 em "Limites e zonas do paciente" para substituir. O profissional define a conduta.':'Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}
+   else{c.q('zc').textContent=typed?'Zonas não configuradas':HR.autoZoneText(AS,c.rrSeen,c.auto.pts.length);c.q('mk').style.display='none'}}
   if(now-c.snapAt>=5000){c.snapAt=now;c.snap=c.rrSeen?c.an.snapshot():null;
+    // série contínua para a estimativa automática de VT1/VT2 por DFA-α1 (experimental; só vale como "estimado por VFC")
+    if(c.rrSeen&&c.t0){c.auto.pts.push({tSec:(now-c.t0)/1000,bpm:live&&c.bpm!==null?c.bpm:0,alpha1:live&&c.snap&&c.snap.avail==='ok'?c.snap.alpha1:null});
+      c.auto.st=HR.autoZoneState(c.auto.pts,c.auto.locks);c.auto.locks=c.auto.st.locks}
     // um ponto por análise; α1 só entra com qualidade suficiente (avail==='ok') e cinta ao vivo
     if(c.proto&&c.proto.on)c.proto.pts.push({tSec:(now-c.proto.t0)/1000,bpm:live&&c.bpm!==null?c.bpm:0,alpha1:live&&c.snap&&c.snap.avail==='ok'?c.snap.alpha1:null})}
   const s=c.snap;
@@ -484,7 +526,7 @@ function sessionOf(c){
   return{label:c.lab.value.trim(),startedAt:c.t0||null,endedAt:now,nValid:c.cnt,nInvalid:c.inv,minBpm:c.mn,meanBpm:c.cnt?c.sum/c.cnt:null,maxBpm:c.mx,rrAvailable:c.rrSeen,
     hrv:sn?{rmssd:sn.time.rmssd,sd1:sn.time.sd1,sd2:sn.time.sd2,artRatio:sn.ratio,avail:sn.avail,alpha1:sn.alpha1}:null,
     protocol:P&&P.pts.length?{durSec:((P.on?now:P.end)-P.t0)/1000,nPoints:P.pts.length,e1:HR.thresholdEstimate(P.pts,HR.THR_VT1_HYP),e2:HR.thresholdEstimate(P.pts,HR.THR_VT2_HYP)}:null,
-    zones:v1>0&&v2>v1&&org?{vt1:v1,vt2:v2,origin:org}:null,limits:{min:lo>0?lo:null,max:hi>0?hi:null},
+    zones:v1>0&&v2>v1&&org?{vt1:v1,vt2:v2,origin:org}:(!(c.q('vt1').value||c.q('vt2').value)&&c.auto.st&&c.auto.st.zones?{...c.auto.st.zones}:null),limits:{min:lo>0?lo:null,max:hi>0?hi:null},
     log:c.log.map(r=>[r[0],r[3],r[4],r[5],r[6]])};
 }
 function saveText(name,text,type){const f=new File([text],name,{type});
