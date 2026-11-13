@@ -2,9 +2,13 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pulsys</title>
 <meta name="theme-color" content="#0f766e">
+<script>try{var t=localStorage.getItem('pulsys.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <style>
 :root{--bg:#f3f5f8;--sf:#fff;--sf2:#f6f8fa;--fg:#111827;--mut:#5b6573;--line:#e3e7ec;--acc:#0f766e;--accfg:#fff;--accbg:#e4f3f1;--ok:#047857;--warn:#b45309;--bad:#b91c1c;--okbg:#e3f4ec;--warnbg:#fdf0dc;--badbg:#fde8e8;--sh:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06)}
-@media(prefers-color-scheme:dark){:root{--bg:#0b1016;--sf:#141b25;--sf2:#1a2330;--fg:#e8edf3;--mut:#9aa6b4;--line:#263241;--acc:#2dd4bf;--accfg:#04201d;--accbg:#0f2d2b;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--okbg:#10291d;--warnbg:#33260c;--badbg:#3a1616;--sh:0 1px 2px rgba(0,0,0,.4)}}
+/* Tema: automático (segue o aparelho), claro ou escuro (atributo data-theme em <html>, definido em Ajustes) */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1016;--sf:#141b25;--sf2:#1a2330;--fg:#e8edf3;--mut:#9aa6b4;--line:#263241;--acc:#2dd4bf;--accfg:#04201d;--accbg:#0f2d2b;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--okbg:#10291d;--warnbg:#33260c;--badbg:#3a1616;--sh:0 1px 2px rgba(0,0,0,.4);--z1:#7dd3fc;--z2:#facc15;--z2t:#fde047;--z3:#f87171;--z3t:#fca5a5;--z1bg:#0c2a3d;--z2bg:#3a2f0b;--z3bg:#3f1515}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1016;--sf:#141b25;--sf2:#1a2330;--fg:#e8edf3;--mut:#9aa6b4;--line:#263241;--acc:#2dd4bf;--accfg:#04201d;--accbg:#0f2d2b;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--okbg:#10291d;--warnbg:#33260c;--badbg:#3a1616;--sh:0 1px 2px rgba(0,0,0,.4);--z1:#7dd3fc;--z2:#facc15;--z2t:#fde047;--z3:#f87171;--z3t:#fca5a5;--z1bg:#0c2a3d;--z2bg:#3a2f0b;--z3bg:#3f1515}
+:root[data-theme="light"]{color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
 .m{color:var(--mut);font-size:13px}
@@ -21,7 +25,7 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 #msg{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--accbg);color:var(--fg);font-size:14px}#msg:empty{display:none}
 #empty{background:var(--sf);border:1px dashed var(--line);border-radius:18px;padding:24px 20px;text-align:center}
 #empty h2{margin:0 0 6px;font-size:18px}#empty ol{text-align:left;max-width:420px;margin:14px auto 18px;padding-left:22px;color:var(--mut)}#empty li{margin:6px 0}
-#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;align-items:start}
+#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(310px,100%),1fr));gap:14px;align-items:start}
 .c{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:12px}
 .c.alb{border-color:var(--bad);box-shadow:0 0 0 3px var(--badbg)}.c.alw{border-color:var(--warn);box-shadow:0 0 0 3px var(--warnbg)}
 .hd{display:flex;align-items:center;gap:10px}
@@ -35,7 +39,6 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 .bpmu{font-size:13px;color:var(--mut);font-weight:600}
 canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 :root{--z1:#0369a1;--z2:#eab308;--z2t:#854d0e;--z3:#dc2626;--z3t:#b91c1c;--z1bg:#e0f0fb;--z2bg:#fef3c7;--z3bg:#fde2e2}
-@media(prefers-color-scheme:dark){:root{--z1:#7dd3fc;--z2:#facc15;--z2t:#fde047;--z3:#f87171;--z3t:#fca5a5;--z1bg:#0c2a3d;--z2bg:#3a2f0b;--z3bg:#3f1515}}
 .zb{display:flex;flex-direction:column;gap:6px}
 .zc{align-self:flex-start;padding:6px 12px;border-radius:999px;font-weight:800;font-size:15px;background:var(--sf2);color:var(--mut)}
 .c[data-z="1"] .zc{background:var(--z1bg);color:var(--z1)}.c[data-z="2"] .zc{background:var(--z2bg);color:var(--z2t)}.c[data-z="3"] .zc{background:var(--z3bg);color:var(--z3t)}
@@ -64,14 +67,31 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .c:not(.x) .zc{height:26px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
 .ph{visibility:hidden}
-/* menu inicial e modos */
-#home{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;max-width:760px;margin:8px auto}
-#home .hh{grid-column:1/-1;margin:4px 0 0;font-size:20px}
+/* telas e menu inferior */
+.view{display:none}
+body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
+#v-home{min-height:50vh}
+.vh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.vh h2{margin:0;font-size:22px}
+.emptyv{background:var(--sf);border:1px dashed var(--line);border-radius:18px;padding:28px 20px;text-align:center}.emptyv .ei{font-size:38px;line-height:1}.emptyv h3{margin:8px 0 4px;font-size:18px}.emptyv p{margin:0 0 16px}
+#ag-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:12px;align-items:start}
+.ar .hero{gap:10px}.ar .bpm{font-size:56px}.ar canvas{height:56px}.ar-f{display:flex;align-items:center;justify-content:space-between;gap:8px}.ar-ic{font-size:16px;letter-spacing:2px}
+.sl{display:block;font-weight:700;margin:0 0 8px}
+#v-ajustes select{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--sf2);font-weight:500}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--sf2);border-radius:14px;padding:4px}.seg button{border:0;background:transparent;min-height:42px;padding:0 6px;font-weight:600;color:var(--mut)}.seg button.on{background:var(--acc);color:var(--accfg)}
+.wrap{padding-bottom:104px}
+#nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:var(--sf);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+#nav .nb{border:0;background:transparent;min-height:54px;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--mut);border-radius:12px;transform:none}
+#nav .nb svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#nav .nb.on{color:var(--acc)}
+#nav .fab{justify-content:flex-start}
+#nav .fab .fi{width:54px;height:54px;border-radius:50%;background:var(--acc);color:var(--accfg);display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 5px var(--sf)}
+#nav .fab svg{width:28px;height:28px;stroke-width:2.6}
+#nav .fab.on .fi{outline:3px solid var(--accbg)}
+#v-novo .hh{margin:4px 0 14px;font-size:22px}
+#v-novo .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;max-width:760px}
 .hmb{min-height:170px;padding:20px;border-radius:18px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px;text-align:left;font-weight:500;box-shadow:var(--sh)}
 .hmb strong{font-size:19px}.hmb .hi{font-size:34px;line-height:1}.hmb .m{font-size:14px;font-weight:500}
 .hmb:hover{border-color:var(--acc)}
-body.home .tools,body.home #msg,body.home #hist,body.home #empty,body.home #g,body.home #add{display:none!important}
-body:not(.home) #home{display:none}
 .pp{display:none}
 body.mod-proto .pp{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px}
 body.mod-proto .ecg,body.mod-proto details,body.mod-proto .zb,body.mod-proto #vm,body.mod-proto .kv .t:not(.tk-al):not(.tk-mt):not(.tk-fc){display:none}
@@ -100,26 +120,62 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .lim input{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font-weight:500}
 .acts{display:flex;gap:8px;flex-wrap:wrap}.acts button{flex:1 1 auto;min-height:44px;font-size:14px}
 .card2{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px}
-#hist .r{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}#hist .r span:first-child{flex:1 1 220px}#hist .r button{min-height:36px;padding:0 12px;font-size:13px}
+#v-hist .r{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}#v-hist .r span:first-child{flex:1 1 220px}#v-hist .r button{min-height:36px;padding:0 12px;font-size:13px}
 .foot{margin:18px 0 0;text-align:center}
 #rep{display:none;position:fixed;inset:0;overflow:auto;background:var(--bg);color:var(--fg);padding:16px;z-index:9}
 #rep .doc{max-width:760px;margin:0 auto;background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:18px}
 #rep table{border-collapse:collapse;width:100%}#rep th,#rep td{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;font-size:14px}#rep th{width:36%;color:var(--mut);font-weight:600}
 @media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
 @media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff;padding:0}#rep .doc{border:0;padding:0}#rep .np{display:none}}
-</style></head><body class="home">
-<header class="top"><div><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1><div class="ver" id="ver">Monitor de cintas cardíacas · v0.3 (teste)</div></div><button class="pri" id="add">＋ Adicionar cinta</button></header>
+</style></head><body data-view="home">
+<header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1><div class="ver" id="ver">Monitor de cintas cardíacas · v0.3 (teste)</div></header>
 <main class="wrap">
-<section id="home" aria-label="Escolha o modo de uso"><h2 class="hh">O que você quer fazer?</h2>
-<button class="hmb" id="go-s"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
-<button class="hmb" id="go-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button></section>
-<div class="tools"><button class="chip" id="sw">⇄ Trocar modo</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="hb">🗂 Histórico</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
 <div id="msg" role="status"></div>
-<div id="hist" class="card2" hidden><strong>Histórico neste aparelho</strong><div class="m" style="margin:4px 0 8px">Sessões salvas só aqui; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
+
+<section class="view" id="v-home" aria-label="Home"></section>
+
+<section class="view" id="v-agora" aria-label="Agora">
+<div class="vh"><h2>Agora</h2><button class="chip" id="add3" hidden>＋ Adicionar cinta</button></div>
+<div id="ag-empty" class="emptyv"><div class="ei">📡</div><h3>Nenhuma cinta conectada</h3><p class="m">Conecte uma cinta para ver aqui a frequência cardíaca e o estado de cada uma.</p><button class="pri" id="add4">＋ Conectar cinta</button></div>
+<div id="ag-list"></div>
+<p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem.</p>
+</section>
+
+<section class="view" id="v-novo" aria-label="Novo">
+<h2 class="hh">O que você quer fazer?</h2>
+<div class="opts">
+<button class="hmb" id="go-s"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
+<button class="hmb" id="go-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
+</div>
+</section>
+
+<section class="view" id="v-run" aria-label="Monitoramento">
+<div class="tools"><button class="chip pri" id="add">＋ Adicionar cinta</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
+</section>
+
+<section class="view" id="v-hist" aria-label="Histórico">
+<div class="vh"><h2>Histórico</h2></div>
+<div class="card2"><div class="m" style="margin:0 0 8px">Sessões salvas só neste aparelho; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
+</section>
+
+<section class="view" id="v-ajustes" aria-label="Ajustes">
+<div class="vh"><h2>Ajustes</h2></div>
+<div class="card2"><label class="sl" for="lang">Idioma</label><select id="lang"><option value="pt-BR" selected>Português (Brasil)</option><option disabled>English (em breve)</option><option disabled>Español (em breve)</option></select><div class="m" style="margin-top:6px">Por enquanto o Pulsys está disponível apenas em português.</div></div>
+<div class="card2"><div class="sl" id="th-l">Tema</div><div class="seg" role="radiogroup" aria-labelledby="th-l"><button role="radio" data-th="auto">Automático</button><button role="radio" data-th="light">Claro</button><button role="radio" data-th="dark">Escuro</button></div><div class="m" style="margin-top:6px">Automático acompanha a configuração do aparelho.</div></div>
+<div class="card2"><div class="sl">Sobre</div><div class="m">Pulsys v0.3 (versão de teste). Ferramenta de apoio ao monitoramento: não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. Estimativas por VFC são experimentais e não são limiares ventilatórios medidos.</div></div>
+</section>
 </main>
+
+<nav id="nav" aria-label="Navegação principal">
+<button class="nb on" data-v="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>
+<button class="nb" data-v="agora" aria-label="Agora"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h5l3-8 4 16 3-8h5"/></svg><span>Agora</span></button>
+<button class="nb fab" data-v="novo" aria-label="Novo: sessão de exercício ou protocolo progressivo"><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>
+<button class="nb" data-v="hist" aria-label="Histórico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Histórico</span></button>
+<button class="nb" data-v="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
+</nav>
 <div id="rep"><div class="doc"><div class="acts np" style="margin-bottom:12px"><button class="pri" id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div></div>
 <script>
 // Porte em JS do hr_core (Dart). Mesma lógica, testada contra os mesmos valores de referência.
@@ -636,6 +692,7 @@ function draw(c){
   al.forEach(a=>{const d=document.createElement('div');d.className=a.level;d.title=a.text;d.setAttribute('aria-label',a.text);
     const i=document.createElement('span');i.className='ic';i.textContent=AIC[a.code]||'⚠';const t=document.createElement('span');t.className='at';t.textContent=a.text;
     d.appendChild(i);d.appendChild(t);box.appendChild(d)});
+  c.al=al;   // a tela "Agora" mostra só os ícones destes alertas
   const hasBad=al.some(a=>a.level==='bad');
   c.el.classList.toggle('alb',hasBad);c.el.classList.toggle('alw',!hasBad&&al.length>0);
   const muted=now<c.mutedUntil;c.q('mu2').textContent=muted?'🔕':'🔔';c.q('mu').textContent=muted?'Silenciado ('+Math.ceil((c.mutedUntil-now)/1000)+' s)':'Silenciar 60 s';
@@ -681,7 +738,6 @@ async function renderHist(){
     b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
     box.appendChild(r)});
 }
-$('hb').onclick=()=>{const h=$('hist');h.hidden=!h.hidden;if(!h.hidden)renderHist()};
 $('hx').onclick=async()=>{if(!confirm('Apagar TODO o histórico deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',s=>s.clear());msg('Histórico apagado.')}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()};
 $('rc2').onclick=()=>{$('rep').style.display='none'};$('rp').onclick=()=>window.print();
 let actx=null;
@@ -696,7 +752,7 @@ $('add').onclick=async()=>{
   if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
   let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service',HR.PMD.SERVICE]})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
   const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
-  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;applyMode();conn(c);
+  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;applyMode();conn(c);renderAgora();
 };
 function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,valido,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5],r[6]].join(','))));return rows.join('\n')}
 $('exp').onclick=async()=>{const t=csv(),f=new File([t],'pulsys.csv',{type:'text/csv'});
@@ -717,24 +773,71 @@ function toggleX(c){
 function closeAllX(){cards.forEach(c=>{if(c.el.classList.contains('x'))toggleX(c)})}
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeAllX()});
 document.addEventListener('click',ev=>{if(ev.target===document.body&&document.body.classList.contains('mx'))closeAllX()});
-// Modos do app (menu inicial): 'sessao' (monitoramento, com visão de grupo) ou 'protocolo' (teste progressivo, cartões completos).
-// As cintas continuam conectadas ao trocar de modo; só muda a tela.
-let appMode=null;
-function setAppMode(m){
-  appMode=m;const b=document.body;closeAllX();
-  b.classList.toggle('home',m===null);b.classList.toggle('mod-sessao',m==='sessao');b.classList.toggle('mod-proto',m==='protocolo');
-  $('ver').textContent=m==='sessao'?'Sessão de exercício · v0.3 (teste)':m==='protocolo'?'Protocolo progressivo · v0.3 (teste)':'Monitor de cintas cardíacas · v0.3 (teste)';
-  applyMode();if(m!==null)msg('');window.scrollTo(0,0);
+// Telas (menu inferior): home, agora, novo (+), sessao e proto (escolhidas no +), hist e ajustes.
+// As cintas continuam conectadas ao trocar de tela; só muda o que aparece.
+let view='home';
+const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};
+const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
+function setView(v){
+  view=v;const b=document.body;closeAllX();b.dataset.view=v;
+  b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
+  document.querySelectorAll('#nav .nb').forEach(n=>{const on=n.dataset.v===TAB[v];n.classList.toggle('on',on);n.setAttribute('aria-current',on?'page':'false')});
+  $('ver').textContent=(SUB[v]||'Monitor de cintas cardíacas')+' · v0.3 (teste)';
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
 }
-$('go-s').onclick=()=>setAppMode('sessao');$('go-p').onclick=()=>setAppMode('protocolo');$('sw').onclick=()=>setAppMode(null);
+document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>setView(n.dataset.v));
+$('go-s').onclick=()=>setView('sessao');$('go-p').onclick=()=>setView('proto');$('sw').onclick=()=>setView('novo');
 function applyMode(){
-  const g=appMode==='sessao'&&(mode==='grp'||(mode==='auto'&&cards.size>=2));if(!g)closeAllX();
-  document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1||appMode!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
+  const g=view==='sessao'&&(mode==='grp'||(mode==='auto'&&cards.size>=2));if(!g)closeAllX();
+  document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1||view!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
 }
+// Tela "Agora": só o básico de cada cinta conectada (identificação, estado, FC, linha do tempo, bateria e ícones de alerta),
+// sem zonas, sem protocolo e sem pré-definição de exercício ou teste.
+const agRows=new Map();
+function renderAgora(){
+  if(view!=='agora')return;
+  $('ag-empty').hidden=cards.size>0;$('add3').hidden=cards.size===0;
+  agRows.forEach((r,id)=>{if(!cards.has(id)){r.el.remove();agRows.delete(id)}});
+  const now=Date.now(),list=$('ag-list');
+  cards.forEach(c=>{
+    let r=agRows.get(c.id);
+    if(!r){
+      const el=document.createElement('div');el.className='c ar';
+      el.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação (código)" aria-label="Identificação do paciente"><span class="pill warn">Conectando…</span></div><div class="hero"><div class="bpmbox"><div class="bpm">—</div><div class="bpmu">bpm</div></div><canvas width="300" height="56" aria-hidden="true"></canvas></div><div class="ar-f"><span class="m ar-bt"></span><span class="ar-ic"></span></div>';
+      r={el,inp:el.querySelector('input'),pill:el.querySelector('.pill'),bpm:el.querySelector('.bpm'),cv:el.querySelector('canvas'),bt:el.querySelector('.ar-bt'),ic:el.querySelector('.ar-ic')};
+      r.inp.addEventListener('input',()=>{c.lab.value=r.inp.value;c.lab.dispatchEvent(new Event('input'))});   // mesma identificação do cartão
+      agRows.set(c.id,r);list.appendChild(el);
+    }
+    const age=c.t?(now-c.t)/1000:0,stale=c.state==='conectado'&&c.t&&age>5,live=c.state==='conectado'&&!stale;
+    r.pill.textContent=live?'Ao vivo':stale?'Sem dados':c.state==='reconectando'?'Reconectando…':c.state==='conectado'?'Ao vivo':'Conectando…';
+    r.pill.className='pill '+(live?'ok':stale?'bad':'warn');
+    r.bpm.textContent=live&&c.bpm!==null?c.bpm:'—';
+    if(document.activeElement!==r.inp&&r.inp.value!==c.lab.value)r.inp.value=c.lab.value;
+    r.bt.textContent=(c.bat===null?'Bateria —':'Bateria '+c.bat+'%')+' · '+(c.dev.name||'cinta')+' · #'+c.n;
+    const al=c.al||[];r.ic.textContent=al.map(a=>AIC[a.code]||'⚠').join(' ');r.ic.title=al.map(a=>a.text).join(' · ');
+    r.el.classList.toggle('alb',al.some(a=>a.level==='bad'));r.el.classList.toggle('alw',al.length>0&&!al.some(a=>a.level==='bad'));
+    const cv=r.cv,x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
+    if(c.hist.length>1){const lo=Math.min(...c.hist)-3,hi=Math.max(...c.hist)+3;x.strokeStyle=getComputedStyle(cv).color;x.lineWidth=2;x.lineJoin='round';x.beginPath();
+      c.hist.forEach((v,i)=>{const X=i/(c.hist.length-1)*cv.width,Y=cv.height-(v-lo)/(hi-lo)*cv.height;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()}
+  });
+}
+$('add3').onclick=$('add4').onclick=()=>$('add').click();
+// Ajustes: tema (automático, claro, escuro) e idioma; guardados só neste aparelho.
+const store={get:k=>{try{return localStorage.getItem(k)}catch(_){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}}};
+function applyTheme(t){
+  if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else{t='auto';document.documentElement.removeAttribute('data-theme')}
+  document.querySelectorAll('[data-th]').forEach(b=>{const on=b.dataset.th===t;b.classList.toggle('on',on);b.setAttribute('aria-checked',on?'true':'false')});
+  store.set('pulsys.theme',t);
+}
+document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>applyTheme(b.dataset.th));
+applyTheme(store.get('pulsys.theme')||'auto');
+$('lang').value='pt-BR';document.documentElement.lang='pt-BR';store.set('pulsys.lang','pt-BR');
+$('lang').onchange=()=>{$('lang').value='pt-BR'};   // por enquanto só português
 $('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';applyMode()};
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
   cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
-  applyMode();cards.forEach(draw);
+  applyMode();cards.forEach(draw);renderAgora();
 },1000);
+setView('home');
 </script></body></html>
