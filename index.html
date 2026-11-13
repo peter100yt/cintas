@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Monitor de cintas</title>
+<title>Pulsys</title>
 <meta name="theme-color" content="#0f766e">
 <style>
 :root{--bg:#f3f5f8;--sf:#fff;--sf2:#f6f8fa;--fg:#111827;--mut:#5b6573;--line:#e3e7ec;--acc:#0f766e;--accfg:#fff;--accbg:#e4f3f1;--ok:#047857;--warn:#b45309;--bad:#b91c1c;--okbg:#e3f4ec;--warnbg:#fdf0dc;--badbg:#fde8e8;--sh:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06)}
@@ -15,7 +15,7 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 .chip{min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
 .danger{color:var(--bad)}
 .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--sf);border-bottom:1px solid var(--line)}
-.top h1{margin:0;font-size:18px;line-height:1.2}.top .ver{font-size:12px;color:var(--mut);font-weight:500}
+.top h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}.top .logo{color:var(--acc);flex:none}.top .ver{font-size:12px;color:var(--mut);font-weight:500}
 .wrap{max-width:1180px;margin:0 auto;padding:12px 16px 32px}
 .tools{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}.tools::-webkit-scrollbar{display:none}
 #msg{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--accbg);color:var(--fg);font-size:14px}#msg:empty{display:none}
@@ -34,6 +34,17 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 .bpmbox{flex:none;min-width:112px}.bpm{font-size:68px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-2px}
 .bpmu{font-size:13px;color:var(--mut);font-weight:600}
 canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
+:root{--z1:#0369a1;--z2:#15803d;--z3:#7e22ce;--z1bg:#e0f0fb;--z2bg:#dcf3e4;--z3bg:#f0e4fb}
+@media(prefers-color-scheme:dark){:root{--z1:#7dd3fc;--z2:#86efac;--z3:#d8b4fe;--z1bg:#0c2a3d;--z2bg:#10301c;--z3bg:#2c1745}}
+.zb{display:flex;flex-direction:column;gap:6px}
+.zc{align-self:flex-start;padding:6px 12px;border-radius:999px;font-weight:800;font-size:15px;background:var(--sf2);color:var(--mut)}
+.c[data-z="1"] .zc{background:var(--z1bg);color:var(--z1)}.c[data-z="2"] .zc{background:var(--z2bg);color:var(--z2)}.c[data-z="3"] .zc{background:var(--z3bg);color:var(--z3)}
+.c[data-z="1"] .bpmbox{border-left:6px solid var(--z1)}.c[data-z="2"] .bpmbox{border-left:6px solid var(--z2)}.c[data-z="3"] .bpmbox{border-left:6px solid var(--z3)}
+.bpmbox{padding-left:10px;border-left:6px solid transparent}
+.zbar{position:relative;display:flex;height:14px;border-radius:7px;overflow:visible}
+.zbar i{flex:1;display:block}.zbar .z1{background:var(--z1);border-radius:7px 0 0 7px}.zbar .z2{background:var(--z2)}.zbar .z3{background:var(--z3);border-radius:0 7px 7px 0}
+.zbar .mk{position:absolute;top:-5px;width:6px;height:24px;margin-left:-3px;border-radius:3px;background:var(--fg);box-shadow:0 0 0 2px var(--sf);left:0}
+.zl{display:grid;grid-template-columns:1fr 1fr 1fr;font-size:12px;color:var(--mut);font-weight:600;text-align:center}.zl span{overflow-wrap:anywhere}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .t{background:var(--sf2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}.t.w{grid-column:1/-1}
 .t .k{font-size:12px;color:var(--mut);font-weight:600}.t [data-k]{font-size:15px;font-weight:600;overflow-wrap:anywhere}
@@ -55,7 +66,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 @media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
 @media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff;padding:0}#rep .doc{border:0;padding:0}#rep .np{display:none}}
 </style></head><body>
-<header class="top"><div><h1>Monitor de cintas</h1><div class="ver">v0.3 · versão de teste</div></div><button class="pri" id="add">＋ Adicionar cinta</button></header>
+<header class="top"><div><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1><div class="ver">Monitor de cintas cardíacas · v0.3 (teste)</div></div><button class="pri" id="add">＋ Adicionar cinta</button></header>
 <main class="wrap">
 <div class="tools"><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="hb">🗂 Histórico</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
 <div id="msg" role="status"></div>
@@ -264,7 +275,7 @@ const HR = (() => {
   function reportHtml(s) {
     const row = (k, v) => '<tr><th>' + esc(k) + '</th><td>' + v + '</td></tr>';
     const h = s.hrv, p = s.protocol, L = s.limits || {};
-    let o = '<h2>Relatório da sessão</h2><table>';
+    let o = '<h2>Pulsys · Relatório da sessão</h2><table>';
     o += row('Identificação', esc(s.label) || '—');
     o += row('Início', s.startedAt ? esc(new Date(s.startedAt).toLocaleString('pt-BR')) : '—');
     o += row('Duração', s.startedAt && s.endedAt ? mmss((s.endedAt - s.startedAt) / 1000) : '—');
@@ -300,6 +311,7 @@ function mk(dev){
   const e=document.createElement('div');e.className='c';
   e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
+   +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
    +'<details><summary>Protocolo progressivo (experimental)</summary><div class="in"><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button data-k="pr">Iniciar protocolo progressivo</button></div></details>'
    +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional. Não há valores padrão.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
@@ -365,6 +377,12 @@ function draw(c){
   else if(!(v1>0&&v2>v1))set('zn','VT1 deve ser menor que VT2','warn');
   else if(!org)set('zn','escolha a origem de VT1/VT2','warn');
   else{const z=live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null;set('zn',z?ZL[z]+' · '+org:'—')}
+  {const zok=v1>0&&v2>v1&&!!org,zz=zok&&live&&c.bpm!==null?HR.zone(c.bpm,v1,v2):null,zb=c.q('zb');
+   c.el.dataset.z=zz||'';zb.hidden=!zok;
+   if(zok){const sp=v2-v1,lo=v1-sp,p=live&&c.bpm!==null?Math.max(0,Math.min(1,(c.bpm-lo)/(3*sp))):null;
+    c.q('zc').textContent=zz?ZL[zz]:'Zona: sem leitura ao vivo';
+    const mk=c.q('mk');mk.style.display=p===null?'none':'block';if(p!==null)mk.style.left=(p*100)+'%';
+    c.q('l1').textContent=v1;c.q('l2').textContent=v2;c.q('zo').textContent='Limites de VT1/VT2: '+org+'. Zonas não são limiar comprovado; o profissional define a conduta.'}}
   if(now-c.snapAt>=5000){c.snapAt=now;c.snap=c.rrSeen?c.an.snapshot():null;
     // um ponto por análise; α1 só entra com qualidade suficiente (avail==='ok') e cinta ao vivo
     if(c.proto&&c.proto.on)c.proto.pts.push({tSec:(now-c.proto.t0)/1000,bpm:live&&c.bpm!==null?c.bpm:0,alpha1:live&&c.snap&&c.snap.avail==='ok'?c.snap.alpha1:null})}
@@ -419,7 +437,7 @@ async function renderHist(){
     const t=document.createElement('span');t.textContent=new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(s.label||'sem identificação')+' · '+(s.startedAt?dur(s.endedAt-s.startedAt):'—')+' · FC média '+(s.meanBpm===null?'—':Math.round(s.meanBpm));r.appendChild(t);
     const b=(txt,fn)=>{const x=document.createElement('button');x.textContent=txt;x.onclick=fn;r.appendChild(x)};
     b('Relatório',()=>{$('rb').innerHTML=HR.reportHtml(s);$('rep').style.display='block'});
-    b('CSV',()=>saveText('sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
+    b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
     b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
     box.appendChild(r)});
 }
@@ -441,9 +459,9 @@ $('add').onclick=async()=>{
   msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;conn(c);
 };
 function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,valido,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5],r[6]].join(','))));return rows.join('\n')}
-$('exp').onclick=async()=>{const t=csv(),f=new File([t],'cintas.csv',{type:'text/csv'});
+$('exp').onclick=async()=>{const t=csv(),f=new File([t],'pulsys.csv',{type:'text/csv'});
   try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(_){}
-  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='cintas.csv';a.click()};
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='pulsys.csv';a.click()};
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(csv());msg('CSV copiado.')}catch(e){msg('Não foi possível copiar: '+e.message)}};
 $('add2').onclick=()=>$('add').click();
 setInterval(()=>{$('empty').hidden=cards.size>0;cards.forEach(draw)},1000);
