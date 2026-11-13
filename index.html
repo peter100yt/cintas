@@ -69,7 +69,7 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .ph{visibility:hidden}
 /* telas e menu inferior */
 .view{display:none}
-body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
+body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
 #v-home{min-height:50vh}
 body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca só na Home */
 .vh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.vh h2{margin:0;font-size:22px}
@@ -88,6 +88,12 @@ body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca 
 #nav .fab .fi{width:54px;height:54px;border-radius:50%;background:var(--acc);color:var(--accfg);display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 5px var(--sf)}
 #nav .fab svg{width:28px;height:28px;stroke-width:2.6}
 #nav .fab.on .fi{outline:3px solid var(--accbg)}
+/* tela "O que você quer fazer?" (aberta por "‹ Modos") */
+#v-novo .hh{margin:4px 0 14px;font-size:22px}
+#v-novo .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;max-width:760px}
+.hmb{min-height:170px;padding:20px;border-radius:18px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px;text-align:left;font-weight:500;box-shadow:var(--sh)}
+.hmb strong{font-size:19px}.hmb .hi{font-size:34px;line-height:1}.hmb .m{font-size:14px;font-weight:500}
+.hmb:hover{border-color:var(--acc)}
 /* menu flutuante do + (aparece sobre a tela atual, sem trocar de tela) */
 #scrim{position:fixed;inset:0;z-index:18;background:rgba(0,0,0,.38);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}
 #scrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
@@ -150,6 +156,14 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="ag-empty" class="emptyv"><div class="ei">📡</div><h3>Nenhuma cinta conectada</h3><p class="m">Conecte uma cinta para ver aqui a frequência cardíaca e o estado de cada uma.</p><button class="pri" id="add4">＋ Conectar cinta</button></div>
 <div id="ag-list"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem.</p>
+</section>
+
+<section class="view" id="v-novo" aria-label="Modos">
+<h2 class="hh">O que você quer fazer?</h2>
+<div class="opts">
+<button class="hmb" id="go-s2"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
+<button class="hmb" id="go-p2"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
+</div>
 </section>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
@@ -785,7 +799,7 @@ document.addEventListener('click',ev=>{if(ev.target===document.body&&document.bo
 // Telas (menu inferior): home, agora, novo (+), sessao e proto (escolhidas no +), hist e ajustes.
 // As cintas continuam conectadas ao trocar de tela; só muda o que aparece.
 let view='home';
-const TAB={home:'home',agora:'agora',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
+const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
 const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
 function setView(v){
   view=v;const b=document.body;closeAllX();b.dataset.view=v;
@@ -810,7 +824,8 @@ $('scrim').onclick=()=>toggleMenu(false);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('fabm').classList.contains('open'))toggleMenu(false)});
 $('go-s').onclick=()=>{toggleMenu(false);setView('sessao')};
 $('go-p').onclick=()=>{toggleMenu(false);setView('proto')};
-$('sw').onclick=()=>toggleMenu(true);   // "‹ Modos": abre o mesmo menu para trocar de modo
+$('go-s2').onclick=()=>setView('sessao');$('go-p2').onclick=()=>setView('proto');
+$('sw').onclick=()=>setView('novo');   // "‹ Modos": volta à tela "O que você quer fazer?", com a descrição de cada modo
 function applyMode(){
   const g=view==='sessao'&&(mode==='grp'||(mode==='auto'&&cards.size>=2));if(!g)closeAllX();
   document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1||view!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
