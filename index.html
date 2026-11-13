@@ -1,34 +1,70 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cintas v0.2</title>
+<title>Monitor de cintas</title>
+<meta name="theme-color" content="#0f766e">
 <style>
-:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f3f4f6;--ok:#0a7d33;--warn:#b45309;--bad:#b91c1c;--line:#d1d5db}
-@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#eee;--mut:#9ca3af;--card:#1f2937;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--line:#374151}}
-body{margin:0;padding:12px;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg)}
-h1{font-size:18px;margin:0 0 4px}.m{color:var(--mut);font-size:13px}
-button{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
-.bar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
-.c{background:var(--card);border-radius:10px;padding:10px}
-.c input{font:inherit;width:100%;box-sizing:border-box;padding:6px;margin:2px 0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
-.bpm{font-size:44px;font-weight:700;line-height:1}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
-.r{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-top:1px solid var(--line);font-size:14px}
-canvas{width:100%;height:50px;color:var(--fg)}
-.c.alb{outline:3px solid var(--bad)}.c.alw{outline:3px solid var(--warn)}
-.al2{margin:4px 0;font-size:14px;font-weight:600}.al2 div{padding:2px 0}.al2 .bad{color:var(--bad)}.al2 .warn{color:var(--warn)}
-.lim{display:flex;gap:6px}
-#hist{margin:10px 0}#hist .r span:first-child{flex:1}#hist .r button{padding:4px 8px;font-size:13px}
+:root{--bg:#f3f5f8;--sf:#fff;--sf2:#f6f8fa;--fg:#111827;--mut:#5b6573;--line:#e3e7ec;--acc:#0f766e;--accfg:#fff;--accbg:#e4f3f1;--ok:#047857;--warn:#b45309;--bad:#b91c1c;--okbg:#e3f4ec;--warnbg:#fdf0dc;--badbg:#fde8e8;--sh:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1016;--sf:#141b25;--sf2:#1a2330;--fg:#e8edf3;--mut:#9aa6b4;--line:#263241;--acc:#2dd4bf;--accfg:#04201d;--accbg:#0f2d2b;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--okbg:#10291d;--warnbg:#33260c;--badbg:#3a1616;--sh:0 1px 2px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
+.m{color:var(--mut);font-size:13px}
+button,select,input{font:inherit;color:var(--fg)}
+button{min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--sf);font-weight:600;cursor:pointer}
+button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.chip{min-height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
+.danger{color:var(--bad)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--sf);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-size:18px;line-height:1.2}.top .ver{font-size:12px;color:var(--mut);font-weight:500}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 16px 32px}
+.tools{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}.tools::-webkit-scrollbar{display:none}
+#msg{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--accbg);color:var(--fg);font-size:14px}#msg:empty{display:none}
+#empty{background:var(--sf);border:1px dashed var(--line);border-radius:18px;padding:24px 20px;text-align:center}
+#empty h2{margin:0 0 6px;font-size:18px}#empty ol{text-align:left;max-width:420px;margin:14px auto 18px;padding-left:22px;color:var(--mut)}#empty li{margin:6px 0}
+#g{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;align-items:start}
+.c{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:12px}
+.c.alb{border-color:var(--bad);box-shadow:0 0 0 3px var(--badbg)}.c.alw{border-color:var(--warn);box-shadow:0 0 0 3px var(--warnbg)}
+.hd{display:flex;align-items:center;gap:10px}
+.nm{flex:1;min-width:0;font-size:18px;font-weight:700;padding:6px 0;border:0;border-bottom:2px solid var(--line);background:transparent;border-radius:0}.nm:focus{border-bottom-color:var(--acc);outline:none}
+.pill{flex:none;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.warn{background:var(--warnbg);color:var(--warn)}.pill.bad{background:var(--badbg);color:var(--bad)}
+.al2:empty{display:none}.al2{display:flex;flex-direction:column;gap:6px}
+.al2 div{padding:9px 12px;border-radius:12px;font-size:14px;font-weight:600}.al2 .bad{background:var(--badbg);color:var(--bad)}.al2 .warn{background:var(--warnbg);color:var(--warn)}
+.hero{display:flex;align-items:center;gap:14px}
+.bpmbox{flex:none;min-width:112px}.bpm{font-size:68px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-2px}
+.bpmu{font-size:13px;color:var(--mut);font-weight:600}
+canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.t{background:var(--sf2);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}.t.w{grid-column:1/-1}
+.t .k{font-size:12px;color:var(--mut);font-weight:600}.t [data-k]{font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+details{border:1px solid var(--line);border-radius:12px}details>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;min-height:44px}
+details>summary::-webkit-details-marker{display:none}details>summary::after{content:"＋";color:var(--mut)}details[open]>summary::after{content:"−"}
+details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut);font-weight:600}.f.g2{flex-direction:row;gap:10px}.f.g2>label{flex:1;display:flex;flex-direction:column;gap:4px}
+.f input,.f select,.in select{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font-weight:500}
+.lim{display:flex;gap:10px}.lim label{flex:1;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut);font-weight:600}
+.lim input{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font-weight:500}
+.acts{display:flex;gap:8px;flex-wrap:wrap}.acts button{flex:1 1 auto;min-height:44px;font-size:14px}
+.card2{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px}
+#hist .r{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}#hist .r span:first-child{flex:1 1 220px}#hist .r button{min-height:36px;padding:0 12px;font-size:13px}
+.foot{margin:18px 0 0;text-align:center}
 #rep{display:none;position:fixed;inset:0;overflow:auto;background:var(--bg);color:var(--fg);padding:16px;z-index:9}
-#rep table{border-collapse:collapse;width:100%}#rep th,#rep td{border-top:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top;font-size:14px}#rep th{width:34%;color:var(--mut);font-weight:600}
-@media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff}#rep .np{display:none}}
+#rep .doc{max-width:760px;margin:0 auto;background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:18px}
+#rep table{border-collapse:collapse;width:100%}#rep th,#rep td{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;font-size:14px}#rep th{width:36%;color:var(--mut);font-weight:600}
+@media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
+@media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff;padding:0}#rep .doc{border:0;padding:0}#rep .np{display:none}}
 </style></head><body>
-<h1>Monitor de cintas · v0.2 (teste)</h1>
-<div class="m">Abra no <b>Bluefy</b> (iPhone/iPad). Vista a cinta com os eletrodos úmidos e desconecte-a de relógios e outros apps antes de parear.</div>
-<div class="bar"><button id="add">+ Adicionar cinta</button><button id="exp">Exportar CSV</button><button id="cp">Copiar CSV</button><button id="snd">Ativar sons de alerta</button><button id="hb">Histórico (neste aparelho)</button></div>
-<div id="hist" hidden><div class="m">Sessões salvas só neste aparelho (nada é enviado à internet). Use um código no campo de identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV se precisar guardar.</div><div id="hl"></div><div class="bar"><button id="hx">Apagar todo o histórico</button></div></div>
-<div id="rep"><div class="bar np"><button id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div>
-<div id="msg" class="m"></div><div id="g"></div>
-<p class="m">Ferramenta de teste de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
+<header class="top"><div><h1>Monitor de cintas</h1><div class="ver">v0.3 · versão de teste</div></div><button class="pri" id="add">＋ Adicionar cinta</button></header>
+<main class="wrap">
+<div class="tools"><button class="chip" id="snd">🔔 Ativar sons de alerta</button><button class="chip" id="hb">🗂 Histórico</button><button class="chip" id="exp">⬇ Exportar CSV</button><button class="chip" id="cp">⧉ Copiar CSV</button></div>
+<div id="msg" role="status"></div>
+<div id="hist" class="card2" hidden><strong>Histórico neste aparelho</strong><div class="m" style="margin:4px 0 8px">Sessões salvas só aqui; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
+<div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
+<div id="g"></div>
+<p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
+</main>
+<div id="rep"><div class="doc"><div class="acts np" style="margin-bottom:12px"><button class="pri" id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div></div>
 <script>
 // Porte em JS do hr_core (Dart). Mesma lógica, testada contra os mesmos valores de referência.
 const HR = (() => {
@@ -262,14 +298,17 @@ const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padSt
 function mk(dev){
   const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,proto:null,outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
-  e.innerHTML='<input placeholder="Paciente (nome ou identificação)"><div class="m" data-k="dev"></div><div class="al2" data-k="al2"></div><div class="bpm" data-k="bpm">—</div><div class="m">bpm <span data-k="pct"></span></div><canvas width="300" height="60"></canvas>'
-   +['st:Conexão','pt:Protocolo','e1:Estimativa α1 0,75','e2:Estimativa α1 0,50','ct:Contato','bt:Bateria','rr:RR','ss:Sessão','fc:FC mín · méd · máx','zn:Zona','mt:VFC (ms)','al:DFA-α1'].map(s=>{const[k,l]=s.split(':');return '<div class="r"><span>'+l+'</span><span data-k="'+k+'"></span></div>'}).join('')
-   +'<div class="m">Limites de alerta de FC (definidos pelo profissional; sem valor padrão)</div><div class="lim"><input type="number" placeholder="FC mín. (bpm)" data-k="amin"><input type="number" placeholder="FC máx. (bpm)" data-k="amax"></div><input type="number" placeholder="FC máx (bpm), opcional" data-k="max"><input type="number" placeholder="FC no VT1 (bpm), opcional" data-k="vt1"><input type="number" placeholder="FC no VT2 (bpm), opcional" data-k="vt2">'
-   +'<select data-k="org" style="width:100%;margin:2px 0;padding:6px"><option value="">Origem de VT1/VT2…</option><option>medido (CPET/teste)</option><option>estimado (VFC/equação)</option><option>prescrito</option></select>'
-   +'<div class="bar"><button data-k="sv">Salvar sessão</button><button data-k="pr">Iniciar protocolo progressivo</button><button data-k="mu">Silenciar 60 s</button><button data-k="rc">Reconectar agora</button><button data-k="rm">Remover</button></div>';
+  e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
+   +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
+   +'<div class="kv">'+['ct:Contato','bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t'+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
+   +'<details><summary>Protocolo progressivo (experimental)</summary><div class="in"><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button data-k="pr">Iniciar protocolo progressivo</button></div></details>'
+   +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional. Não há valores padrão.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
+   +'<div class="lim"><label>FC máx. (opcional)<input type="number" inputmode="numeric" placeholder="bpm" data-k="max"></label></div><div class="lim"><label>FC no VT1<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt1"></label><label>FC no VT2<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt2"></label></div>'
+   +'<select data-k="org" aria-label="Origem de VT1/VT2"><option value="">Origem de VT1/VT2…</option><option>medido (CPET/teste)</option><option>estimado (VFC/equação)</option><option>prescrito</option></select></div></details>'
+   +'<div class="acts"><button data-k="sv">Salvar sessão</button><button data-k="mu">Silenciar 60 s</button><button data-k="rc">Reconectar</button><button data-k="rm" class="danger">Remover</button></div>';
   c.el=e;c.q=k=>e.querySelector('[data-k="'+k+'"]');c.lab=e.querySelector('input');
   c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
-  c.q('rm').onclick=()=>{c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
     if(!c.rrSeen){msg('Esta cinta não envia RR: protocolo de VFC indisponível.');return}
@@ -313,12 +352,13 @@ function draw(c){
   const live=c.state==='conectado'&&!stale;
   const stTxt=stale?'sem dados há '+Math.round(age)+' s':c.state==='conectado'?'conectado':c.state+(c.retry?' (tentativa '+c.retry+')':'')+(c.t?' · última leitura há '+Math.round(age)+' s':'');
   set('st',stTxt+(c.gaps?' · quedas: '+c.gaps:'')+(c.err&&!live?' · '+c.err:''),live?'ok':'bad');
+  const pill=c.q('pill');pill.textContent=live?'Ao vivo':stale?'Sem dados':c.state==='reconectando'?'Reconectando…':c.state==='conectado'?'Ao vivo':'Conectando…';pill.className='pill '+(live?'ok':stale?'bad':'warn');
   c.q('bpm').textContent=live&&c.bpm!==null?c.bpm:'—';
   const mx=parseFloat(c.q('max').value);c.q('pct').textContent=live&&mx>0&&c.bpm!==null?'· '+Math.round(c.bpm/mx*100)+'% da FC máx':'';
-  set('ct',{detected:'ok',notDetected:'SEM CONTATO: leitura ignorada',notSupported:'não informado'}[c.contact]||'—',c.contact==='notDetected'?'bad':'');
+  set('ct',{detected:'detectado',notDetected:'SEM CONTATO: leitura ignorada',notSupported:'não informado'}[c.contact]||'—',c.contact==='notDetected'?'bad':c.contact==='detected'?'ok':'');
   set('bt',c.bat===null?'—':c.bat+'%',c.bat!==null&&c.bat<20?'warn':'');
   set('rr',c.cnt<10&&!c.rrSeen?'verificando…':c.rrSeen?'disponível':'AUSENTE: VFC desabilitada',c.cnt>=10&&!c.rrSeen?'warn':'');
-  set('ss',c.t0?dur(now-c.t0)+' desde a 1ª leitura':'—');
+  set('ss',c.t0?dur(now-c.t0):'—');
   set('fc',c.cnt?c.mn+' · '+Math.round(c.sum/c.cnt)+' · '+c.mx+(c.inv?' ('+c.inv+' leituras inválidas)':''):'—');
   const v1=parseFloat(c.q('vt1').value),v2=parseFloat(c.q('vt2').value),org=c.q('org').value;
   if(!c.q('vt1').value&&!c.q('vt2').value)set('zn','informe VT1 e VT2');
@@ -389,8 +429,8 @@ $('rc2').onclick=()=>{$('rep').style.display='none'};$('rp').onclick=()=>window.
 let actx=null;
 function beep(){if(!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=0.2;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+0.4)}catch(_){}}
 $('snd').onclick=()=>{
-  if(actx){actx=null;$('snd').textContent='Ativar sons de alerta';msg('Sons de alerta desativados. Os alertas visuais continuam.');return}
-  try{actx=new(window.AudioContext||window.webkitAudioContext)();actx.resume();beep();$('snd').textContent='Sons ativos (tocar para desativar)';msg('Sons ativos. Mantenha o volume ligado e o aparelho sem modo silencioso; no iPhone o som pode não tocar com a tela bloqueada.')}
+  if(actx){actx=null;$('snd').textContent='🔔 Ativar sons de alerta';msg('Sons de alerta desativados. Os alertas visuais continuam.');return}
+  try{actx=new(window.AudioContext||window.webkitAudioContext)();actx.resume();beep();$('snd').textContent='🔊 Sons ativos (tocar para desativar)';msg('Sons ativos. Mantenha o volume ligado e o aparelho sem modo silencioso; no iPhone o som pode não tocar com a tela bloqueada.')}
   catch(e){actx=null;msg('Não foi possível ativar o som: '+e.message)}
 };
 async function keepAwake(){try{if(navigator.wakeLock)await navigator.wakeLock.request('screen')}catch(_){}}
@@ -398,12 +438,13 @@ $('add').onclick=async()=>{
   if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
   let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service']})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
   const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
-  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);conn(c);
+  msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;conn(c);
 };
 function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,valido,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5],r[6]].join(','))));return rows.join('\n')}
 $('exp').onclick=async()=>{const t=csv(),f=new File([t],'cintas.csv',{type:'text/csv'});
   try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(_){}
   const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download='cintas.csv';a.click()};
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(csv());msg('CSV copiado.')}catch(e){msg('Não foi possível copiar: '+e.message)}};
-setInterval(()=>cards.forEach(draw),1000);
+$('add2').onclick=()=>$('add').click();
+setInterval(()=>{$('empty').hidden=cards.size>0;cards.forEach(draw)},1000);
 </script></body></html>
