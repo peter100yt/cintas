@@ -27,7 +27,9 @@ button:active{transform:scale(.98)}button:focus-visible,input:focus-visible,sele
 .top h1{margin:0;font-size:22px;line-height:1.2;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}.top .logo{color:var(--acc);flex:none}
 .wrap{max-width:1180px;margin:0 auto;padding:12px 16px 32px}
 .tools{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}.tools::-webkit-scrollbar{display:none}
-#msg{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:var(--accbg);color:var(--fg);font-size:14px}#msg:empty{display:none}
+/* notificações em pop-up (toast): aparecem no topo, somem sozinhas e fecham ao toque */
+#msg{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));z-index:60;width:max-content;max-width:min(92vw,420px);padding:12px 16px;border-radius:14px;background:var(--fg);color:var(--bg);font-size:14px;font-weight:500;line-height:1.35;box-shadow:0 8px 28px rgba(0,0,0,.35);opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,-24px);transition:opacity .2s ease,transform .25s ease,visibility 0s linear .25s}
+#msg.show{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0);transition:opacity .2s ease,transform .25s ease;cursor:pointer}
 #empty{background:var(--sf);border:1px dashed var(--line);border-radius:18px;padding:24px 20px;text-align:center}
 #empty h2{margin:0 0 6px;font-size:18px}#empty ol{text-align:left;max-width:420px;margin:14px auto 18px;padding-left:22px;color:var(--mut)}#empty li{margin:6px 0}
 #g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(310px,100%),1fr));gap:14px;align-items:start}
@@ -74,12 +76,13 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .ph{visibility:hidden}
 /* sessão: iniciar/encerrar e cartão mínimo antes de iniciar */
 #sbar{margin:0 0 12px}.sbtn{min-height:52px;width:100%;font-size:17px;border-radius:14px}
-#s-run{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-#s-run .rec{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--bad);font-size:15px}
-#s-run .rec i{width:10px;height:10px;border-radius:50%;background:var(--bad);animation:rp 1.4s ease-in-out infinite}
-@keyframes rp{50%{opacity:.25}}
-.stime{font-variant-numeric:tabular-nums;font-size:24px;font-weight:800;margin-left:auto}
-#s-run .sbtn{width:auto;min-height:44px;padding:0 18px;font-size:15px}
+/* sessão em andamento, na linha de botões: ● piscando, tempo (fonte pequena) e ícone de parar */
+#s-run{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 5px 0 12px;background:var(--sf);border:1px solid var(--line);border-radius:999px}
+#s-run .rec{display:inline-flex;align-items:center}
+#s-run .rec i{width:10px;height:10px;border-radius:50%;background:var(--bad);animation:rp 1.2s ease-in-out infinite}
+@keyframes rp{50%{opacity:.2}}
+.stime{font-variant-numeric:tabular-nums;font-size:14px;font-weight:700}
+#s-run .stop{min-height:0;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:var(--badbg);color:var(--bad);display:inline-flex;align-items:center;justify-content:center}
 body.mod-proto #sbar{display:none}
 #s-run[hidden],.zb[hidden]{display:none}   /* o display:flex/grid dessas regras anulava o atributo hidden */
 body.mod-sessao:not(.sess-on) .c .kv,body.mod-sessao:not(.sess-on) .c .ecg,body.mod-sessao:not(.sess-on) .c .zb{display:none!important}
@@ -89,7 +92,7 @@ body.mod-sessao:not(.sess-on) .c [data-k="sv"]{display:none}
 .dlg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}.dlg[hidden]{display:none}
 .dbox{background:var(--sf);border-radius:18px;padding:20px;max-width:380px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.35)}.dbox h3{margin:0 0 8px;font-size:19px}
 .dacts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-@media(prefers-reduced-motion:reduce){#s-run .rec i{animation:none}}
+@media(prefers-reduced-motion:reduce){#s-run .rec i{animation:none}#msg{transition:none!important}}
 /* telas e menu inferior */
 .view{display:none}
 body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
@@ -190,12 +193,9 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </section>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
-<div class="vh"><h2 id="run-t">Sessão de exercício</h2></div>
-<div id="sbar" hidden>
-<button class="pri sbtn" id="s-start">▶ Iniciar sessão</button>
-<div id="s-run" hidden><span class="rec"><i></i>Sessão em andamento</span><span class="stime" id="s-time">00:00</span><button class="sbtn danger" id="s-end">■ Encerrar</button></div>
-</div>
-<div class="tools"><button class="chip" id="sw">‹ Modos</button><button class="chip pri" id="add" hidden>＋ Adicionar cinta</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
+<div class="vh"><h2 id="run-t">Sessão de exercício</h2><button class="chip" id="add" hidden>＋ Adicionar cinta</button></div>
+<div id="sbar" hidden><button class="pri sbtn" id="s-start">▶ Iniciar sessão</button></div>
+<div class="tools"><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
@@ -528,7 +528,10 @@ const HR = (() => {
 if (typeof module !== 'undefined') module.exports = HR;
 
 const $=id=>document.getElementById(id),cards=new Map();let seq=0;
-const msg=t=>{$('msg').textContent=t};
+// Notificação em pop-up: some sozinha (mais tempo para textos longos) ou ao tocar; msg('') fecha na hora.
+let msgT=null;
+const msg=t=>{const e=$('msg');clearTimeout(msgT);if(!t){e.classList.remove('show');return}e.textContent=t;e.classList.add('show');msgT=setTimeout(()=>e.classList.remove('show'),Math.min(9000,3500+t.length*35))};
+$('msg').onclick=()=>{clearTimeout(msgT);$('msg').classList.remove('show')};
 const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
 const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function mk(dev){
@@ -852,7 +855,7 @@ function setView(v){
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
-  $('sbar').hidden=cards.size===0&&!sess.on;document.body.classList.toggle('sess-on',sess.on);
+  $('sbar').hidden=cards.size===0||sess.on;document.body.classList.toggle('sess-on',sess.on);   // o "Iniciar" some quando a sessão roda (tempo e parar vão para a linha de botões)
   $('s-start').hidden=sess.on;$('s-run').hidden=!sess.on;$('ag-bd').hidden=!sess.on;
   if(sess.on)$('s-time').textContent=dur(Date.now()-sess.t0);
 }
