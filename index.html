@@ -72,6 +72,24 @@ canvas{flex:1;min-width:0;height:64px;color:var(--acc)}
 .grp .c:not(.x) .zc{height:26px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .grp .c:not(.x) .zb[hidden]{display:flex}.grp .c:not(.x) .zb[hidden] .zbar{visibility:hidden}
 .ph{visibility:hidden}
+/* sessão: iniciar/encerrar e cartão mínimo antes de iniciar */
+#sbar{margin:0 0 12px}.sbtn{min-height:52px;width:100%;font-size:17px;border-radius:14px}
+#s-run{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+#s-run .rec{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--bad);font-size:15px}
+#s-run .rec i{width:10px;height:10px;border-radius:50%;background:var(--bad);animation:rp 1.4s ease-in-out infinite}
+@keyframes rp{50%{opacity:.25}}
+.stime{font-variant-numeric:tabular-nums;font-size:24px;font-weight:800;margin-left:auto}
+#s-run .sbtn{width:auto;min-height:44px;padding:0 18px;font-size:15px}
+body.mod-proto #sbar{display:none}
+#s-run[hidden],.zb[hidden]{display:none}   /* o display:flex/grid dessas regras anulava o atributo hidden */
+body.mod-sessao:not(.sess-on) .c .kv,body.mod-sessao:not(.sess-on) .c .ecg,body.mod-sessao:not(.sess-on) .c .zb{display:none!important}
+body.mod-sessao:not(.sess-on) .c [data-k="sv"]{display:none}
+#nav .nbi{position:relative;display:inline-flex}
+.bd{position:absolute;top:-3px;right:-7px;width:11px;height:11px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 2px var(--sf)}
+.dlg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}.dlg[hidden]{display:none}
+.dbox{background:var(--sf);border-radius:18px;padding:20px;max-width:380px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.35)}.dbox h3{margin:0 0 8px;font-size:19px}
+.dacts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+@media(prefers-reduced-motion:reduce){#s-run .rec i{animation:none}}
 /* telas e menu inferior */
 .view{display:none}
 body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
@@ -173,6 +191,10 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 
 <section class="view" id="v-run" aria-label="Monitoramento">
 <div class="vh"><h2 id="run-t">Sessão de exercício</h2></div>
+<div id="sbar" hidden>
+<button class="pri sbtn" id="s-start">▶ Iniciar sessão</button>
+<div id="s-run" hidden><span class="rec"><i></i>Sessão em andamento</span><span class="stime" id="s-time">00:00</span><button class="sbtn danger" id="s-end">■ Encerrar</button></div>
+</div>
 <div class="tools"><button class="chip" id="sw">‹ Modos</button><button class="chip pri" id="add" hidden>＋ Adicionar cinta</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
 <div id="g"></div>
@@ -194,11 +216,12 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 
 <nav id="nav" aria-label="Navegação principal">
 <button class="nb on" data-v="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>
-<button class="nb" data-v="agora" aria-label="Agora"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h5l3-8 4 16 3-8h5"/></svg><span>Agora</span></button>
+<button class="nb" data-v="agora" aria-label="Agora"><span class="nbi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h5l3-8 4 16 3-8h5"/></svg><i class="bd" id="ag-bd" hidden></i></span><span>Agora</span></button>
 <button class="nb fab" data-v="novo" aria-label="Novo: sessão de exercício ou protocolo progressivo" aria-haspopup="menu" aria-expanded="false" aria-controls="fabm"><span class="fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></button>
 <button class="nb" data-v="hist" aria-label="Histórico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Histórico</span></button>
 <button class="nb" data-v="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
 </nav>
+<div id="endd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="endt"><div class="dbox"><h3 id="endt">Encerrar a sessão?</h3><p class="m">Você pode salvar a sessão no Histórico deste aparelho antes de encerrar. Se encerrar sem salvar, as leituras desta sessão serão descartadas e não dá para recuperá-las.</p><div class="dacts"><button class="pri" id="e-save">Salvar e encerrar</button><button class="danger" id="e-no">Encerrar sem salvar</button><button id="e-cancel">Continuar sessão</button></div></div></div>
 <div id="scrim"></div>
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
 <button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
@@ -635,13 +658,20 @@ function recover(c){
   if(c.removed)return;ecgDown(c,'ECG interrompido na reconexão. Toque em Iniciar ECG depois que reconectar.');clearTimeout(c.timer);c.timer=null;c.retry=0;c.gaps++;c.state='reconectando';c.an.reset();
   c.cid++;c.busy=false;quietDisconnect(c);conn(c);
 }
+// Sessão de exercício: global (todas as cintas). Registra dados só entre "Iniciar" e "Encerrar".
+// Protocolo progressivo mantém o próprio início/fim por cinta (c.proto) e também registra enquanto roda.
+const sess={on:false,t0:0};
+const collecting=c=>sess.on||!!(c.proto&&c.proto.on);
+function resetCard(c){c.mn=null;c.mx=null;c.sum=0;c.cnt=0;c.inv=0;c.log=[];c.t0=0;c.auto={pts:[],locks:null,st:null}}
 function onHr(c,dv){
   let m;try{m=HR.parseHrm(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){c.bad++;return}
   const t=Date.now(),ok=HR.isValidSample(m);c.pk++;c.t=t;c.contact=m.contact;
-  c.log.push([t,c.lab.value,c.id,m.bpm,m.contact,ok?1:0,m.rr.map(v=>v.toFixed(1)).join(' ')]);
-  if(!ok){c.inv++;c.bpm=null;return}   // FC 0 ou sem contato: não é dado fisiológico
-  c.bpm=m.bpm;if(!c.t0)c.t0=t;
-  c.mn=c.mn===null?m.bpm:Math.min(c.mn,m.bpm);c.mx=c.mx===null?m.bpm:Math.max(c.mx,m.bpm);c.sum+=m.bpm;c.cnt++;
+  // Antes de "Iniciar" (sessão) a FC aparece em tempo real, mas nada é registrado: log, estatísticas e início da sessão só contam depois.
+  const rec=collecting(c);
+  if(rec)c.log.push([t,c.lab.value,c.id,m.bpm,m.contact,ok?1:0,m.rr.map(v=>v.toFixed(1)).join(' ')]);
+  if(!ok){if(rec)c.inv++;c.bpm=null;return}   // FC 0 ou sem contato: não é dado fisiológico
+  c.bpm=m.bpm;
+  if(rec){if(!c.t0)c.t0=t;c.mn=c.mn===null?m.bpm:Math.min(c.mn,m.bpm);c.mx=c.mx===null?m.bpm:Math.max(c.mx,m.bpm);c.sum+=m.bpm;c.cnt++}
   if(m.rr.length){c.rrSeen=true;c.an.add(m.rr)}
   c.hist.push(m.bpm);if(c.hist.length>180)c.hist.shift();
 }
@@ -807,13 +837,40 @@ document.addEventListener('click',ev=>{if(ev.target===document.body&&document.bo
 let view='home';
 const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
 const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
+// Aba destacada: com uma sessão em andamento, a tela da sessão pertence a "Agora".
+function markTab(){
+  const tab=(view==='sessao'&&sess.on)?'agora':TAB[view];
+  document.querySelectorAll('#nav .nb').forEach(n=>{const on=n.dataset.v===tab;n.classList.toggle('on',on);n.setAttribute('aria-current',on?'page':'false')});
+}
 function setView(v){
+  if(v==='agora'&&sess.on)v='sessao';   // sessão em andamento: "Agora" mostra e retoma a sessão; encerrada, volta aos dados básicos
   view=v;const b=document.body;closeAllX();b.dataset.view=v;
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
-  document.querySelectorAll('#nav .nb').forEach(n=>{const on=n.dataset.v===TAB[v];n.classList.toggle('on',on);n.setAttribute('aria-current',on?'page':'false')});
+  markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
   msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
 }
+// Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
+function renderSess(){
+  $('sbar').hidden=cards.size===0&&!sess.on;document.body.classList.toggle('sess-on',sess.on);
+  $('s-start').hidden=sess.on;$('s-run').hidden=!sess.on;$('ag-bd').hidden=!sess.on;
+  if(sess.on)$('s-time').textContent=dur(Date.now()-sess.t0);
+}
+$('s-start').onclick=()=>{
+  cards.forEach(resetCard);sess.on=true;sess.t0=Date.now();   // começa do zero: nada de antes do "Iniciar" entra na sessão
+  renderSess();markTab();msg('Sessão iniciada.');
+};
+async function finishSess(save){
+  let n=0,err=null;
+  if(save)for(const c of cards.values())if(c.cnt>0){try{await tx('readwrite',s=>s.add(sessionOf(c)));n++}catch(e){err=e}}
+  if(err){msg('Não foi possível salvar neste aparelho: '+(err.message||err)+'. A sessão continua em andamento; exporte o CSV antes de encerrar.');return}
+  sess.on=false;cards.forEach(resetCard);renderSess();markTab();
+  msg(save?'Sessão encerrada e salva no Histórico ('+n+(n===1?' paciente).':' pacientes).'):'Sessão encerrada.');
+}
+$('s-end').onclick=()=>{if([...cards.values()].some(c=>c.cnt>0)){$('endd').hidden=false;$('e-save').focus()}else finishSess(false)};
+$('e-cancel').onclick=()=>{$('endd').hidden=true};
+$('e-no').onclick=()=>{$('endd').hidden=true;finishSess(false)};
+$('e-save').onclick=()=>{$('endd').hidden=true;finishSess(true)};
 // Botão "+": abre um menu flutuante animado sobre a tela atual (a tela só muda quando uma opção é escolhida).
 function toggleMenu(open){
   const m=$('fabm'),f=document.querySelector('#nav .fab'),o=open===undefined?!m.classList.contains('open'):open;
@@ -882,6 +939,8 @@ $('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';ap
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
   // "Adicionar cinta" do topo só depois da primeira cinta (antes, o botão do meio já cobre); exportar/copiar CSV só com dados de sessão
+  if(sess.on&&cards.size===0)sess.on=false;   // sem cintas não há sessão
+  renderSess();markTab();
   $('add').hidden=cards.size===0;const temDados=[...cards.values()].some(c=>c.cnt>0);$('exp').hidden=$('cp').hidden=!temDados;
   cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
   applyMode();cards.forEach(draw);renderAgora();
