@@ -1313,7 +1313,7 @@ function exResult(){
 }
 function exTick(){
   const now=Date.now(),vis=view==='ecgr';
-  if(ex.step===1){if(vis){exFillDevs();exCheck();$('ex-none').hidden=cards.size>0}return}
+  if(ex.step===1){if(vis)exShow();return}   // reavalia mensagem x formulário: conectar o monitor com a tela já aberta deve mostrar o formulário
   if(ex.step===2){
     if(ex.c&&!cards.has(ex.c.id)){exAbort('O monitor foi removido.');return}
     const rem=Math.max(0,ex.restSec-(now-ex.t2)/1000);
