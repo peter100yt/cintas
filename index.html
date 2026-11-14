@@ -114,6 +114,25 @@ body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca 
 #nav .fab .fi{width:54px;height:54px;border-radius:50%;background:var(--acc);color:var(--accfg);display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 5px var(--sf)}
 #nav .fab svg{width:28px;height:28px;stroke-width:2.6}
 #nav .fab.on .fi{outline:3px solid var(--accbg)}
+/* ECG de repouso */
+body[data-view="ecgr"] #v-ecgr{display:block}
+.stp{font-size:13px;color:var(--mut);font-weight:700;white-space:nowrap}
+.ckr{display:flex;align-items:flex-start;gap:12px;padding:10px 0;font-size:15px;border-top:1px solid var(--line);cursor:pointer}.ckr:first-of-type{border-top:0}
+.ckr input{flex:none;width:24px;height:24px;margin:0;accent-color:var(--acc)}
+.exf{display:flex;flex-direction:column;gap:12px}
+.sq{display:flex;align-items:center;gap:12px;margin-bottom:10px}.sqt{min-width:0}.qt{font-weight:700;font-size:16px}
+.dot{flex:none;width:18px;height:18px;border-radius:50%;background:var(--line)}.dot.good{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+.cd{margin-left:auto;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+canvas.exv{flex:none;display:block;width:100%;height:150px;background:var(--sf2);border-radius:8px;color:var(--fg)}
+.inst{margin:10px 0;font-size:14px;color:var(--mut);font-weight:600}.inst.strong{color:var(--fg);font-size:16px;text-align:center;margin:12px 0}
+.exb{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.prog{height:12px;border-radius:6px;background:var(--line);overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s linear}
+.symc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.symc[hidden]{display:none}   /* o display:grid anulava o atributo hidden */
+#ex-sym{margin-bottom:4px}
+.rbn{padding:12px 14px;border-radius:12px;font-weight:700;margin-bottom:10px}.rbn.ok{background:var(--okbg);color:var(--ok)}.rbn.bad{background:var(--badbg);color:var(--bad)}
+.rlist{margin:6px 0 10px;padding-left:20px;font-size:14px}
+#ex-4 .acts{margin-top:12px}
+@media(prefers-reduced-motion:reduce){.prog i{transition:none}}
 /* tela "O que você quer fazer?" (aberta por "‹ Modos") */
 #v-novo .hh{margin:4px 0 14px;font-size:22px}
 #v-novo .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;max-width:760px}
@@ -140,6 +159,8 @@ body.mod-proto .pp{display:flex;flex-direction:column;gap:10px;border:1px solid 
 body.mod-proto .ecg,body.mod-proto details,body.mod-proto .zb,body.mod-proto #vm,body.mod-proto .kv .t:not(.tk-al):not(.tk-mt):not(.tk-fc){display:none}
 .ecg{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px}
 .ehd{display:flex;align-items:center;justify-content:space-between;gap:8px}.ehd button{min-height:40px;font-size:14px}
+.t .v{font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.ecgdoc .strip{break-inside:avoid;margin:6px 0}.ecgdoc svg{display:block;max-width:100%;height:auto}.ecgdoc h2,.ecgdoc h3{margin:12px 0 6px}
 .ecg canvas.ecv{flex:none;width:100%;height:150px;background:var(--sf2);border-radius:8px;color:var(--fg)}
 .ecg:not(.open) canvas.ecv,.ecg:not(.open) [data-k="est"],.ecg:not(.open) .enote,.ecg:not(.run) canvas.ecv{display:none}   /* quadro e observações só depois de "Iniciar ECG"; o quadro só com o ECG rodando (erros mostram só a mensagem) */
 .grp .c:not(.x) .ecg{display:none}
@@ -166,7 +187,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .card2{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px}
 #v-hist .r{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}#v-hist .r span:first-child{flex:1 1 220px}#v-hist .r button{min-height:36px;padding:0 12px;font-size:13px}
 .foot{margin:18px 0 0;text-align:center}
-#rep{display:none;position:fixed;inset:0;overflow:auto;background:var(--bg);color:var(--fg);padding:16px;z-index:9}
+#rep{display:none;position:fixed;inset:0;overflow:auto;background:var(--bg);color:var(--fg);padding:16px;z-index:45}
 #rep .doc{max-width:760px;margin:0 auto;background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:18px}
 #rep table{border-collapse:collapse;width:100%}#rep th,#rep td{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;font-size:14px}#rep th{width:36%;color:var(--mut);font-weight:600}
 @media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
@@ -190,6 +211,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div class="opts">
 <button class="hmb" id="go-s2"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
 <button class="hmb" id="go-p2"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
+<button class="hmb" id="go-e2"><span class="hi">🩺</span><strong>ECG de repouso</strong><span class="m">Exame guiado em 4 etapas, com traçado de 1 derivação, controle de qualidade do sinal, triagem de ritmo e laudo em PDF. É triagem: não diagnostica infarto nem isquemia.</span></button>
 </div>
 </section>
 
@@ -200,6 +222,47 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="empty"><h2>Nenhum monitor conectado</h2><div class="m">Pareie o primeiro monitor para começar a monitorar.</div><ol><li>Coloque o monitor no corpo (na cinta de peito, com os eletrodos úmidos).</li><li>Desconecte-o de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar monitor</b> e escolha o monitor na lista.</li></ol><button class="pri" id="add2">＋ Adicionar monitor</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
+</section>
+
+<section class="view" id="v-ecgr" aria-label="ECG de repouso">
+<div class="vh"><h2>ECG de repouso</h2><span class="stp" id="ex-stp">Etapa 1 de 4</span></div>
+<div id="ex-none" class="emptyv" hidden><div class="ei">🩺</div><h3>Nenhum monitor conectado</h3><p class="m">Conecte um monitor com ECG (cinta de peito) para fazer o exame.</p><button class="pri" id="add5">＋ Conectar monitor</button></div>
+<div id="ex-1" class="card2" hidden>
+<div class="sl">Antes de começar</div>
+<label class="ckr"><input type="checkbox" class="exck"><span>Umedeça os eletrodos do monitor antes de vestir.</span></label>
+<label class="ckr"><input type="checkbox" class="exck"><span>Posicione o sensor centralizado abaixo do peito.</span></label>
+<label class="ckr"><input type="checkbox" class="exck"><span>Deite-se ou sente-se com as costas apoiadas.</span></label>
+<div class="sl" style="margin-top:16px">Dados do exame</div>
+<div class="exf">
+<label class="f"><span>Monitor</span><select id="ex-dev"></select></label>
+<label class="f"><span>Identificação do paciente (código)</span><input id="ex-id" maxlength="40" placeholder="Código, não o nome completo" autocomplete="off"></label>
+<div class="f g2"><label><span>Duração da gravação</span><select id="ex-dur"><option value="60">60 s</option><option value="120">120 s</option><option value="180">180 s</option></select></label><label><span>Repouso antes</span><select id="ex-rest"><option value="20">20 s</option><option value="30">30 s</option><option value="300">5 min (protocolo completo)</option></select></label></div>
+</div>
+<div class="m" id="ex-hint" style="margin:10px 0"></div>
+<button class="pri sbtn" id="ex-go" disabled>Continuar</button>
+</div>
+<div id="ex-2" class="card2" hidden>
+<div class="sl">Acomodação e qualidade do sinal</div>
+<div class="sq"><i id="ex-dot" class="dot wait"></i><div class="sqt"><div id="ex-qt" class="qt">Coletando sinal…</div><div class="m" id="ex-qr"></div></div><div class="cd" id="ex-cd">00:20</div></div>
+<canvas class="exv" id="ex-cv2" width="750" height="150" aria-label="Traçado do ECG ao vivo"></canvas>
+<p class="inst">Permaneça imóvel, em silêncio e respire suavemente.</p>
+<div id="ex-err" class="al2" role="alert"></div>
+<div class="exb"><button class="pri sbtn" id="ex-rec" disabled>● Iniciar gravação</button><button class="sbtn" id="ex-c2">Cancelar exame</button></div>
+</div>
+<div id="ex-3" class="card2" hidden>
+<div class="sl">Gravando</div>
+<div class="prog"><i id="ex-pg"></i></div><div class="m" id="ex-pt" style="margin:6px 0 10px">00:00 / 01:00</div>
+<canvas class="exv" id="ex-cv3" width="750" height="150" aria-label="Traçado do ECG sendo gravado"></canvas>
+<p class="inst strong">Permaneça imóvel, em silêncio e respire suavemente.</p>
+<button class="sbtn" id="ex-sym">＋ Marcar sintoma</button>
+<div id="ex-symc" class="symc" hidden><button data-sym="palpitacao">Palpitação</button><button data-sym="tontura">Tontura</button><button data-sym="falta_de_ar">Falta de ar</button><button data-sym="outro">Outro</button></div>
+<div class="m" id="ex-ml" style="margin:8px 0"></div>
+<button class="sbtn danger" id="ex-c3">Cancelar exame</button>
+</div>
+<div id="ex-4" hidden>
+<div class="card2"><div id="ex-res"></div></div>
+<div class="acts"><button class="pri" id="ex-pdf">Gerar PDF</button><button id="ex-sv">Salvar no Histórico</button><button id="ex-new">Novo exame</button></div>
+</div>
 </section>
 
 <section class="view" id="v-hist" aria-label="Histórico">
@@ -227,6 +290,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
 <button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
 <button class="fmb" role="menuitem" id="go-p" tabindex="-1"><span class="hi">📈</span><span class="ft"><strong>Protocolo progressivo</strong><span class="m">Teste de carga crescente (experimental)</span></span></button>
+<button class="fmb" role="menuitem" id="go-e" tabindex="-1"><span class="hi">🩺</span><span class="ft"><strong>ECG de repouso</strong><span class="m">Triagem de ritmo em 1 derivação</span></span></button>
 </div>
 <div id="rep"><div class="doc"><div class="acts np" style="margin-bottom:12px"><button class="pri" id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div></div>
 <script>
@@ -492,7 +556,9 @@ const HR = (() => {
     if (n % 3) throw new Error('quadro PMD com amostras incompletas');
     const samples = [];
     for (let i = 10; i < b.length; i += 3) { let v = b[i] | (b[i + 1] << 8) | (b[i + 2] << 16); if (v & 0x800000) v -= 0x1000000; samples.push(v); }
-    return { samples };
+    // timestamp do quadro (8 bytes, ns, little-endian; refere-se à ÚLTIMA amostra do quadro, conforme a documentação da Polar)
+    const lo = (b[1] | (b[2] << 8) | (b[3] << 16) | (b[4] << 24)) >>> 0, hi = (b[5] | (b[6] << 8) | (b[7] << 16) | (b[8] << 24)) >>> 0;
+    return { samples, ts: hi * 4294967296 + lo };
   }
   // Resposta do ponto de controle: [0xF0][operação][tipo de medida][erro]; erro 0 = sucesso. Outro pacote: null.
   function parsePmdResponse(b) {
@@ -524,7 +590,221 @@ const HR = (() => {
     return 'VT1 (α1 0,75): ' + protoText(s.r1) + ' · VT2 (α1 0,50): ' + protoText(s.r2) + (s.note ? ' · ' + s.note : '');
   }
 
-  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP };
+  // ===================== ECG DE REPOUSO (triagem em 1 derivação) =====================
+  // Parâmetros de trabalho do roteiro do usuário; NÃO validados clinicamente. Triagem, não diagnóstico.
+  const ECG = { FS: 130, HP: 0.5, LP: 40, NOTCH: 60, BAD_MAX: 0.15, BRADY: 50, TACHY: 100, MIN_BEATS: 20,
+    FLAT_SD: 8, SAT_UV: 6000, NOISE_RATIO: 0.5, IRR_REL: 0.20, PREM_SHORT: 0.80, PREM_LONG: 1.20 };
+
+  // Biquad (cookbook de Robert Bristow-Johnson): passa-alta, passa-baixa e notch.
+  function bq(type, f0, fs, Q) {
+    const w0 = 2 * Math.PI * f0 / fs, c = Math.cos(w0), al = Math.sin(w0) / (2 * Q);
+    let b0, b1, b2;
+    if (type === 'hp') { b0 = (1 + c) / 2; b1 = -(1 + c); b2 = (1 + c) / 2; }
+    else if (type === 'lp') { b0 = (1 - c) / 2; b1 = 1 - c; b2 = (1 - c) / 2; }
+    else { b0 = 1; b1 = -2 * c; b2 = 1; }   // notch
+    const a0 = 1 + al;
+    return { b0: b0 / a0, b1: b1 / a0, b2: b2 / a0, a1: -2 * c / a0, a2: (1 - al) / a0 };
+  }
+  function bqRun(x, q) {
+    const n = x.length, y = new Float64Array(n); let z1 = 0, z2 = 0;
+    for (let i = 0; i < n; i++) { const v = x[i], o = q.b0 * v + z1; z1 = q.b1 * v - q.a1 * o + z2; z2 = q.b2 * v - q.a2 * o; y[i] = o; }
+    return y;
+  }
+  const cascade = (x, secs) => { let y = x; for (const q of secs) y = bqRun(y, q); return y; };
+  // Seções do pipeline: passa-alta 0,5 Hz + passa-baixa 40 Hz + notch 60 Hz (rede elétrica no Brasil).
+  // Em fase zero (ida e volta) a magnitude de cada seção é elevada ao quadrado; os cortes de projeto são ajustados (no domínio
+  // deformado da transformada bilinear, relevante perto de Nyquist) para que o ponto de -3 dB caia em 0,5 e 40 Hz.
+  const K3DB = 0.8022;   // (potência de Butterworth de 2ª ordem)^2 = 1/2  =>  razão de frequências 0,8022
+  const warp = (f, fs, k) => fs / Math.PI * Math.atan(k * Math.tan(Math.PI * f / fs));
+  function ecgSections(fs, zeroPhase) {
+    const hp = zeroPhase ? warp(ECG.HP, fs, K3DB) : ECG.HP, lp = zeroPhase ? warp(ECG.LP, fs, 1 / K3DB) : ECG.LP;
+    const s = [bq('hp', hp, fs, Math.SQRT1_2), bq('lp', Math.min(lp, fs * 0.45), fs, Math.SQRT1_2)];
+    if (ECG.NOTCH < fs / 2 - 1) s.push(bq('notch', ECG.NOTCH, fs, 30));
+    return s;
+  }
+  // Filtro de fase zero (ida e volta) com extensão ímpar nas pontas; usado no laudo (offline), sem distorcer a morfologia.
+  function filtfilt(x, secs) {
+    const n = x.length, pad = Math.min(n - 1, 260), e = new Float64Array(n + 2 * pad);
+    for (let i = 0; i < pad; i++) e[i] = 2 * x[0] - x[pad - i];
+    for (let i = 0; i < n; i++) e[pad + i] = x[i];
+    for (let i = 0; i < pad; i++) e[pad + n + i] = 2 * x[n - 1] - x[n - 2 - i];
+    let y = cascade(e, secs).reverse(); y = cascade(y, secs).reverse();
+    return y.slice(pad, pad + n);
+  }
+  function ecgFilter(raw, fs = ECG.FS, zeroPhase = true) {
+    const x = Float64Array.from(raw);
+    return zeroPhase ? filtfilt(x, ecgSections(fs, true)) : cascade(x, ecgSections(fs, false));
+  }
+  // Filtro em fluxo (causal) para o traçado ao vivo.
+  function ecgStream(fs = ECG.FS) {
+    const secs = ecgSections(fs, false), st = secs.map(() => [0, 0]);
+    return x => { let v = x; for (let k = 0; k < secs.length; k++) { const q = secs[k], s = st[k], o = q.b0 * v + s[0]; s[0] = q.b1 * v - q.a1 * o + s[1]; s[1] = q.b2 * v - q.a2 * o; v = o; } return v; };
+  }
+  // Perda de pacotes Bluetooth: o timestamp do quadro é o da última amostra, então o intervalo normal entre quadros é n/fs.
+  function ecgGapSamples(prevTs, ts, n, fs = ECG.FS) {
+    if (!(prevTs > 0) || !(ts > prevTs) || !(n > 0)) return 0;
+    const extra = (ts - prevTs) / 1e9 - n / fs;
+    return extra < 0.03 ? 0 : Math.round(extra * fs);
+  }
+  const pctl = (a, p) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.min(s.length - 1, Math.max(0, Math.round(p * (s.length - 1))))] : NaN; };
+
+  // Detecção de complexos QRS (tipo Pan-Tompkins simplificado): energia da derivada, limiar adaptativo e período refratário.
+  // Retorna índices de amostra dos picos R (polaridade qualquer).
+  function detectR(x, fs = ECG.FS) {
+    const n = x.length; if (n < fs * 3) return [];
+    const d = new Float64Array(n); for (let i = 1; i < n - 1; i++) d[i] = (x[i + 1] - x[i - 1]) / 2;
+    const w = Math.max(3, Math.round(0.08 * fs)), cs = new Float64Array(n + 1);
+    for (let i = 0; i < n; i++) cs[i + 1] = cs[i] + d[i] * d[i];
+    const env = new Float64Array(n); for (let i = 0; i < n; i++) { const a = Math.max(0, i - (w >> 1)), b = Math.min(n, a + w); env[i] = (cs[b] - cs[a]) / (b - a); }
+    const mx = []; for (let k = 0; k + fs <= n; k += fs) { let m = 0; for (let i = k; i < k + fs; i++) if (env[i] > m) m = env[i]; mx.push(m); }
+    const T = 0.3 * pctl(mx, 0.5); if (!(T > 0)) return [];
+    const refr = Math.round(0.25 * fs), half = Math.round(0.06 * fs), look = Math.round(0.12 * fs), peaks = [];
+    let i = 0;
+    while (i < n) {
+      if (env[i] > T) {
+        const e = Math.min(n - 1, i + look); let bm = i; for (let j = i; j <= e; j++) if (env[j] > env[bm]) bm = j;
+        const lo = Math.max(0, bm - half), hi = Math.min(n - 1, bm + half); let pk = lo;
+        for (let j = lo; j <= hi; j++) if (Math.abs(x[j]) > Math.abs(x[pk])) pk = j;
+        if (!peaks.length || pk - peaks[peaks.length - 1] >= refr) peaks.push(pk);
+        i = Math.max(i + 1, pk + refr);
+      } else i++;
+    }
+    return peaks;
+  }
+
+  // Qualidade por época de 1 s: sinal plano, saturação/artefato, ruído muscular (razão de potência 25-40 Hz / 5-15 Hz) e perda de pacotes.
+  function epochQuality(raw, xf, fs = ECG.FS, gaps = []) {
+    const n = xf.length, ne = Math.floor(n / fs), x = Float64Array.from(raw);
+    // bandas em fase zero com extensão nas pontas: o filtro causal tem transitório no início (linha de base ainda presente) e
+    // gerava falso "ruído" na primeira época de janelas curtas
+    const qb = filtfilt(x, [bq('hp', 5, fs, Math.SQRT1_2), bq('lp', 15, fs, Math.SQRT1_2)]);
+    const hb = filtfilt(x, [bq('hp', 25, fs, Math.SQRT1_2), bq('lp', Math.min(40, fs * 0.45), fs, Math.SQRT1_2)]);
+    const raw1 = [];
+    for (let k = 0; k < ne; k++) {
+      const s = k * fs, e = s + fs; let m = 0; for (let i = s; i < e; i++) m += xf[i]; m /= fs;
+      let v = 0, sat = 0, rq = 0, rh = 0;
+      for (let i = s; i < e; i++) { v += (xf[i] - m) ** 2; if (Math.abs(xf[i]) > ECG.SAT_UV) sat++; rq += qb[i] ** 2; rh += hb[i] ** 2; }
+      raw1.push({ sd: Math.sqrt(v / fs), sat, q: Math.sqrt(rq / fs), h: Math.sqrt(rh / fs) });
+    }
+    // Referência de amplitude de QRS do registro (90º percentil da energia 5-15 Hz por época). Comparar com a energia da PRÓPRIA época
+    // marcava como ruído as épocas sem QRS (ritmos lentos, 1 batimento a cada >1 s), onde a energia 5-15 Hz é mínima.
+    const qRef = pctl(raw1.map(o => o.q), 0.9);
+    return raw1.map((o, k) => {
+      const s = k * fs, e = s + fs, flat = o.sd < ECG.FLAT_SD, saturated = o.sat >= 3, noisy = !flat && qRef > 0 && o.h / qRef > ECG.NOISE_RATIO;
+      const gap = gaps.some(g => g.start < e && g.start + g.lost > s);
+      return { flat, saturated, noisy, gap, bad: flat || saturated || noisy || gap };
+    });
+  }
+  // Intervalos RR e métricas de regularidade. RR só entra se os dois picos estão em épocas boas e o intervalo é plausível (300-2000 ms).
+  function rrAnalysis(peaks, fs, ep) {
+    const good = i => { const e = ep[Math.floor(i / fs)]; return !e || !e.bad; };
+    const all = [];
+    for (let i = 0; i < peaks.length - 1; i++) { const rr = (peaks[i + 1] - peaks[i]) / fs * 1000; all.push({ rr, ok: good(peaks[i]) && good(peaks[i + 1]) && rr >= 300 && rr <= 2000 }); }
+    const v = all.filter(o => o.ok).map(o => o.rr);
+    if (v.length < 5) return { nBeats: v.length ? v.length + 1 : 0, hrMean: null, medRR: null, jumpsFrac: 0, prem: 0, r1: 0, cyc: 0, cv: 0, rejected: all.length - v.length, pairs: 0 };
+    const mu = mean(v), med = median(v);
+    let jumps = 0, pairs = 0, prem = 0;
+    for (let i = 0; i < all.length - 1; i++) if (all[i].ok && all[i + 1].ok) {
+      const a = all[i].rr, b = all[i + 1].rr; pairs++;
+      if (Math.abs(b - a) / a > ECG.IRR_REL) jumps++;
+      if (a < ECG.PREM_SHORT * med && b > ECG.PREM_LONG * med) prem++;   // batimento precoce seguido de pausa
+    }
+    let den = 0; for (let i = 0; i < v.length; i++) den += (v[i] - mu) ** 2;
+    const ac = lag => { let num = 0; for (let i = 0; i < v.length - lag; i++) num += (v[i] - mu) * (v[i + lag] - mu); return den ? num / den : 0; };
+    // cyc: periodicidade do RR (autocorrelação máxima nos lags 2 a 8 batimentos). A arritmia sinusal respiratória (período de ~4 a 6
+    // batimentos) é cíclica e não deve ser tratada como irregularidade; ritmo irregular sem padrão tem cyc baixo.
+    const cyc = Math.max(...[2, 3, 4, 5, 6, 7, 8].map(ac));
+    return { nBeats: v.length + 1, hrMean: 60000 / mu, medRR: med, jumpsFrac: pairs ? jumps / pairs : 0, prem, r1: ac(1), cyc, cv: sstd(v) / mu, rejected: all.length - v.length, pairs };
+  }
+  // Irregular: >=2 padrões de batimento precoce com pausa, OU muitos saltos >20% entre RR consecutivos sem padrão cíclico
+  // (a arritmia sinusal respiratória é cíclica e não deve disparar), OU variabilidade alta (CV > 15%) sem padrão cíclico.
+  function isIrregular(a) {
+    if (!(a.pairs >= 15)) return false;
+    return a.prem >= 2 || (a.jumpsFrac >= 0.10 && a.cyc < 0.5) || (a.cv > 0.15 && a.cyc < 0.5);
+  }
+  const FLAG_TXT = { brady: 'Bradicardia: FC média abaixo de 50 bpm', tachy: 'Taquicardia: FC média acima de 100 bpm', irr: 'Ritmo irregular detectado (triagem): intervalos RR irregulares' };
+  // Triagem completa de um registro de repouso. raw: µV; gaps: [{start, lost}] em amostras do próprio registro.
+  function restEcgTriage(raw, fs = ECG.FS, gaps = []) {
+    const xf = ecgFilter(raw, fs, true), ep = epochQuality(raw, xf, fs, gaps);
+    const nBad = ep.filter(e => e.bad).length, badFraction = ep.length ? nBad / ep.length : 1;
+    const cnt = k => ep.filter(e => e[k]).length;
+    const peaks = detectR(xf, fs), a = rrAnalysis(peaks, fs, ep);
+    const reasons = []; let valid = true;
+    if (!ep.length) { valid = false; reasons.push('registro curto demais'); }
+    if (badFraction > ECG.BAD_MAX) {
+      valid = false;
+      const parts = []; if (cnt('flat')) parts.push(cnt('flat') + ' s de sinal plano'); if (cnt('noisy')) parts.push(cnt('noisy') + ' s de ruído muscular');
+      if (cnt('saturated')) parts.push(cnt('saturated') + ' s de saturação/movimento'); if (cnt('gap')) parts.push(cnt('gap') + ' s com perda de pacotes');
+      reasons.push(Math.round(badFraction * 100) + '% do trecho com ruído, artefato ou perda de dados (limite de ' + Math.round(ECG.BAD_MAX * 100) + '%)' + (parts.length ? ': ' + parts.join(', ') : ''));
+    }
+    if (!(a.nBeats >= ECG.MIN_BEATS)) { valid = false; reasons.push('poucos batimentos detectados com qualidade (' + a.nBeats + '; mínimo ' + ECG.MIN_BEATS + ')'); }
+    if (a.hrMean && (a.hrMean < 25 || a.hrMean > 220)) { valid = false; reasons.push('frequência fora do plausível: detecção de batimentos não confiável'); }
+    const flags = [];
+    if (valid) {
+      if (a.hrMean < ECG.BRADY) flags.push({ code: 'brady', level: 'warn', text: FLAG_TXT.brady });
+      if (a.hrMean > ECG.TACHY) flags.push({ code: 'tachy', level: 'warn', text: FLAG_TXT.tachy });
+      if (isIrregular(a)) flags.push({ code: 'irr', level: 'warn', text: FLAG_TXT.irr });
+    }
+    return { valid, reasons, flags, badFraction, epochs: ep, peaks, hrMean: valid ? a.hrMean : null, hrRaw: a.hrMean, nBeats: a.nBeats, analysis: a, filtered: xf, durSec: raw.length / fs };
+  }
+  // Qualidade ao vivo (janela de ~8 s) para liberar a gravação: 'good' (verde), 'warn' (amarelo), 'bad' (vermelho) ou 'wait'.
+  function liveQuality(raw, fs = ECG.FS, gaps = []) {
+    if (raw.length < fs * 5) return { state: 'wait', reason: 'coletando sinal…' };
+    const xf = ecgFilter(raw, fs, true), ep = epochQuality(raw, xf, fs, gaps), peaks = detectR(xf, fs);
+    const c = k => ep.filter(e => e[k]).length, bad = ep.filter(e => e.bad).length, secs = raw.length / fs;
+    let reason = '';
+    if (c('gap')) reason = 'perda de pacotes Bluetooth';
+    else if (c('flat')) reason = 'sinal plano: confira o contato e se os eletrodos estão úmidos';
+    else if (c('saturated')) reason = 'saturação ou movimento: fique imóvel';
+    else if (c('noisy')) reason = 'ruído muscular: relaxe e fique imóvel';
+    else if (peaks.length < 3) reason = 'batimentos não detectados';
+    const enough = peaks.length >= Math.floor(secs * 0.5);
+    if (!bad && enough) return { state: 'good', reason: 'sinal estável' };
+    if (bad <= Math.ceil(ep.length * 0.25) && peaks.length >= 3) return { state: 'warn', reason: reason || 'sinal instável' };
+    return { state: 'bad', reason: reason || 'sinal ruim' };
+  }
+
+  // ---- Laudo (HTML imprimível): tiras de 10 s a 25 mm/s e 10 mm/mV, com grade milimetrada ----
+  const SYM_TXT = { palpitacao: 'Palpitação', tontura: 'Tontura', falta_de_ar: 'Falta de ar', outro: 'Outro sintoma' };
+  function ecgStripSvg(xf, fs, i0, seconds, markers) {
+    const L = 10, W = seconds * 25, H = 40, y0 = H / 2, TW = W + L, i1 = Math.min(xf.length, i0 + Math.round(seconds * fs));
+    let g = '';
+    for (let x = 0; x <= TW + 0.001; x += 1) g += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '" stroke="' + (x % 5 ? '#f6d4d4' : '#e49a9a') + '" stroke-width="' + (x % 5 ? 0.1 : 0.22) + '"/>';
+    for (let y = 0; y <= H + 0.001; y += 1) g += '<line x1="0" y1="' + y + '" x2="' + TW + '" y2="' + y + '" stroke="' + (y % 5 ? '#f6d4d4' : '#e49a9a') + '" stroke-width="' + (y % 5 ? 0.1 : 0.22) + '"/>';
+    const cal = '<polyline points="1,' + y0 + ' 3,' + y0 + ' 3,' + (y0 - 10) + ' 8,' + (y0 - 10) + ' 8,' + y0 + ' 10,' + y0 + '" fill="none" stroke="#000" stroke-width="0.35"/>';
+    const pts = [];
+    for (let i = i0; i < i1; i++) { const x = L + (i - i0) / fs * 25, y = Math.max(0, Math.min(H, y0 - xf[i] / 1000 * 10)); pts.push(x.toFixed(2) + ',' + y.toFixed(2)); }
+    const tr = pts.length > 1 ? '<polyline points="' + pts.join(' ') + '" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round"/>' : '';
+    let mk = '';
+    (markers || []).forEach(m => { if (m.sample >= i0 && m.sample < i1) { const x = L + (m.sample - i0) / fs * 25; mk += '<line x1="' + x.toFixed(2) + '" y1="0" x2="' + x.toFixed(2) + '" y2="' + H + '" stroke="#b91c1c" stroke-width="0.3" stroke-dasharray="1,1"/><text x="' + (x + 0.8).toFixed(2) + '" y="3.2" font-size="2.6" fill="#b91c1c">' + esc(SYM_TXT[m.type] || m.type) + '</text>'; } });
+    const t = '<text x="1" y="' + (H - 1) + '" font-size="2.6" fill="#555">' + Math.round(i0 / fs) + ' s</text>';
+    return '<svg class="es" xmlns="http://www.w3.org/2000/svg" width="' + TW + 'mm" height="' + H + 'mm" viewBox="0 0 ' + TW + ' ' + H + '">' + g + cal + tr + mk + t + '</svg>';
+  }
+  // exam: { label, startedAt, durSec, fs, hrMean, nBeats, valid, reasons, flags, markers:[{sample,type}], filtered:[µV], badFraction }
+  function ecgReportHtml(x) {
+    const row = (k, v) => '<tr><th>' + esc(k) + '</th><td>' + v + '</td></tr>';
+    const fs = x.fs || ECG.FS;
+    let o = '<div class="ecgdoc"><h2>Pulsys · ECG de repouso (1 derivação)</h2><table>';
+    o += row('Identificação', esc(x.label) || '—');
+    o += row('Data e hora', x.startedAt ? esc(new Date(x.startedAt).toLocaleString('pt-BR')) : '—');
+    o += row('Duração do registro', nf(x.durSec) + ' s');
+    o += row('Resultado da triagem', x.valid ? 'leitura válida' : '<b>LEITURA INCONCLUSIVA: repetir o exame</b>');
+    if (x.valid) {
+      o += row('FC média', nf(x.hrMean) + ' bpm (' + nf(x.nBeats) + ' batimentos)');
+      o += row('Alertas da triagem', x.flags && x.flags.length ? x.flags.map(f => '<b>' + esc(f.text) + '</b>').join('<br>') : 'nenhum alerta pelos critérios usados');
+    } else o += row('Motivo', (x.reasons || []).map(esc).join('<br>') || '—');
+    o += row('Qualidade do sinal', 'trecho com ruído, artefato ou perda de dados: ' + nf((x.badFraction || 0) * 100) + '%');
+    const mk = x.markers || [];
+    o += row('Sintomas marcados', mk.length ? mk.map(m => esc(SYM_TXT[m.type] || m.type) + ' aos ' + mmss(m.sample / fs)).join('<br>') : 'nenhum');
+    o += row('Aquisição e filtros', fs + ' Hz; passa-alta 0,5 Hz, passa-baixa 40 Hz e notch de 60 Hz (fase zero); escala 25 mm/s e 10 mm/mV (válida se impresso em tamanho real, 100%)');
+    o += '</table><h3>Traçado completo (tiras de 10 s)</h3>';
+    const f = x.filtered || [];
+    for (let i0 = 0; i0 < f.length; i0 += 10 * fs) o += '<div class="strip">' + ecgStripSvg(f, fs, i0, 10, mk) + '</div>';
+    o += '<p class="m"><b>Aviso:</b> este exame é uma TRIAGEM de ritmo cardíaco em 1 derivação (monitor de peito). Não diagnostica infarto nem isquemia e não substitui um ECG de 12 derivações nem a avaliação médica. Os critérios de triagem são conservadores, mas não foram validados clinicamente; ausência de alerta não significa ausência de alteração.</p></div>';
+    return o;
+  }
+
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -611,6 +891,7 @@ function onEcg(c,dv){
   let r;try{r=HR.parsePmdEcg(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){return}
   if(!r)return;const E=c.ecg;
   for(const v of r.samples){E.buf[E.n%ECG_N]=v;E.n++}
+  if(ex.c===c&&(ex.step===2||ex.step===3))exFeed(r.samples,r.ts);   // exame de ECG de repouso em andamento neste monitor
   const now=Date.now();if(!E.first)E.first=now;E.lastData=now;E.stamps.push([now,r.samples.length]);while(E.stamps.length&&now-E.stamps[0][0]>2000)E.stamps.shift();E.dirty=true;
 }
 function drawEcg(c){
@@ -798,15 +1079,19 @@ async function renderHist(){
   if(!all.length){box.textContent='Nenhuma sessão salva.';return}
   all.sort((a,b)=>b.id-a.id).forEach(s=>{
     const r=document.createElement('div');r.className='r';
-    const t=document.createElement('span');t.textContent=new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(s.label||'sem identificação')+' · '+(s.startedAt?dur(s.endedAt-s.startedAt):'—')+' · FC média '+(s.meanBpm===null?'—':Math.round(s.meanBpm));r.appendChild(t);
+    const isE=s.kind==='ecg';   // exame de ECG de repouso (guardado com o traçado filtrado) ou sessão de exercício
+    const t=document.createElement('span');t.textContent=new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(isE?'ECG de repouso · ':'')+(s.label||'sem identificação')+' · '+(isE?Math.round(s.durSec)+' s':(s.startedAt?dur(s.endedAt-s.startedAt):'—'))+' · FC média '+(s.meanBpm==null?'—':Math.round(s.meanBpm))+(isE&&!s.valid?' · inconclusivo':'');r.appendChild(t);
     const b=(txt,fn)=>{const x=document.createElement('button');x.textContent=txt;x.onclick=fn;r.appendChild(x)};
-    b('Relatório',()=>{$('rb').innerHTML=HR.reportHtml(s);$('rep').style.display='block'});
-    b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
+    b('Relatório',()=>isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
+    if(!isE)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
     b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
     box.appendChild(r)});
 }
 $('hx').onclick=async()=>{if(!confirm('Apagar TODO o histórico deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',s=>s.clear());msg('Histórico apagado.')}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()};
-$('rc2').onclick=()=>{$('rep').style.display='none'};$('rp').onclick=()=>window.print();
+// Relatório em tela cheia (sessão: retrato; laudo de ECG: paisagem, para caber a tira de 10 s a 25 mm/s)
+function setLand(on){let st=$('pgl');if(on&&!st){st=document.createElement('style');st.id='pgl';st.textContent='@media print{@page{size:A4 landscape;margin:8mm}}';document.head.appendChild(st)}else if(!on&&st)st.remove()}
+function openRep(html,land){$('rb').innerHTML=html;$('rep').style.display='block';setLand(!!land)}
+$('rc2').onclick=()=>{$('rep').style.display='none';setLand(false)};$('rp').onclick=()=>window.print();
 let actx=null;
 function beep(){if(!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=0.2;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+0.4)}catch(_){}}
 const setSnd=on=>{$('snd').setAttribute('aria-checked',on?'true':'false')};
@@ -844,7 +1129,7 @@ document.addEventListener('click',ev=>{if(ev.target===document.body&&document.bo
 // Telas (menu inferior): home, agora, novo (+), sessao e proto (escolhidas no +), hist e ajustes.
 // As cintas continuam conectadas ao trocar de tela; só muda o que aparece.
 let view='home';
-const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
+const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',ecgr:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
 const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
 // Aba destacada: com uma sessão em andamento, a tela da sessão pertence a "Agora".
 function markTab(){
@@ -857,7 +1142,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='ecgr')exShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -946,6 +1231,145 @@ applyTheme(store.get('pulsys.theme')||'auto');
 $('lang').value='pt-BR';document.documentElement.lang='pt-BR';store.set('pulsys.lang','pt-BR');
 $('lang').onchange=()=>{$('lang').value='pt-BR'};   // por enquanto só português
 $('vm').onclick=()=>{mode=document.body.classList.contains('grp')?'det':'grp';applyMode()};
+// ===================== ECG de repouso: exame guiado em 4 etapas =====================
+// 1 checklist e dados · 2 acomodação e qualidade do sinal · 3 gravação (60 a 180 s) com marcação de sintomas · 4 resultado, PDF e histórico.
+// Triagem de ritmo em 1 derivação; critérios do roteiro do usuário, sem validação clínica. Nada sai do aparelho.
+const EXS=130,EXMARK={palpitacao:'Palpitação',tontura:'Tontura',falta_de_ar:'Falta de ar',outro:'Outro sintoma'};
+const exNew=()=>({step:1,c:null,label:'',durSec:60,restSec:20,roll:[],rollGaps:[],gn:0,lastTs:0,lastData:0,sf:null,disp:new Float32Array(780),dn:0,t2:0,goodSince:0,q:{state:'wait',reason:''},qAt:0,rec:null,recGaps:null,markers:[],capStart:0,result:null,saved:false,err:'',longGap:false});
+let ex=exNew();
+const exLive=c=>c.state==='conectado'&&c.t&&(Date.now()-c.t)/1000<=5;
+// Recebe um quadro de ECG: detecta perda de pacotes pelo timestamp, mantém uma janela de ~12 s para a qualidade, o traçado ao vivo
+// (filtrado em fluxo) e, na etapa 3, o registro completo.
+function exFeed(samples,ts){
+  ex.lastData=Date.now();
+  const lost=HR.ecgGapSamples(ex.lastTs,ts,samples.length,EXS);ex.lastTs=ts;
+  const push=v=>{ex.roll.push(v);const y=ex.sf(v);ex.disp[ex.dn%780]=y;ex.dn++;if(ex.rec)ex.rec.push(v);ex.gn++};
+  if(lost>0){
+    if(lost>EXS*10)ex.longGap=true;
+    else{const last=ex.roll.length?ex.roll[ex.roll.length-1]:0;
+      ex.rollGaps.push({start:ex.gn,lost});if(ex.rec)ex.recGaps.push({start:ex.rec.length,lost});
+      for(let i=0;i<lost;i++)push(last)}   // preenche para manter a base de tempo; o trecho fica marcado como perda
+  }
+  for(const v of samples)push(v);
+  if(ex.roll.length>EXS*12)ex.roll.splice(0,ex.roll.length-EXS*12);
+  const w0=ex.gn-ex.roll.length;ex.rollGaps=ex.rollGaps.filter(g=>g.start+g.lost>w0);
+}
+function exReset(){if(ex.c&&(ex.step===2||ex.step===3))ecgOff(ex.c,'Desligado.');ex=exNew();exShow()}
+function exFillDevs(){
+  const sel=$('ex-dev'),list=[...cards.values()],ids=list.map(c=>c.id).join('|'),txt=c=>(c.lab.value||'Monitor #'+c.n)+' · '+(c.dev.name||'monitor')+(exLive(c)?'':' (sem dados)');
+  if(sel.dataset.ids!==ids){const prev=sel.value;sel.textContent='';list.forEach(c=>{const o=document.createElement('option');o.value=c.id;sel.appendChild(o)});sel.dataset.ids=ids;if(prev&&cards.has(prev))sel.value=prev}
+  [...sel.options].forEach(o=>{const c=cards.get(o.value);if(c)o.textContent=txt(c)});
+}
+function exCheck(){
+  const all=[...document.querySelectorAll('.exck')].every(i=>i.checked),c=cards.get($('ex-dev').value),live=!!c&&exLive(c);
+  $('ex-go').disabled=!(all&&live);
+  $('ex-hint').textContent=!all?'Marque os três itens do checklist para continuar.':!c?'Selecione um monitor.':!live?'Aguardando dados do monitor selecionado…':'Tudo pronto.';
+}
+function exShow(){
+  const have=cards.size>0;
+  $('ex-none').hidden=have||ex.step!==1;$('ex-1').hidden=!(have&&ex.step===1);
+  for(const k of [2,3,4])$('ex-'+k).hidden=ex.step!==k;
+  $('ex-stp').textContent='Etapa '+ex.step+' de 4';
+  if(ex.step===1){exFillDevs();exCheck()}
+}
+function drawExTrace(cv){
+  if(!cv||!cv.offsetParent)return;
+  const dpr=window.devicePixelRatio||1,w=Math.round(cv.clientWidth*dpr),h=Math.round(cv.clientHeight*dpr);if(!w||!h)return;
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}
+  const x=cv.getContext('2d'),cs=getComputedStyle(document.documentElement),line=cs.getPropertyValue('--line').trim()||'#ccc',fg=cs.getPropertyValue('--fg').trim()||'#000',bad=cs.getPropertyValue('--bad').trim()||'#b91c1c',mut=cs.getPropertyValue('--mut').trim()||'#666',mm=w/150;   // 25 mm/s em 6 s; 10 mm/mV
+  x.clearRect(0,0,w,h);x.lineWidth=1;
+  for(let i=0;i*mm<=w;i++){x.strokeStyle=line;x.globalAlpha=i%5?0.35:0.9;x.beginPath();x.moveTo(Math.round(i*mm)+.5,0);x.lineTo(Math.round(i*mm)+.5,h);x.stroke()}
+  for(let j=0;j*mm<=h;j++){x.strokeStyle=line;x.globalAlpha=j%5?0.35:0.9;x.beginPath();x.moveTo(0,Math.round(j*mm)+.5);x.lineTo(w,Math.round(j*mm)+.5);x.stroke()}
+  x.globalAlpha=1;
+  const len=Math.min(ex.dn,780);
+  if(len>1){x.strokeStyle=fg;x.lineWidth=Math.max(1.5,dpr*1.5);x.lineJoin='round';x.beginPath();
+    for(let i=0;i<len;i++){const v=ex.disp[(ex.dn-len+i)%780],X=(780-len+i)/779*w,Y=Math.max(0,Math.min(h,h/2-v/1000*10*mm));i?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke()}
+  if(ex.step===3&&ex.rec){x.strokeStyle=bad;x.lineWidth=dpr*1.5;ex.markers.forEach(m=>{const ago=ex.rec.length-m.sample;if(ago>=0&&ago<len){const X=(779-ago)/779*w;x.beginPath();x.moveTo(X,0);x.lineTo(X,h);x.stroke()}})}
+  x.font=Math.round(11*dpr)+'px system-ui,sans-serif';x.fillStyle=mut;x.fillText('25 mm/s · 10 mm/mV',6*dpr,h-6*dpr);
+}
+function exMarks(){$('ex-ml').textContent=ex.markers.length?'Sintomas marcados: '+ex.markers.map(m=>EXMARK[m.type]+' ('+dur(m.sample/EXS*1000)+')').join(', '):''}
+function exAbort(why){
+  const c=ex.c;if(c)ecgOff(c,'Desligado.');
+  const secs=ex.rec?ex.rec.length/EXS:0;
+  ex.result={valid:false,aborted:true,reasons:[why+(ex.rec?' A gravação ficou com '+Math.round(secs)+' s e está incompleta.':'')],flags:[],badFraction:0,durSec:secs,fs:EXS,markers:ex.markers.slice(),label:ex.label,startedAt:ex.capStart||ex.t2,filtered:[],hrMean:null,nBeats:0};
+  ex.step=4;exShow();exResult();msg(why);
+}
+function exFinish(){
+  const c=ex.c;ecgOff(c,'Desligado.');
+  const raw=ex.rec.slice(0,ex.durSec*EXS),t=HR.restEcgTriage(raw,EXS,ex.recGaps);
+  ex.result={valid:t.valid,reasons:t.reasons,flags:t.flags,badFraction:t.badFraction,hrMean:t.hrMean,nBeats:t.nBeats,durSec:raw.length/EXS,fs:EXS,markers:ex.markers.slice(),label:ex.label,startedAt:ex.capStart,filtered:Array.from(t.filtered,v=>Math.round(v*10)/10)};
+  ex.step=4;exShow();exResult();msg('Gravação concluída.');
+}
+function exResult(){
+  const r=ex.result,esc=HR.esc,tile=(k,v)=>'<div class="t"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';let h='';
+  if(r.valid){
+    h+='<div class="rbn ok">Leitura válida</div><div class="kv">'+tile('FC média',Math.round(r.hrMean)+' bpm')+tile('Batimentos',r.nBeats)+tile('Duração',Math.round(r.durSec)+' s')+tile('Trecho com ruído',Math.round(r.badFraction*100)+'%')+'</div>';
+    h+=r.flags.length?'<div class="al2" style="margin-top:10px">'+r.flags.map(f=>'<div class="warn"><span class="ic">⚠️</span><span class="at">'+esc(f.text)+'</span></div>').join('')+'</div>':'<div class="m" style="margin-top:10px">Nenhum alerta pelos critérios de triagem usados.</div>';
+  }else h+='<div class="rbn bad">'+(r.aborted?'Exame interrompido':'Leitura inconclusiva: repita o exame')+'</div><ul class="rlist">'+r.reasons.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  if(r.markers.length)h+='<div class="m" style="margin-top:10px"><b>Sintomas marcados:</b> '+r.markers.map(m=>esc(EXMARK[m.type]||m.type)+' ('+dur(m.sample/EXS*1000)+')').join(', ')+'</div>';
+  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> triagem de ritmo cardíaco em 1 derivação. Não diagnostica infarto nem isquemia e não substitui um ECG de 12 derivações nem a avaliação médica. Os critérios não foram validados clinicamente.</p>';
+  $('ex-res').innerHTML=h;
+  $('ex-pdf').hidden=$('ex-sv').hidden=!!r.aborted;$('ex-sv').disabled=ex.saved;$('ex-sv').textContent=ex.saved?'Salvo no Histórico':'Salvar no Histórico';
+}
+function exTick(){
+  const now=Date.now(),vis=view==='ecgr';
+  if(ex.step===1){if(vis){exFillDevs();exCheck();$('ex-none').hidden=cards.size>0}return}
+  if(ex.step===2){
+    if(ex.c&&!cards.has(ex.c.id)){exAbort('O monitor foi removido.');return}
+    const rem=Math.max(0,ex.restSec-(now-ex.t2)/1000);
+    if(now-ex.qAt>=1000){
+      ex.qAt=now;const w=ex.roll.slice(-EXS*8),w0=ex.gn-w.length,g=ex.rollGaps.filter(x=>x.start+x.lost>w0).map(x=>({start:x.start-w0,lost:x.lost}));
+      let q=HR.liveQuality(w,EXS,g);if(now-ex.lastData>3000||ex.c.state!=='conectado')q={state:'bad',reason:'sem dados do ECG: confira a conexão do monitor'};
+      ex.q=q;ex.goodSince=q.state==='good'?(ex.goodSince||now):0;
+    }
+    const ready=rem<=0&&!!ex.goodSince&&now-ex.goodSince>=5000;
+    if(vis){
+      const q=ex.q;$('ex-dot').className='dot '+q.state;
+      $('ex-qt').textContent=q.state==='good'?'Sinal estável':q.state==='warn'?'Sinal instável':q.state==='bad'?'Sinal ruim':'Coletando sinal…';
+      $('ex-qr').textContent=ex.err?'':(rem<=0&&q.state==='good'&&!ready?'estabilizando…':q.reason);
+      $('ex-cd').textContent=rem>0?dur(rem*1000):(ready?'Pronto':'…');
+      $('ex-rec').disabled=!ready;
+      $('ex-err').innerHTML=ex.err?'<div class="bad">'+HR.esc(ex.err)+'</div>':'';
+      drawExTrace($('ex-cv2'));
+    }
+    return;
+  }
+  if(ex.step===3){
+    if(!cards.has(ex.c.id)||ex.c.state!=='conectado'){exAbort('A conexão com o monitor foi perdida durante a gravação.');return}
+    if(now-ex.lastData>4000){exAbort('Os dados do ECG pararam durante a gravação.');return}
+    if(ex.longGap){exAbort('Houve uma perda longa de dados Bluetooth durante a gravação.');return}
+    const total=ex.durSec*EXS;if(ex.rec.length>=total){exFinish();return}
+    if(vis){const s=ex.rec.length/EXS;$('ex-pg').style.width=(ex.rec.length/total*100)+'%';$('ex-pt').textContent=dur(s*1000)+' / '+dur(ex.durSec*1000);drawExTrace($('ex-cv3'))}
+  }
+}
+setInterval(exTick,250);
+$('go-e').onclick=()=>{toggleMenu(false);setView('ecgr')};
+$('go-e2').onclick=()=>setView('ecgr');
+$('add5').onclick=()=>$('add').click();
+document.querySelectorAll('.exck').forEach(i=>i.onchange=exCheck);$('ex-dev').onchange=exCheck;
+$('ex-go').onclick=async()=>{
+  const c=cards.get($('ex-dev').value);if(!c)return;
+  ex=Object.assign(exNew(),{step:2,c,label:$('ex-id').value.trim(),durSec:+$('ex-dur').value,restSec:+$('ex-rest').value,sf:HR.ecgStream(EXS),t2:Date.now()});
+  exShow();
+  await startEcg(c);
+  if(ex.step===2&&!c.ecg.on)ex.err=c.ecg.msg||'Não foi possível iniciar o ECG neste monitor.';
+};
+$('ex-rec').onclick=()=>{if(ex.step!==2||$('ex-rec').disabled)return;ex.step=3;ex.rec=[];ex.recGaps=[];ex.markers=[];ex.capStart=Date.now();$('ex-symc').hidden=true;exMarks();exShow()};
+$('ex-sym').onclick=()=>{$('ex-symc').hidden=!$('ex-symc').hidden};
+$('ex-symc').onclick=ev=>{
+  const b=ev.target.closest('button[data-sym]');if(!b||ex.step!==3||!ex.rec)return;
+  ex.markers.push({sample:ex.rec.length,type:b.dataset.sym});$('ex-symc').hidden=true;exMarks();
+  msg('Sintoma marcado aos '+dur(ex.rec.length/EXS*1000)+': '+EXMARK[b.dataset.sym]+'.');
+};
+$('ex-c2').onclick=()=>exReset();
+$('ex-c3').onclick=()=>{if(confirm('Cancelar o exame? A gravação feita até agora será descartada.'))exReset()};
+$('ex-new').onclick=()=>exReset();
+$('ex-pdf').onclick=()=>{if(ex.result)openRep(HR.ecgReportHtml(ex.result),true)};
+$('ex-sv').onclick=async()=>{
+  const x=ex.result;if(!x||x.aborted||ex.saved)return;
+  try{await tx('readwrite',s=>s.add({kind:'ecg',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,meanBpm:x.hrMean,durSec:x.durSec,valid:x.valid,exam:x}));ex.saved=true;exResult();msg('Exame salvo no Histórico deste aparelho.')}
+  catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Gere o PDF antes de sair.')}
+};
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
   // "Adicionar cinta" do topo só depois da primeira cinta (antes, o botão do meio já cobre); exportar/copiar CSV só com dados de sessão
