@@ -141,6 +141,7 @@ body.mod-proto .ecg,body.mod-proto details,body.mod-proto .zb,body.mod-proto #vm
 .ecg{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px}
 .ehd{display:flex;align-items:center;justify-content:space-between;gap:8px}.ehd button{min-height:40px;font-size:14px}
 .ecg canvas.ecv{flex:none;width:100%;height:150px;background:var(--sf2);border-radius:8px;color:var(--fg)}
+.ecg:not(.open) canvas.ecv,.ecg:not(.open) [data-k="est"],.ecg:not(.open) .enote,.ecg:not(.run) canvas.ecv{display:none}   /* quadro e observações só depois de "Iniciar ECG"; o quadro só com o ECG rodando (erros mostram só a mensagem) */
 .grp .c:not(.x) .ecg{display:none}
 .c[data-za="1"] .zc{outline:1.5px dashed currentColor;outline-offset:-1.5px}
 .c[data-z="p"] .zc{background:linear-gradient(90deg,var(--z2bg),var(--z3bg));color:var(--fg)}.c[data-z="p"] .bpmbox{border-left:6px solid var(--z2)}
@@ -541,7 +542,7 @@ function mk(dev){
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão:w','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t tk-'+p[0]+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
-   +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.</div><div class="m">25 mm/s · 10 mm/mV · 1 derivação pelo monitor de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
+   +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.</div><div class="m enote">25 mm/s · 10 mm/mV · 1 derivação pelo monitor de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
    +'<div class="pp"><strong>Protocolo progressivo (experimental)</strong><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios medidos.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button class="pri" data-k="pr">Iniciar protocolo progressivo</button></div>'
    +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional; não há valores padrão. VT1 e VT2 em branco: o app tenta estimar por VFC (DFA-α1), de forma experimental e sempre rotulada como estimativa. O que você digitar substitui a estimativa.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
    +'<div class="lim"><label>FC máx. (opcional)<input type="number" inputmode="numeric" placeholder="bpm" data-k="max"></label></div><div class="lim"><label>FC no VT1<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt1"></label><label>FC no VT2<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt2"></label></div>'
@@ -551,7 +552,7 @@ function mk(dev){
   // trocar a identificação descarta a estimativa automática: ela não pode misturar dados de pacientes diferentes
   c.lab.addEventListener('input',()=>{c.auto={pts:[],locks:null,st:null}});
   c.q('dev').textContent=(dev.name||'monitor')+' · #'+c.n;
-  c.q('eb').onclick=()=>{if(c.ecg.on||c.ecg.starting)stopEcg(c,'Desligado.');else startEcg(c)};
+  c.q('eb').onclick=()=>{if(c.ecg.on||c.ecg.starting)ecgOff(c,'Desligado.');else startEcg(c)};
   c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover este monitor? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
@@ -571,6 +572,10 @@ function mk(dev){
 // Protocolo conforme a documentação pública da Polar; NÃO verificado em hardware neste projeto.
 const ECG_N=780;   // 6 s a 130 Hz
 const writeCtl=(k,arr)=>{const v=Uint8Array.from(arr);return k.writeValueWithResponse?k.writeValueWithResponse(v):k.writeValue(v)};
+// O quadro do traçado e as observações só aparecem depois de tocar em "Iniciar ECG" (E.show); ao parar, somem de novo.
+// Erros e quedas de conexão mantêm o quadro aberto para a mensagem ser lida.
+function ecgPanel(c){const p=c.el.querySelector('.ecg');if(p){p.classList.toggle('open',!!c.ecg.show);p.classList.toggle('run',!!(c.ecg.on||c.ecg.starting))}}
+function ecgOff(c,msg){c.ecg.show=false;ecgPanel(c);return stopEcg(c,msg)}
 function ecgDown(c,msg){const E=c.ecg;if(!E.on&&!E.starting)return;E.on=false;E.starting=false;E.msg=msg;E.data=E.ctrl=E.onData=E.onCtrl=null;E.dirty=true}   // enlace já caiu: sem operações GATT
 async function stopEcg(c,msg){
   const E=c.ecg,d=E.data,k=E.ctrl,hd=E.onData,hc=E.onCtrl,was=E.on||E.starting;
@@ -581,9 +586,10 @@ async function stopEcg(c,msg){
 }
 async function startEcg(c){
   const E=c.ecg;if(E.on||E.starting)return;
+  E.show=true;ecgPanel(c);   // tocar em "Iniciar ECG" abre o quadro (e mostra também as mensagens de erro, se houver)
   if(c.state!=='conectado'||!c.srv){E.msg='Conecte o monitor antes de iniciar o ECG.';E.dirty=true;return}
-  cards.forEach(o=>{if(o!==c)stopEcg(o,'Desligado (outro monitor iniciou o ECG).')});
-  E.starting=true;E.msg='Iniciando ECG…';E.n=0;E.buf.fill(0);E.stamps=[];E.lastData=0;E.first=0;E.dirty=true;
+  cards.forEach(o=>{if(o!==c)ecgOff(o,'Desligado (outro monitor iniciou o ECG).')});
+  E.starting=true;E.msg='Iniciando ECG…';E.n=0;E.buf.fill(0);E.stamps=[];E.lastData=0;E.first=0;E.dirty=true;ecgPanel(c);
   try{
     await withTimeout(serial(async()=>{   // não disputa o enlace com tentativas de conexão
       const svc=await c.srv.getPrimaryService(HR.PMD.SERVICE),ctrl=await svc.getCharacteristic(HR.PMD.CTRL),data=await svc.getCharacteristic(HR.PMD.DATA);
@@ -595,7 +601,7 @@ async function startEcg(c){
       await ctrl.startNotifications();await data.startNotifications();
       await writeCtl(ctrl,HR.PMD.START_ECG);
     }),15000,'ECG');
-    if(E.starting){E.on=true;E.starting=false;E.msg='Aguardando dados do ECG…'}
+    if(E.starting){E.on=true;E.starting=false;E.msg='Aguardando dados do ECG…';ecgPanel(c)}
   }catch(e){
     const m=String(e&&e.message||e);
     stopEcg(c,'Não foi possível iniciar o ECG: '+m.slice(0,80)+(/not found|no services|security/i.test(m)?' (este modelo de monitor ou o navegador pode não oferecer o ECG)':''));
@@ -691,7 +697,7 @@ function draw(c){
   pill.textContent=pcmp?{'Reconectando…':'Reconect.','Conectando…':'Conect.'}[pfull]||pfull:pfull;pill.title=pfull;pill.className='pill '+(live?'ok':stale?'bad':'warn');
   {const E=c.ecg,eb=c.q('eb'),es=c.q('est'),tn=Date.now();
    if(E.on&&c.state!=='conectado')ecgDown(c,'ECG interrompido: conexão perdida. Toque em Iniciar ECG depois que reconectar.');
-   eb.textContent=E.on||E.starting?'Parar ECG':'Iniciar ECG';eb.disabled=!(live||E.on||E.starting);
+   eb.textContent=E.on||E.starting?'Parar ECG':'Iniciar ECG';eb.disabled=!(live||E.on||E.starting);ecgPanel(c);
    if(E.on&&E.lastData){const el=E.first?(tn-E.first)/1000:0;   // média desde o início (os pacotes chegam em rajadas)
      es.textContent=tn-E.lastData>3000?'Sem dados de ECG há '+Math.round((tn-E.lastData)/1000)+' s':'Ao vivo · ~'+(el>=3?Math.round(E.n/el):'…')+' amostras/s (esperado: 130)'+(c.contact==='notDetected'?' · SEM CONTATO':'')}
    else es.textContent=E.msg||'Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.';
