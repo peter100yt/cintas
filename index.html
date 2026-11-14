@@ -178,8 +178,8 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <section class="view" id="v-home" aria-label="Home"></section>
 
 <section class="view" id="v-agora" aria-label="Agora">
-<div class="vh"><h2>Agora</h2><button class="chip" id="add3" hidden>＋ Adicionar cinta</button></div>
-<div id="ag-empty" class="emptyv"><div class="ei">📡</div><h3>Nenhuma cinta conectada</h3><p class="m">Conecte uma cinta para ver aqui a frequência cardíaca e o estado de cada uma.</p><button class="pri" id="add4">＋ Conectar cinta</button></div>
+<div class="vh"><h2>Agora</h2><button class="chip" id="add3" hidden>＋ Adicionar monitor</button></div>
+<div id="ag-empty" class="emptyv"><div class="ei">📡</div><h3>Nenhum monitor conectado</h3><p class="m">Conecte um monitor para ver aqui a frequência cardíaca e o estado de cada um.</p><button class="pri" id="add4">＋ Conectar monitor</button></div>
 <div id="ag-list"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem.</p>
 </section>
@@ -193,10 +193,10 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </section>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
-<div class="vh"><h2 id="run-t">Sessão de exercício</h2><button class="chip" id="add" hidden>＋ Adicionar cinta</button></div>
+<div class="vh"><h2 id="run-t">Sessão de exercício</h2><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div></div>
 <div id="sbar" hidden><button class="pri sbtn" id="s-start">▶ Iniciar sessão</button></div>
-<div class="tools"><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
-<div id="empty"><h2>Nenhuma cinta conectada</h2><div class="m">Pareie a primeira cinta para começar a monitorar.</div><ol><li>Vista a cinta com os eletrodos úmidos.</li><li>Desconecte-a de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar cinta</b> e escolha a cinta na lista.</li></ol><button class="pri" id="add2">＋ Adicionar cinta</button></div>
+<div class="tools"><button class="chip" id="add" hidden>＋ Adicionar monitor</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
+<div id="empty"><h2>Nenhum monitor conectado</h2><div class="m">Pareie o primeiro monitor para começar a monitorar.</div><ol><li>Coloque o monitor no corpo (na cinta de peito, com os eletrodos úmidos).</li><li>Desconecte-o de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar monitor</b> e escolha o monitor na lista.</li></ol><button class="pri" id="add2">＋ Adicionar monitor</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
 </section>
@@ -373,7 +373,7 @@ const HR = (() => {
     if (s.state !== 'conectado') add('conexao', 'bad', 'Conexão perdida (' + s.state + ')');
     else if (s.ageSec > STALE_SEC) add('semdados', 'bad', 'Sem dados há ' + Math.round(s.ageSec) + ' s');
     const live = s.state === 'conectado' && !(s.ageSec > STALE_SEC);
-    if (live && s.contact === 'notDetected') add('contato', 'bad', 'Sem contato da cinta com a pele');
+    if (live && s.contact === 'notDetected') add('contato', 'bad', 'Sem contato do monitor com a pele');
     const lo = s.minBpm > 0 ? s.minBpm : null, hi = s.maxBpm > 0 ? s.maxBpm : null;
     if (lo !== null && hi !== null && lo >= hi) add('limites', 'warn', 'Limites de alerta inválidos: mínimo deve ser menor que máximo');
     else if (live && s.contact !== 'notDetected' && s.bpm > 0 && s.outSec >= HOLD_SEC) {
@@ -381,8 +381,8 @@ const HR = (() => {
       else if (lo !== null && s.bpm < lo) add('fcbaixa', 'bad', 'FC ' + s.bpm + ' abaixo do limite ' + lo + ' bpm');
     }
     if (live && s.rrSeen && s.artRatio > ART_MAX) add('sinal', 'warn', 'Sinal ruim: ' + (s.artRatio * 100).toFixed(1) + '% dos batimentos descartados; VFC inconclusiva');
-    if (live && !s.rrSeen && s.nSamples >= 10) add('semrr', 'warn', 'Cinta sem RR: VFC desabilitada');
-    if (s.bat !== null && s.bat !== undefined && s.bat < BAT_LOW) add('bateria', 'warn', 'Bateria da cinta em ' + s.bat + '%');
+    if (live && !s.rrSeen && s.nSamples >= 10) add('semrr', 'warn', 'Monitor sem RR: VFC desabilitada');
+    if (s.bat !== null && s.bat !== undefined && s.bat < BAT_LOW) add('bateria', 'warn', 'Bateria do monitor em ' + s.bat + '%');
     return a;
   }
 
@@ -439,7 +439,7 @@ const HR = (() => {
     o += row('Duração', s.startedAt && s.endedAt ? mmss((s.endedAt - s.startedAt) / 1000) : '—');
     o += row('FC mín · média · máx (bpm)', nf(s.minBpm) + ' · ' + nf(s.meanBpm) + ' · ' + nf(s.maxBpm));
     o += row('Leituras válidas · inválidas', nf(s.nValid) + ' · ' + nf(s.nInvalid) + ' (FC 0 ou sem contato não entram nas estatísticas)');
-    if (!s.rrAvailable) o += row('VFC', 'indisponível: a cinta não enviou RR');
+    if (!s.rrAvailable) o += row('VFC', 'indisponível: o monitor não enviou RR');
     else if (!h) o += row('VFC', '—');
     else {
       o += row('Última análise de VFC (janela de até 120 s)', 'RMSSD ' + nf(h.rmssd, 1) + ' · SD1 ' + nf(h.sd1, 1) + ' · SD2 ' + nf(h.sd2, 1) + ' ms · artefatos ' + nf(h.artRatio * 100, 1) + '%');
@@ -541,7 +541,7 @@ function mk(dev){
    +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão:w','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t tk-'+p[0]+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
-   +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria da cinta; só uma cinta por vez.</div><div class="m">25 mm/s · 10 mm/mV · 1 derivação pela cinta de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
+   +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.</div><div class="m">25 mm/s · 10 mm/mV · 1 derivação pelo monitor de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
    +'<div class="pp"><strong>Protocolo progressivo (experimental)</strong><div class="m">Inicie ao começar o teste progressivo e encerre ao terminar. Estimativas por VFC não são limiares ventilatórios medidos.</div><div class="kv">'+['pt:Protocolo:w','e1:Estimativa α1 0,75:w','e2:Estimativa α1 0,50:w'].map(s=>{const p=s.split(':');return '<div class="t w"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div><button class="pri" data-k="pr">Iniciar protocolo progressivo</button></div>'
    +'<details><summary>Limites e zonas do paciente</summary><div class="in"><div class="m">Definidos pelo profissional; não há valores padrão. VT1 e VT2 em branco: o app tenta estimar por VFC (DFA-α1), de forma experimental e sempre rotulada como estimativa. O que você digitar substitui a estimativa.</div><div class="lim"><label>Alerta: FC mínima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amin"></label><label>Alerta: FC máxima<input type="number" inputmode="numeric" placeholder="bpm" data-k="amax"></label></div>'
    +'<div class="lim"><label>FC máx. (opcional)<input type="number" inputmode="numeric" placeholder="bpm" data-k="max"></label></div><div class="lim"><label>FC no VT1<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt1"></label><label>FC no VT2<input type="number" inputmode="numeric" placeholder="bpm" data-k="vt2"></label></div>'
@@ -550,12 +550,12 @@ function mk(dev){
   c.el=e;c.q=k=>e.querySelector('[data-k="'+k+'"]');c.lab=e.querySelector('input');
   // trocar a identificação descarta a estimativa automática: ela não pode misturar dados de pacientes diferentes
   c.lab.addEventListener('input',()=>{c.auto={pts:[],locks:null,st:null}});
-  c.q('dev').textContent=(dev.name||'cinta')+' · #'+c.n;
+  c.q('dev').textContent=(dev.name||'monitor')+' · #'+c.n;
   c.q('eb').onclick=()=>{if(c.ecg.on||c.ecg.starting)stopEcg(c,'Desligado.');else startEcg(c)};
-  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover esta cinta? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover este monitor? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
-    if(!c.rrSeen){msg('Esta cinta não envia RR: protocolo de VFC indisponível.');return}
+    if(!c.rrSeen){msg('Este monitor não envia RR: protocolo de VFC indisponível.');return}
     c.proto={on:true,t0:Date.now(),end:0,pts:[]};c.snapAt=0;draw(c)};
   c.q('sv').onclick=async()=>{
     if(!c.cnt){msg('Nada para salvar: ainda não há leituras válidas.');return}
@@ -581,15 +581,15 @@ async function stopEcg(c,msg){
 }
 async function startEcg(c){
   const E=c.ecg;if(E.on||E.starting)return;
-  if(c.state!=='conectado'||!c.srv){E.msg='Conecte a cinta antes de iniciar o ECG.';E.dirty=true;return}
-  cards.forEach(o=>{if(o!==c)stopEcg(o,'Desligado (outra cinta iniciou o ECG).')});
+  if(c.state!=='conectado'||!c.srv){E.msg='Conecte o monitor antes de iniciar o ECG.';E.dirty=true;return}
+  cards.forEach(o=>{if(o!==c)stopEcg(o,'Desligado (outro monitor iniciou o ECG).')});
   E.starting=true;E.msg='Iniciando ECG…';E.n=0;E.buf.fill(0);E.stamps=[];E.lastData=0;E.first=0;E.dirty=true;
   try{
     await withTimeout(serial(async()=>{   // não disputa o enlace com tentativas de conexão
       const svc=await c.srv.getPrimaryService(HR.PMD.SERVICE),ctrl=await svc.getCharacteristic(HR.PMD.CTRL),data=await svc.getCharacteristic(HR.PMD.DATA);
       E.ctrl=ctrl;E.data=data;
       E.onCtrl=ev=>{const v=ev.target.value,r=HR.parsePmdResponse(new Uint8Array(v.buffer,v.byteOffset,v.byteLength));
-        if(r&&r.op===2&&!r.ok)ecgDown(c,'A cinta recusou o ECG (código '+r.error+'). Toque em Iniciar ECG para tentar de novo.')};
+        if(r&&r.op===2&&!r.ok)ecgDown(c,'O monitor recusou o ECG (código '+r.error+'). Toque em Iniciar ECG para tentar de novo.')};
       E.onData=ev=>onEcg(c,ev.target.value);
       ctrl.addEventListener('characteristicvaluechanged',E.onCtrl);data.addEventListener('characteristicvaluechanged',E.onData);
       await ctrl.startNotifications();await data.startNotifications();
@@ -598,7 +598,7 @@ async function startEcg(c){
     if(E.starting){E.on=true;E.starting=false;E.msg='Aguardando dados do ECG…'}
   }catch(e){
     const m=String(e&&e.message||e);
-    stopEcg(c,'Não foi possível iniciar o ECG: '+m.slice(0,80)+(/not found|no services|security/i.test(m)?' (este modelo de cinta ou o navegador pode não oferecer o ECG)':''));
+    stopEcg(c,'Não foi possível iniciar o ECG: '+m.slice(0,80)+(/not found|no services|security/i.test(m)?' (este modelo de monitor ou o navegador pode não oferecer o ECG)':''));
   }
 }
 function onEcg(c,dv){
@@ -694,7 +694,7 @@ function draw(c){
    eb.textContent=E.on||E.starting?'Parar ECG':'Iniciar ECG';eb.disabled=!(live||E.on||E.starting);
    if(E.on&&E.lastData){const el=E.first?(tn-E.first)/1000:0;   // média desde o início (os pacotes chegam em rajadas)
      es.textContent=tn-E.lastData>3000?'Sem dados de ECG há '+Math.round((tn-E.lastData)/1000)+' s':'Ao vivo · ~'+(el>=3?Math.round(E.n/el):'…')+' amostras/s (esperado: 130)'+(c.contact==='notDetected'?' · SEM CONTATO':'')}
-   else es.textContent=E.msg||'Desligado. O ECG aumenta o uso de Bluetooth e da bateria da cinta; só uma cinta por vez.';
+   else es.textContent=E.msg||'Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.';
    if(!E.on)drawEcg(c)}
   c.q('bpm').textContent=live&&c.bpm!==null?c.bpm:'—';
   const mx=parseFloat(c.q('max').value);c.q('pct').textContent=live&&mx>0&&c.bpm!==null?'· '+Math.round(c.bpm/mx*100)+'% da FC máx':'';
@@ -813,7 +813,7 @@ async function keepAwake(){try{if(navigator.wakeLock)await navigator.wakeLock.re
 $('add').onclick=async()=>{
   if(!navigator.bluetooth){msg('Sem Web Bluetooth neste navegador. No iPhone/iPad use o Bluefy.');return}
   let dev;try{dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service',HR.PMD.SERVICE]})}catch(e){msg('Seleção cancelada ou falhou: '+e.message);return}
-  const id=dev.id||dev.name;if(cards.has(id)){msg('Esta cinta já está na lista.');return}
+  const id=dev.id||dev.name;if(cards.has(id)){msg('Este monitor já está na lista.');return}
   msg('');keepAwake();const c=mk(dev);cards.set(c.id,c);$('empty').hidden=true;applyMode();conn(c);renderAgora();
 };
 function csv(){const rows=['hora_iso,paciente,dispositivo,bpm,contato,valido,rr_ms'];cards.forEach(c=>c.log.forEach(r=>rows.push([new Date(r[0]).toISOString(),'"'+String(r[1]).replace(/"/g,'""')+'"',r[2],r[3],r[4],r[5],r[6]].join(','))));return rows.join('\n')}
@@ -919,7 +919,7 @@ function renderAgora(){
     r.pill.className='pill '+(live?'ok':stale?'bad':'warn');
     r.bpm.textContent=live&&c.bpm!==null?c.bpm:'—';
     if(document.activeElement!==r.inp&&r.inp.value!==c.lab.value)r.inp.value=c.lab.value;
-    r.bt.textContent=(c.bat===null?'Bateria —':'Bateria '+c.bat+'%')+' · '+(c.dev.name||'cinta')+' · #'+c.n;
+    r.bt.textContent=(c.bat===null?'Bateria —':'Bateria '+c.bat+'%')+' · '+(c.dev.name||'monitor')+' · #'+c.n;
     const al=c.al||[];r.ic.textContent=al.map(a=>AIC[a.code]||'⚠').join(' ');r.ic.title=al.map(a=>a.text).join(' · ');
     r.el.classList.toggle('alb',al.some(a=>a.level==='bad'));r.el.classList.toggle('alw',al.length>0&&!al.some(a=>a.level==='bad'));
     const cv=r.cv,x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
