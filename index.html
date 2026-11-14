@@ -114,6 +114,22 @@ body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca 
 #nav .fab .fi{width:54px;height:54px;border-radius:50%;background:var(--acc);color:var(--accfg);display:flex;align-items:center;justify-content:center;margin-top:-26px;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 5px var(--sf)}
 #nav .fab svg{width:28px;height:28px;stroke-width:2.6}
 #nav .fab.on .fi{outline:3px solid var(--accbg)}
+/* Leitura de VFC */
+body[data-view="vfc"] #v-vfc{display:block}
+.vfl{margin:6px 0 10px;padding-left:20px;font-size:14px;color:var(--mut)}.vfl li{margin:6px 0}.vfl b{color:var(--fg)}
+.vfpace[hidden]{display:none}
+.vfhr{display:flex;align-items:baseline;justify-content:center;gap:6px;margin:6px 0}.vfhr span{font-size:56px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}.vfhr small{color:var(--mut);font-weight:700}
+.brz{display:flex;flex-direction:column;align-items:center;gap:10px;margin:10px 0}
+.brc{width:160px;height:160px;border-radius:50%;background:var(--accbg);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.brc i{display:block;width:100%;height:100%;border-radius:50%;background:var(--acc);opacity:.85;transform:scale(.45)}
+.brz.pc .brc i{animation:brt var(--bp,10s) ease-in-out infinite}
+.brz:not(.pc) .brc{display:none}
+.brt{font-size:18px;font-weight:800;text-align:center;min-height:26px}
+@keyframes brt{0%,100%{transform:scale(.45)}50%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.brz.pc .brc i{animation:none;transform:scale(.75)}}
+.vfm{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vfm .t.main{grid-column:1/-1}.vfm .t.main .v{font-size:26px;font-weight:800}
+.vfs{margin:10px 0 4px;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.vfdoc svg.rrc{display:block;max-width:100%;height:auto;margin:6px 0}
 /* ECG de repouso */
 body[data-view="ecgr"] #v-ecgr{display:block}
 .stp{font-size:13px;color:var(--mut);font-weight:700;white-space:nowrap}
@@ -211,6 +227,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div class="opts">
 <button class="hmb" id="go-s2"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
 <button class="hmb" id="go-p2"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
+<button class="hmb" id="go-v2"><span class="hi">〰️</span><strong>Leitura de VFC</strong><span class="m">Variabilidade da frequência cardíaca em repouso padronizado: modo ultra-curto (60 s) ou padrão (5 min), com estabilização, respiração espontânea ou cadenciada e relatório. Descreve a resposta autonômica; não é diagnóstico.</span></button>
 <button class="hmb" id="go-e2"><span class="hi">🩺</span><strong>ECG de repouso</strong><span class="m">Exame guiado em 4 etapas, com traçado de 1 derivação, controle de qualidade do sinal, triagem de ritmo e laudo em PDF. É triagem: não diagnostica infarto nem isquemia.</span></button>
 </div>
 </section>
@@ -265,6 +282,45 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </div>
 </section>
 
+<section class="view" id="v-vfc" aria-label="Leitura de VFC">
+<div class="vh"><h2>Leitura de VFC</h2><span class="stp" id="vf-stp">Etapa 1 de 4</span></div>
+<div id="vf-none" class="emptyv" hidden><div class="ei">〰️</div><h3>Nenhum monitor conectado</h3><p class="m">Conecte um monitor que envie intervalos RR (cinta de peito) para fazer a leitura.</p><button class="pri" id="add6">＋ Conectar monitor</button></div>
+<div id="vf-1" class="card2" hidden>
+<div class="sl">Padronize a coleta</div>
+<ul class="vfl"><li>Faça sempre no <b>mesmo horário</b>, de preferência ao acordar, antes de cafeína e de exercício e depois de esvaziar a bexiga.</li><li>Escolha uma <b>postura</b> e mantenha sempre a mesma: mudar de posição altera o tônus vagal.</li><li>Durante a leitura, <b>não fale</b>, não engula saliva repetidamente e <b>não se mexa</b>.</li></ul>
+<label class="ckr"><input type="checkbox" id="vf-ok"><span>Estou nas condições acima.</span></label>
+<div class="sl" style="margin-top:16px">Dados da leitura</div>
+<div class="exf">
+<label class="f"><span>Monitor</span><select id="vf-dev"></select></label>
+<label class="f"><span>Identificação do paciente (código)</span><input id="vf-id" maxlength="40" placeholder="Código, não o nome completo" autocomplete="off"></label>
+<label class="f"><span>Modo</span><select id="vf-mode"><option value="ultra">Ultra-curto (60 s): RMSSD, LnRMSSD e SDNN</option><option value="std">Padrão curto (5 min): tempo e frequência (LF, HF)</option></select></label>
+<div class="f g2"><label><span>Postura</span><select id="vf-pos"><option value="supino">Decúbito dorsal</option><option value="sentado">Sentado em repouso</option></select></label><label><span>Estabilização</span><select id="vf-stab"><option value="60">1 min</option><option value="120">2 min</option><option value="180">3 min</option></select></label></div>
+<div class="f g2"><label><span>Respiração</span><select id="vf-br"><option value="espontanea">Espontânea</option><option value="cadenciada">Cadenciada (guiada)</option></select></label><label class="vfpace" id="vf-pacel" hidden><span>Ritmo</span><select id="vf-pace"><option value="6">6 por min</option><option value="8">8 por min</option><option value="10">10 por min</option><option value="12">12 por min</option></select></label></div>
+</div>
+<div class="m" id="vf-hint" style="margin:10px 0"></div>
+<button class="pri sbtn" id="vf-go" disabled>Continuar</button>
+</div>
+<div id="vf-2" class="card2" hidden>
+<div class="sl">Estabilização</div>
+<div class="sq"><div class="sqt"><div class="qt">Relaxe e deixe a frequência cardíaca cair</div><div class="m" id="vf-hint2"></div></div><div class="cd" id="vf-cd">01:00</div></div>
+<div class="vfhr"><span id="vf-hr2">—</span><small>bpm</small></div>
+<div class="brz" id="vf-bz2"><div class="brc"><i></i></div><div class="brt" id="vf-bt2"></div></div>
+<div class="exb"><button class="pri sbtn" id="vf-go2" disabled>● Iniciar gravação</button><button class="sbtn" id="vf-c2">Cancelar leitura</button></div>
+</div>
+<div id="vf-3" class="card2" hidden>
+<div class="sl">Gravando</div>
+<div class="prog"><i id="vf-pg"></i></div><div class="m" id="vf-pt" style="margin:6px 0 10px">00:00 / 01:00</div>
+<div class="vfhr"><span id="vf-hr3">—</span><small>bpm</small></div>
+<div class="brz" id="vf-bz3"><div class="brc"><i></i></div><div class="brt" id="vf-bt3"></div></div>
+<div class="m" id="vf-live" style="text-align:center;margin:6px 0 10px"></div>
+<button class="sbtn danger" id="vf-c3">Cancelar leitura</button>
+</div>
+<div id="vf-4" hidden>
+<div class="card2"><div id="vf-res"></div></div>
+<div class="acts"><button class="pri" id="vf-rep">Relatório</button><button id="vf-sv">Salvar no Histórico</button><button id="vf-new">Nova leitura</button></div>
+</div>
+</section>
+
 <section class="view" id="v-hist" aria-label="Histórico">
 <div class="vh"><h2>Histórico</h2></div>
 <div class="card2"><div class="m" style="margin:0 0 8px">Sessões salvas só neste aparelho; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
@@ -290,6 +346,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
 <button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
 <button class="fmb" role="menuitem" id="go-p" tabindex="-1"><span class="hi">📈</span><span class="ft"><strong>Protocolo progressivo</strong><span class="m">Teste de carga crescente (experimental)</span></span></button>
+<button class="fmb" role="menuitem" id="go-v" tabindex="-1"><span class="hi">〰️</span><span class="ft"><strong>Leitura de VFC</strong><span class="m">Repouso padronizado: 60 s ou 5 min</span></span></button>
 <button class="fmb" role="menuitem" id="go-e" tabindex="-1"><span class="hi">🩺</span><span class="ft"><strong>ECG de repouso</strong><span class="m">Triagem de ritmo em 1 derivação</span></span></button>
 </div>
 <div id="rep"><div class="doc"><div class="acts np" style="margin-bottom:12px"><button class="pri" id="rp">Imprimir / salvar PDF</button><button id="rc2">Fechar</button></div><div id="rb"></div></div></div>
@@ -804,7 +861,158 @@ const HR = (() => {
     return o;
   }
 
-  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT };
+  // ===================== LEITURA DE VFC (repouso padronizado: 60 s ou 5 min) =====================
+  // Parâmetros do roteiro do usuário; NÃO validados clinicamente. As métricas descrevem a resposta autonômica; o app não
+  // classifica valores como "normais" nem define limiares.
+  const VFC = { DEV: 0.20, MAX_ART: 0.05, MIN_RR: 300, MAX_RR: 2000, FS: 4, SEG: 512, LOSS_MAX: 0.02,
+    MODES: { ultra: { sec: 60, minBeats: 30, freq: false, nome: 'Ultra-curto (60 s)' }, std: { sec: 300, minBeats: 150, freq: true, nome: 'Padrão curto (5 min)' } } };
+
+  // Interpolação polinomial de Lagrange por até 4 pontos válidos vizinhos (2 antes e 2 depois) = cúbica no caso completo.
+  function lagrange(P, x, j) {
+    if (!P.length) return NaN;
+    if (P.length === 1) return x[P[0]];
+    let s = 0;
+    for (let i = 0; i < P.length; i++) { let t = x[P[i]]; for (let m = 0; m < P.length; m++) if (m !== i) t *= (j - P[m]) / (P[i] - P[m]); s += t; }
+    return s;
+  }
+  // Substitui os valores marcados (flags) por interpolação cúbica no eixo de batimentos, usando só os valores válidos originais.
+  function cubicFill(x, flags) {
+    const n = x.length, y = x.slice(); let i = 0;
+    while (i < n) {
+      if (!flags[i]) { i++; continue; }
+      const a = i; while (i < n && flags[i]) i++;
+      const b = i - 1, before = [], after = [];
+      for (let k = a - 1; k >= 0 && before.length < 2; k--) if (!flags[k]) before.unshift(k);
+      for (let k = b + 1; k < n && after.length < 2; k++) if (!flags[k]) after.push(k);
+      const P = before.concat(after);
+      for (let j = a; j <= b; j++) y[j] = lagrange(P, x, j);
+    }
+    return y;
+  }
+  // Limpeza de artefatos/ectópicos: RR que difere mais de 20% da média dos 5 batimentos anteriores (já corrigidos) ou fora de
+  // 300-2000 ms é marcado e substituído por interpolação cúbica. Os 5 primeiros usam a mediana dos 9 primeiros como referência.
+  function vfcClean(rr, o = {}) {
+    const dev = o.dev ?? VFC.DEV, n = rr.length, flags = new Array(n).fill(false), w = new Array(n);
+    const first = rr.slice(0, Math.min(n, 9)).filter(Number.isFinite), init = first.length ? median(first) : NaN;
+    for (let i = 0; i < n; i++) {
+      const r = i >= 5 ? mean(w.slice(i - 5, i)) : init, v = rr[i];
+      const bad = !Number.isFinite(v) || v < VFC.MIN_RR || v > VFC.MAX_RR || !(r > 0) || Math.abs(v - r) / r > dev;
+      flags[i] = bad; w[i] = bad ? r : v;
+    }
+    const art = flags.filter(Boolean).length;
+    return { cleaned: cubicFill(rr, flags), flags, n, artifacts: art, pct: n ? art / n : 1 };
+  }
+  // Métricas no domínio do tempo (série já limpa): RMSSD, LnRMSSD, SDNN, pNN50 (diferença adjacente > 50 ms), FC média.
+  function vfcTime(c) {
+    const n = c.length; if (n < 3) return null;
+    const d = []; for (let i = 1; i < n; i++) d.push(c[i] - c[i - 1]);
+    const rmssd = Math.sqrt(d.reduce((s, v) => s + v * v, 0) / d.length), mu = mean(c);
+    return { n, meanRR: mu, hr: 60000 / mu, rmssd, lnRmssd: rmssd > 0 ? Math.log(rmssd) : null, sdnn: sstd(c), pnn50: 100 * d.filter(v => Math.abs(v) > 50).length / d.length };
+  }
+  function naturalSpline(x, y) {
+    const n = x.length, h = [], al = [0], l = [1], mu = [0], z = [0], c = new Array(n).fill(0), b = [], d = [];
+    for (let i = 0; i < n - 1; i++) h[i] = x[i + 1] - x[i];
+    for (let i = 1; i < n - 1; i++) al[i] = 3 / h[i] * (y[i + 1] - y[i]) - 3 / h[i - 1] * (y[i] - y[i - 1]);
+    for (let i = 1; i < n - 1; i++) { l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1]; mu[i] = h[i] / l[i]; z[i] = (al[i] - h[i - 1] * z[i - 1]) / l[i]; }
+    for (let j = n - 2; j >= 0; j--) { c[j] = z[j] - mu[j] * c[j + 1]; b[j] = (y[j + 1] - y[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3; d[j] = (c[j + 1] - c[j]) / (3 * h[j]); }
+    let i = 0;
+    return t => { if (t < x[i]) i = 0; while (i < n - 2 && t >= x[i + 1]) i++; const dx = t - x[i]; return y[i] + b[i] * dx + c[i] * dx * dx + d[i] * dx * dx * dx; };
+  }
+  function fft(re, im) {
+    const n = re.length;
+    for (let i = 1, j = 0; i < n; i++) { let bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; } }
+    for (let len = 2; len <= n; len <<= 1) {
+      const ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+      for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let k = 0; k < len / 2; k++) {
+        const a = i + k, b = a + len / 2, tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr; } }
+    }
+  }
+  // Domínio da frequência (só para 5 min): tacograma reamostrado a 4 Hz por spline cúbica natural, método de Welch (segmentos de
+  // 128 s, 50% de sobreposição, janela de Hann, tendência linear removida por segmento). LF 0,04-0,15 Hz e HF 0,15-0,40 Hz em ms².
+  function vfcFreq(c) {
+    const n = c.length; if (n < 10) return null;
+    const t = new Array(n); let acc = 0; for (let i = 0; i < n; i++) { acc += c[i] / 1000; t[i] = acc; }
+    const N = Math.floor((t[n - 1] - t[0]) * VFC.FS) + 1, S = VFC.SEG; if (N < S) return null;
+    const sp = naturalSpline(t, c), x = new Float64Array(N); for (let k = 0; k < N; k++) x[k] = sp(t[0] + k / VFC.FS);
+    const hann = new Float64Array(S); let w2 = 0; for (let i = 0; i < S; i++) { hann[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / S)); w2 += hann[i] * hann[i]; }
+    const psd = new Float64Array(S / 2 + 1); let segs = 0;
+    for (let s0 = 0; s0 + S <= N; s0 += S / 2) {
+      let sx = 0, sy = 0, sxx = 0, sxy = 0; for (let i = 0; i < S; i++) { sx += i; sy += x[s0 + i]; sxx += i * i; sxy += i * x[s0 + i]; }
+      const sl = (S * sxy - sx * sy) / (S * sxx - sx * sx), ic = (sy - sl * sx) / S, re = new Float64Array(S), im = new Float64Array(S);
+      for (let i = 0; i < S; i++) re[i] = (x[s0 + i] - (ic + sl * i)) * hann[i];
+      fft(re, im);
+      for (let k = 0; k <= S / 2; k++) psd[k] += (re[k] * re[k] + im[k] * im[k]) / (VFC.FS * w2) * (k > 0 && k < S / 2 ? 2 : 1);
+      segs++;
+    }
+    const df = VFC.FS / S; let lf = 0, hf = 0;
+    for (let k = 0; k <= S / 2; k++) { const f = k * df, p = psd[k] / segs * df; if (f >= 0.04 && f < 0.15) lf += p; else if (f >= 0.15 && f < 0.40) hf += p; }
+    const tot = lf + hf;
+    return { lf, hf, lfhf: hf > 0 ? lf / hf : null, lfNu: tot > 0 ? 100 * lf / tot : null, hfNu: tot > 0 ? 100 * hf / tot : null, segments: segs };
+  }
+  // Perda de dados na coleta pelo pacote BLE de FC: o relógio avança entre o 1º e o último pacote, e os RR dos pacotes seguintes devem
+  // somar o mesmo tempo (a diferença fica dentro de ~1 intervalo RR por causa do batimento parcial). O que passar disso, descontado o
+  // tempo sem contato já contado à parte, é perda de pacotes.
+  function vfcLossMs(firstT, lastT, rrSumAfterFirst, noContactMs, meanRR) {
+    if (!(lastT > firstT)) return 0;
+    return Math.max(0, (lastT - firstT) - rrSumAfterFirst - (noContactMs || 0) - ((meanRR || 900) + 300));
+  }
+  // Análise completa de uma leitura. rr: intervalos RR (ms) do trecho gravado. loss: { lossMs, noContactMs, durMs } medidos na coleta.
+  function vfcAnalyze(rr, mode, loss = {}) {
+    const cfg = VFC.MODES[mode]; if (!cfg) throw new Error('modo de VFC inválido');
+    const cl = vfcClean(rr), reasons = []; let valid = true;
+    if (rr.length < cfg.minBeats) { valid = false; reasons.push('poucos batimentos registrados (' + rr.length + '; mínimo ' + cfg.minBeats + ')'); }
+    if (cl.pct > VFC.MAX_ART) { valid = false; reasons.push(Math.round(cl.pct * 1000) / 10 + '% dos batimentos precisaram de correção (artefatos ou ectópicos), acima do limite de ' + VFC.MAX_ART * 100 + '%'); }
+    const durMs = loss.durMs || cfg.sec * 1000, lossFrac = ((loss.lossMs || 0) + (loss.noContactMs || 0)) / durMs;
+    if (lossFrac > VFC.LOSS_MAX) { valid = false; reasons.push('perda de dados ou de contato do monitor em ' + Math.round(lossFrac * 100) + '% da coleta (limite de ' + VFC.LOSS_MAX * 100 + '%)'); }
+    const time = valid ? vfcTime(cl.cleaned) : null; let freq = null;
+    if (valid && cfg.freq) { freq = vfcFreq(cl.cleaned); if (!freq) { valid = false; reasons.push('registro curto demais para a análise de frequência'); } }
+    return { valid, reasons, mode, nBeats: rr.length, artifactsPct: cl.pct, artifacts: cl.artifacts, cleaned: cl.cleaned, flags: cl.flags, time: valid ? time : null, freq: valid ? freq : null, lossFrac };
+  }
+
+  // ---- Laudo da leitura de VFC (HTML imprimível) ----
+  const POSTURE_TXT = { supino: 'Decúbito dorsal', sentado: 'Sentado em repouso' };
+  function rrChartSvg(raw, flags, cleaned) {
+    const W = 600, H = 150, n = cleaned.length; if (n < 2) return '';
+    const lo = Math.min(...cleaned) - 40, hi = Math.max(...cleaned) + 40, X = i => 30 + i / (n - 1) * (W - 40), Y = v => H - 18 - (v - lo) / (hi - lo) * (H - 30);
+    let s = '<svg class="rrc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Tacograma dos intervalos RR">';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fafafa" stroke="#ddd"/>';
+    s += '<text x="4" y="12" font-size="10" fill="#666">' + Math.round(hi) + ' ms</text><text x="4" y="' + (H - 20) + '" font-size="10" fill="#666">' + Math.round(lo) + ' ms</text>';
+    s += '<polyline fill="none" stroke="#0f766e" stroke-width="1.5" points="' + cleaned.map((v, i) => X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ') + '"/>';
+    flags.forEach((f, i) => { if (f) s += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(cleaned[i]).toFixed(1) + '" r="3" fill="none" stroke="#b91c1c" stroke-width="1.3"/>'; });
+    return s + '<text x="30" y="' + (H - 4) + '" font-size="10" fill="#666">batimentos (círculos vermelhos: corrigidos por interpolação cúbica)</text></svg>';
+  }
+  // x: { label, startedAt, mode, posture, breathing ('espontanea'|'cadenciada'), paceRpm, stabSec, valid, reasons, nBeats, artifactsPct, time, freq, raw, flags, cleaned }
+  function vfcReportHtml(x) {
+    const row = (k, v) => '<tr><th>' + esc(k) + '</th><td>' + v + '</td></tr>', cfg = VFC.MODES[x.mode] || VFC.MODES.ultra;
+    let o = '<div class="vfcdoc"><h2>Pulsys · Leitura de VFC</h2><table>';
+    o += row('Identificação', esc(x.label) || '—');
+    o += row('Data e hora', x.startedAt ? esc(new Date(x.startedAt).toLocaleString('pt-BR')) : '—');
+    o += row('Modo', esc(cfg.nome));
+    o += row('Postura', esc(POSTURE_TXT[x.posture] || '—'));
+    o += row('Respiração', x.breathing === 'cadenciada' ? 'cadenciada, ' + nf(x.paceRpm, 1).replace('.', ',') + ' respirações/min (' + nf(x.paceRpm / 60, 2).replace('.', ',') + ' Hz)' : 'espontânea');
+    o += row('Estabilização antes da gravação', nf((x.stabSec || 0) / 60, 1).replace('.', ',') + ' min');
+    o += row('Resultado', x.valid ? 'leitura válida' : '<b>LEITURA INVALIDADA: repetir a medição</b>');
+    if (x.valid) {
+      const t = x.time, f = x.freq;
+      o += row('RMSSD', nf(t.rmssd, 1) + ' ms');
+      o += row('LnRMSSD', nf(t.lnRmssd, 2));
+      o += row('SDNN', nf(t.sdnn, 1) + ' ms');
+      if (f) { o += row('pNN50', nf(t.pnn50, 1) + ' %');
+        o += row('LF', nf(f.lf, 0) + ' ms² (' + nf(f.lfNu, 0) + ' n.u.)'); o += row('HF', nf(f.hf, 0) + ' ms² (' + nf(f.hfNu, 0) + ' n.u.)'); o += row('LF/HF', f.lfhf === null ? '—' : nf(f.lfhf, 2)); }
+      o += row('FC média', nf(t.hr, 0) + ' bpm');
+    } else o += row('Motivo', (x.reasons || []).map(esc).join('<br>') || '—');
+    o += row('Batimentos e correção', nf(x.nBeats) + ' batimentos; ' + nf((x.artifactsPct || 0) * 100, 1) + '% corrigidos por interpolação cúbica (limite de 5%)');
+    o += '</table>';
+    if (x.cleaned && x.cleaned.length > 1) o += '<h3>Tacograma</h3>' + rrChartSvg(x.raw || x.cleaned, x.flags || [], x.cleaned);
+    o += '<p class="m">' + (x.mode === 'ultra' ? 'Modo ultra-curto: só RMSSD, LnRMSSD e SDNN são válidos; as métricas de frequência (LF/HF) não são confiáveis em 1 minuto.' : 'Modo padrão de 5 minutos: métricas do domínio do tempo e da frequência (LF 0,04-0,15 Hz e HF 0,15-0,40 Hz).') + '</p>';
+    if (x.breathing === 'cadenciada' && x.paceRpm < 9) o += '<p class="m">Com respiração cadenciada abaixo de 9 por minuto (0,15 Hz), a potência respiratória cai na banda LF: não compare LF e HF com leituras em respiração espontânea.</p>';
+    o += '<p class="m"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura e depende de horário, postura, respiração, sono, cafeína, medicamentos, idade e condição física. O app não classifica os valores como normais ou alterados, não define limiares e não é diagnóstico. Compare apenas leituras feitas no mesmo horário, na mesma postura e no mesmo modo. Os critérios de validade não foram validados clinicamente.</p></div>';
+    return o;
+  }
+
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -956,6 +1164,7 @@ function resetCard(c){c.mn=null;c.mx=null;c.sum=0;c.cnt=0;c.inv=0;c.log=[];c.t0=
 function onHr(c,dv){
   let m;try{m=HR.parseHrm(new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength))}catch(_){c.bad++;return}
   const t=Date.now(),ok=HR.isValidSample(m);c.pk++;c.t=t;c.contact=m.contact;
+  if(vf.c===c&&(vf.step===2||vf.step===3))vfFeed(m,t,ok);   // leitura de VFC em andamento neste monitor (usa os RR do pacote de FC)
   // Antes de "Iniciar" (sessão) a FC aparece em tempo real, mas nada é registrado: log, estatísticas e início da sessão só contam depois.
   const rec=collecting(c);
   if(rec)c.log.push([t,c.lab.value,c.id,m.bpm,m.contact,ok?1:0,m.rr.map(v=>v.toFixed(1)).join(' ')]);
@@ -1079,11 +1288,13 @@ async function renderHist(){
   if(!all.length){box.textContent='Nenhuma sessão salva.';return}
   all.sort((a,b)=>b.id-a.id).forEach(s=>{
     const r=document.createElement('div');r.className='r';
-    const isE=s.kind==='ecg';   // exame de ECG de repouso (guardado com o traçado filtrado) ou sessão de exercício
-    const t=document.createElement('span');t.textContent=new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(isE?'ECG de repouso · ':'')+(s.label||'sem identificação')+' · '+(isE?Math.round(s.durSec)+' s':(s.startedAt?dur(s.endedAt-s.startedAt):'—'))+' · FC média '+(s.meanBpm==null?'—':Math.round(s.meanBpm))+(isE&&!s.valid?' · inconclusivo':'');r.appendChild(t);
+    const isE=s.kind==='ecg',isV=s.kind==='vfc';   // exame de ECG de repouso, leitura de VFC ou sessão de exercício
+    const t=document.createElement('span');
+    t.textContent=isV?new Date(s.endedAt).toLocaleString('pt-BR')+' · Leitura de VFC · '+(s.label||'sem identificação')+' · '+(HR.VFC.MODES[s.mode]?HR.VFC.MODES[s.mode].nome:'')+(s.valid?' · RMSSD '+(s.rmssd==null?'—':s.rmssd.toFixed(1)+' ms'):' · invalidada'):
+      new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(isE?'ECG de repouso · ':'')+(s.label||'sem identificação')+' · '+(isE?Math.round(s.durSec)+' s':(s.startedAt?dur(s.endedAt-s.startedAt):'—'))+' · FC média '+(s.meanBpm==null?'—':Math.round(s.meanBpm))+(isE&&!s.valid?' · inconclusivo':'');r.appendChild(t);
     const b=(txt,fn)=>{const x=document.createElement('button');x.textContent=txt;x.onclick=fn;r.appendChild(x)};
-    b('Relatório',()=>isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
-    if(!isE)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
+    b('Relatório',()=>isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
+    if(!isE&&!isV)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
     b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
     box.appendChild(r)});
 }
@@ -1129,7 +1340,7 @@ document.addEventListener('click',ev=>{if(ev.target===document.body&&document.bo
 // Telas (menu inferior): home, agora, novo (+), sessao e proto (escolhidas no +), hist e ajustes.
 // As cintas continuam conectadas ao trocar de tela; só muda o que aparece.
 let view='home';
-const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',ecgr:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
+const TAB={home:'home',agora:'agora',novo:'novo',sessao:'novo',proto:'novo',ecgr:'novo',vfc:'novo',hist:'hist',ajustes:'ajustes'};   // aba destacada em cada tela
 const SUB={sessao:'Sessão de exercício',proto:'Protocolo progressivo'};
 // Aba destacada: com uma sessão em andamento, a tela da sessão pertence a "Agora".
 function markTab(){
@@ -1142,7 +1353,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='ecgr')exShow();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -1369,6 +1580,124 @@ $('ex-sv').onclick=async()=>{
   const x=ex.result;if(!x||x.aborted||ex.saved)return;
   try{await tx('readwrite',s=>s.add({kind:'ecg',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,meanBpm:x.hrMean,durSec:x.durSec,valid:x.valid,exam:x}));ex.saved=true;exResult();msg('Exame salvo no Histórico deste aparelho.')}
   catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Gere o PDF antes de sair.')}
+};
+// ===================== Leitura de VFC: repouso padronizado em 4 etapas =====================
+// 1 padronização e dados · 2 estabilização (1 a 3 min) · 3 gravação (60 s ou 5 min) · 4 resultado, relatório e histórico.
+// Usa os intervalos RR do pacote padrão de FC (0x2A37, resolução de 1/1024 s); não precisa do ECG. Descreve a resposta autonômica;
+// não classifica valores nem define limiares. Critérios do roteiro do usuário, sem validação clínica.
+const vfNew=()=>({step:1,c:null,label:'',mode:'ultra',posture:'supino',breathing:'espontanea',pace:6,stabSec:60,t2:0,breathT0:0,rr:[],rrSum:0,firstT:0,lastRecT:0,rrSumAfterFirst:0,noContactMs:0,lastT:0,lastData:0,result:null,saved:false,loaded:false});
+let vf=vfNew();
+const vfLive=c=>c.state==='conectado'&&c.t&&(Date.now()-c.t)/1000<=5;
+// Recebe cada pacote de FC do monitor da leitura. Na gravação guarda os RR e mede a perda de contato; a perda de pacotes sai do relógio.
+function vfFeed(m,t,ok){
+  const dt=vf.lastT?t-vf.lastT:0;vf.lastT=t;vf.lastData=t;
+  if(vf.step!==3)return;
+  if(!ok){vf.noContactMs+=dt;return}   // FC 0 ou sem contato não é dado fisiológico
+  if(!vf.firstT)vf.firstT=t;else vf.rrSumAfterFirst+=m.rr.reduce((a,b)=>a+b,0);
+  for(const v of m.rr){vf.rr.push(v);vf.rrSum+=v}
+  vf.lastRecT=t;
+}
+function vfReset(){vf=vfNew();vfShow()}
+function vfPrefs(){try{return JSON.parse(store.get('pulsys.vfc')||'{}')}catch(_){return{}}}
+function vfFillDevs(){
+  const sel=$('vf-dev'),list=[...cards.values()],ids=list.map(c=>c.id).join('|'),txt=c=>(c.lab.value||'Monitor #'+c.n)+' · '+(c.dev.name||'monitor')+(vfLive(c)?'':' (sem dados)')+(c.rrSeen?'':' (sem RR)');
+  if(sel.dataset.ids!==ids){const prev=sel.value;sel.textContent='';list.forEach(c=>{const o=document.createElement('option');o.value=c.id;sel.appendChild(o)});sel.dataset.ids=ids;if(prev&&cards.has(prev))sel.value=prev}
+  [...sel.options].forEach(o=>{const c=cards.get(o.value);if(c)o.textContent=txt(c)});
+}
+function vfCheck(){
+  $('vf-pacel').hidden=$('vf-br').value!=='cadenciada';
+  const ok=$('vf-ok').checked,c=cards.get($('vf-dev').value),live=!!c&&vfLive(c),rr=!!c&&c.rrSeen;
+  $('vf-go').disabled=!(ok&&live&&rr);
+  $('vf-hint').textContent=!ok?'Confirme as condições da coleta para continuar.':!c?'Selecione um monitor.':!live?'Aguardando dados do monitor selecionado…':!rr?'Este monitor ainda não enviou intervalos RR: a VFC não pode ser medida com ele.':'Tudo pronto.';
+}
+function vfShow(){
+  const have=cards.size>0;
+  $('vf-none').hidden=have||vf.step!==1;$('vf-1').hidden=!(have&&vf.step===1);
+  for(const k of [2,3,4])$('vf-'+k).hidden=vf.step!==k;
+  $('vf-stp').textContent='Etapa '+vf.step+' de 4';
+  if(vf.step===1){
+    if(!vf.loaded){vf.loaded=true;const p=vfPrefs();   // mantém a mesma postura/modo/respiração da leitura anterior (padronização)
+      if(p.mode)$('vf-mode').value=p.mode;if(p.posture)$('vf-pos').value=p.posture;if(p.breathing)$('vf-br').value=p.breathing;if(p.pace)$('vf-pace').value=String(p.pace);if(p.stab)$('vf-stab').value=String(p.stab)}
+    vfFillDevs();vfCheck();
+  }
+}
+// Animação e texto da respiração (cadenciada: círculo que cresce na inspiração e encolhe na expiração; espontânea: só o texto)
+function vfBreath(k,now){
+  const z=$('vf-bz'+k),t=$('vf-bt'+k),paced=vf.breathing==='cadenciada';
+  z.classList.toggle('pc',paced);
+  if(!paced){t.textContent='Respire naturalmente. Não fale, não engula saliva repetidamente e não se mexa.';return}
+  const per=60/vf.pace;z.style.setProperty('--bp',per+'s');
+  const ph=((now-vf.breathT0)/1000)%per;t.textContent=(ph<per/2?'Inspire':'Expire')+' · '+vf.pace+' respirações por minuto';
+}
+function vfRestartAnim(){vf.breathT0=Date.now();['2','3'].forEach(k=>{const i=document.querySelector('#vf-bz'+k+' .brc i');if(i){i.style.animation='none';void i.offsetWidth;i.style.animation=''}})}
+function vfAbort(why){
+  vf.result={valid:false,aborted:true,reasons:[why],mode:vf.mode,posture:vf.posture,breathing:vf.breathing,paceRpm:vf.pace,stabSec:vf.stabSec,label:vf.label,startedAt:vf.recT0||vf.t2,nBeats:vf.rr.length,artifactsPct:0,time:null,freq:null,raw:[],flags:[],cleaned:[]};
+  vf.step=4;vfShow();vfResult();msg(why);
+}
+function vfFinish(){
+  const raw=vf.rr.slice(),meanRR=raw.length?raw.reduce((a,b)=>a+b,0)/raw.length:900,wall=(vf.lastRecT-vf.firstT)||HR.VFC.MODES[vf.mode].sec*1000;
+  const loss=HR.vfcLossMs(vf.firstT,vf.lastRecT,vf.rrSumAfterFirst,vf.noContactMs,meanRR);
+  const a=HR.vfcAnalyze(raw,vf.mode,{lossMs:loss,noContactMs:vf.noContactMs,durMs:wall});
+  vf.result={valid:a.valid,reasons:a.reasons,mode:vf.mode,posture:vf.posture,breathing:vf.breathing,paceRpm:vf.pace,stabSec:vf.stabSec,label:vf.label,startedAt:vf.recT0,nBeats:a.nBeats,artifactsPct:a.artifactsPct,time:a.time,freq:a.freq,raw,flags:a.flags,cleaned:a.cleaned};
+  vf.step=4;vfShow();vfResult();msg('Gravação concluída.');
+}
+function vfResult(){
+  const r=vf.result,esc=HR.esc,f=(v,d=1)=>v==null||!isFinite(v)?'—':v.toFixed(d).replace('.',','),tile=(k,v,main)=>'<div class="t'+(main?' main':'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
+  let h='';
+  if(r.valid){
+    const t=r.time,q=r.freq;
+    h+='<div class="rbn ok">Leitura válida</div><div class="vfs">Principais</div><div class="vfm">'+tile('RMSSD (ms)',f(t.rmssd),1)+tile('LnRMSSD',f(t.lnRmssd,2))+tile('SDNN (ms)',f(t.sdnn))+'</div>';
+    if(q)h+='<div class="vfs">Apoio e frequência (5 min)</div><div class="vfm">'+tile('pNN50 (%)',f(t.pnn50))+tile('LF/HF',f(q.lfhf,2))+tile('LF (ms² · n.u.)',f(q.lf,0)+' · '+f(q.lfNu,0))+tile('HF (ms² · n.u.)',f(q.hf,0)+' · '+f(q.hfNu,0))+'</div>';
+    else h+='<div class="m" style="margin-top:8px">Modo ultra-curto: só RMSSD, LnRMSSD e SDNN são válidos; LF/HF não é confiável em 1 minuto.</div>';
+    h+='<div class="vfs">Qualidade</div><div class="vfm">'+tile('FC média',Math.round(t.hr)+' bpm')+tile('Batimentos',r.nBeats)+tile('Corrigidos (cúbica)',f(r.artifactsPct*100)+'%')+tile('Modo',esc(HR.VFC.MODES[r.mode].nome))+'</div>';
+  }else h+='<div class="rbn bad">'+(r.aborted?'Leitura interrompida':'Leitura invalidada: repita a medição')+'</div><ul class="rlist">'+r.reasons.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  h+='<div class="m" style="margin-top:10px">'+esc(HR.POSTURE_TXT[r.posture]||'')+' · respiração '+(r.breathing==='cadenciada'?'cadenciada a '+r.paceRpm+'/min':'espontânea')+' · estabilização de '+Math.round(r.stabSec/60)+' min</div>';
+  if(r.valid&&r.breathing==='cadenciada'&&r.paceRpm<9)h+='<div class="m" style="margin-top:6px">Respiração abaixo de 9/min cai na banda LF: não compare LF e HF com leituras em respiração espontânea.</div>';
+  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura; o app não classifica os valores como normais ou alterados nem define limiares, e não é diagnóstico. Compare apenas leituras no mesmo horário, postura e modo.</p>';
+  $('vf-res').innerHTML=h;
+  $('vf-rep').hidden=!!r.aborted;$('vf-sv').hidden=!!r.aborted;$('vf-sv').disabled=vf.saved;$('vf-sv').textContent=vf.saved?'Salvo no Histórico':'Salvar no Histórico';
+}
+function vfTick(){
+  const now=Date.now(),vis=view==='vfc';
+  if(vf.step===1){if(vis)vfShow();return}
+  if(vf.step===2){
+    if(!cards.has(vf.c.id)){vfAbort('O monitor foi removido.');return}
+    const rem=Math.max(0,vf.stabSec-(now-vf.t2)/1000),live=vfLive(vf.c),ready=rem<=0&&live&&vf.c.rrSeen;
+    if(vis){$('vf-cd').textContent=dur(rem*1000);$('vf-hr2').textContent=live&&vf.c.bpm!==null?vf.c.bpm:'—';$('vf-go2').disabled=!ready;
+      $('vf-hint2').textContent=rem>0?'Aguarde: a frequência cardíaca precisa cair e estabilizar.':ready?'Pronto para a gravação.':'Aguardando dados de RR do monitor…';vfBreath('2',now)}
+    return;
+  }
+  if(vf.step===3){
+    if(!cards.has(vf.c.id)||vf.c.state!=='conectado'){vfAbort('A conexão com o monitor foi perdida durante a gravação.');return}
+    if(now-vf.lastData>5000){vfAbort('Os dados do monitor pararam durante a gravação.');return}
+    const target=HR.VFC.MODES[vf.mode].sec*1000;if(vf.rrSum>=target){vfFinish();return}
+    if(vis){const cl=vf.rr.length>10?HR.vfcClean(vf.rr):null;
+      $('vf-pg').style.width=Math.min(100,vf.rrSum/target*100)+'%';$('vf-pt').textContent=dur(vf.rrSum)+' / '+dur(target);
+      $('vf-hr3').textContent=vfLive(vf.c)&&vf.c.bpm!==null?vf.c.bpm:'—';
+      $('vf-live').textContent=cl?'Batimentos: '+vf.rr.length+' · corrigidos: '+(cl.pct*100).toFixed(1).replace('.',',')+'%'+(cl.pct>HR.VFC.MAX_ART?' (acima de 5%: a leitura será invalidada; fique imóvel)':''):'Coletando batimentos…';
+      vfBreath('3',now)}
+  }
+}
+setInterval(vfTick,250);
+$('go-v').onclick=()=>{toggleMenu(false);setView('vfc')};
+$('go-v2').onclick=()=>setView('vfc');
+$('add6').onclick=()=>$('add').click();
+$('vf-ok').onchange=vfCheck;$('vf-dev').onchange=vfCheck;$('vf-br').onchange=vfCheck;
+$('vf-go').onclick=()=>{
+  const c=cards.get($('vf-dev').value);if(!c)return;
+  vf=Object.assign(vfNew(),{step:2,c,loaded:true,label:$('vf-id').value.trim(),mode:$('vf-mode').value,posture:$('vf-pos').value,breathing:$('vf-br').value,pace:+$('vf-pace').value,stabSec:+$('vf-stab').value,t2:Date.now(),breathT0:Date.now()});
+  store.set('pulsys.vfc',JSON.stringify({mode:vf.mode,posture:vf.posture,breathing:vf.breathing,pace:vf.pace,stab:vf.stabSec}));
+  vfShow();vfRestartAnim();
+};
+$('vf-go2').onclick=()=>{if(vf.step!==2||$('vf-go2').disabled)return;vf.step=3;vf.recT0=Date.now();vf.rr=[];vf.rrSum=0;vf.firstT=0;vf.lastRecT=0;vf.rrSumAfterFirst=0;vf.noContactMs=0;vf.lastData=Date.now();vfShow();vfRestartAnim()};
+$('vf-c2').onclick=()=>vfReset();
+$('vf-c3').onclick=()=>{if(confirm('Cancelar a leitura? A gravação feita até agora será descartada.'))vfReset()};
+$('vf-new').onclick=()=>vfReset();
+$('vf-rep').onclick=()=>{if(vf.result)openRep(HR.vfcReportHtml(vf.result),false)};
+$('vf-sv').onclick=async()=>{
+  const x=vf.result;if(!x||x.aborted||vf.saved)return;
+  try{await tx('readwrite',s=>s.add({kind:'vfc',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,mode:x.mode,valid:x.valid,rmssd:x.time?x.time.rmssd:null,meanBpm:x.time?x.time.hr:null,exam:x}));vf.saved=true;vfResult();msg('Leitura salva no Histórico deste aparelho.')}
+  catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Abra o relatório antes de sair.')}
 };
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
