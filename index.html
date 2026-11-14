@@ -890,8 +890,9 @@ $('go-p').onclick=()=>{toggleMenu(false);setView('proto')};
 $('go-s2').onclick=()=>setView('sessao');$('go-p2').onclick=()=>setView('proto');
 $('sw').onclick=()=>setView('novo');   // "‹ Modos": volta à tela "O que você quer fazer?", com a descrição de cada modo
 function applyMode(){
-  const g=view==='sessao'&&(mode==='grp'||(mode==='auto'&&cards.size>=2));if(!g)closeAllX();
-  document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<1||view!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
+  // Visão de grupo e o botão que alterna só existem com 2 ou mais cintas (com uma só, sempre a visão detalhada)
+  const g=view==='sessao'&&cards.size>=2&&mode!=='det';if(!g)closeAllX();
+  document.body.classList.toggle('grp',g);$('vm').hidden=cards.size<2||view!=='sessao';$('vm').textContent=g?'▦ Visão de grupo':'☰ Visão detalhada';
 }
 // Tela "Agora": só o básico de cada cinta conectada (identificação, estado, FC, linha do tempo, bateria e ícones de alerta),
 // sem zonas, sem protocolo e sem pré-definição de exercício ou teste.
