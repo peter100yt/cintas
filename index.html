@@ -208,12 +208,47 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 #rep table{border-collapse:collapse;width:100%}#rep th,#rep td{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;font-size:14px}#rep th{width:36%;color:var(--mut);font-weight:600}
 @media(max-width:420px){.bpm{font-size:56px}.bpmbox{min-width:92px}}
 @media print{body>*:not(#rep){display:none!important}#rep{position:static;display:block!important;color:#000;background:#fff;padding:0}#rep .doc{border:0;padding:0}#rep .np{display:none}}
+/* Home: estado dos monitores, atalhos, última atividade, dicas e aviso de uso seguro */
+.hh2{margin:18px 0 10px;font-size:20px}
+.hst-r{display:flex;align-items:center;gap:12px}.hst-i{font-size:30px;line-height:1}.hst-t{display:flex;flex-direction:column;gap:2px}.hst-t strong{font-size:17px}
+.hst-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hst-ses{display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--bad);background:var(--badbg);color:var(--fg);font-weight:600;text-align:left}.hst-ses[hidden]{display:none}.hst-ses span:nth-child(2){flex:1}
+.hst-ses .rec{width:10px;height:10px;display:inline-block}.hst-ses .rec i{display:block;width:10px;height:10px;border-radius:50%;background:var(--bad);animation:rp 1.2s infinite}@media(prefers-reduced-motion:reduce){.hst-ses .rec i{animation:none}}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:12px;max-width:760px}
+.hmb.hs{min-height:124px;padding:14px}.hmb.hs strong{font-size:17px}.hmb.hs .hi{font-size:28px}.hmb.hs .m{font-size:13px}
+.hlast{margin-top:14px}.hl-t{margin:0 0 10px;font-size:14px}
+.tipc{margin-top:14px;overflow:hidden;padding:12px 12px}.tipc .sl{font-size:13px;margin:0 0 4px}
+.tips{display:grid;overflow:hidden;min-height:37px}   /* 2 linhas de 13 px */
+.tp{grid-area:1/1;font-size:13px;line-height:18px;max-height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--mut);align-self:start}
+.hsafe{margin-top:14px}.hsafe summary{cursor:pointer;font-weight:600;min-height:32px;display:flex;align-items:center}.hsafe ul{margin:8px 0 0;padding-left:18px}.hsafe li{margin:4px 0}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
 <div id="msg" role="status"></div>
 
-<section class="view" id="v-home" aria-label="Home"></section>
+<section class="view" id="v-home" aria-label="Home">
+<div class="card2 hst" id="hm-st" aria-live="polite">
+<div class="hst-r"><span class="hst-i" id="hm-si" aria-hidden="true">📡</span><div class="hst-t"><strong id="hm-s1">Nenhum monitor conectado</strong><span class="m" id="hm-s2"></span></div></div>
+<div class="hst-b"><button class="pri chip" id="hm-conn">＋ Conectar monitor</button><button class="chip" id="hm-ag" hidden>Ver em Agora</button></div>
+<button class="hst-ses" id="hm-ses" hidden><span class="rec" aria-hidden="true"><i></i></span><span id="hm-ses-t">Sessão em andamento</span><span aria-hidden="true">›</span></button>
+</div>
+<div class="card2 tipc" id="hm-tips" role="region" aria-label="Dicas de uso"><div class="sl">Dicas</div><div class="tips" id="tp-box"></div></div>
+<h2 class="hh2">O que você quer fazer?</h2>
+<div class="hgrid">
+<button class="hmb hs" id="hm-s"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo.</span></button>
+<button class="hmb hs" id="hm-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Carga crescente, com estimativa experimental por VFC.</span></button>
+<button class="hmb hs" id="hm-v"><span class="hi">〰️</span><strong>Leitura de VFC</strong><span class="m">Repouso padronizado: 60 s ou 5 min.</span></button>
+<button class="hmb hs" id="hm-e"><span class="hi">🩺</span><strong>ECG de repouso</strong><span class="m">Triagem de ritmo em 1 derivação.</span></button>
+</div>
+<div class="card2 hlast" id="hm-last" hidden><div class="sl">Última atividade salva</div><div id="hm-lt" class="hl-t"></div><button class="chip" id="hm-lh">Abrir no Histórico</button></div>
+<details class="card2 hsafe" id="hm-safe"><summary>Antes de começar: uso seguro</summary>
+<ul class="m">
+<li>O Pulsys é ferramenta de apoio. Não substitui avaliação clínica, ECG de 12 derivações, supervisão profissional nem protocolos de emergência.</li>
+<li>A ausência de alerta não significa que o paciente está bem.</li>
+<li>Zonas e limites vêm do profissional: o app não usa valores padrão. Estimativas por VFC são experimentais e não são limiares ventilatórios medidos.</li>
+</ul></details>
+<p class="m foot">Pulsys · versão de teste · os dados ficam só neste aparelho.</p>
+</section>
 
 <section class="view" id="v-agora" aria-label="Agora">
 <div class="vh"><h2>Agora</h2><button class="chip" id="add3" hidden>＋ Adicionar monitor</button></div>
@@ -1353,7 +1388,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -1699,6 +1734,75 @@ $('vf-sv').onclick=async()=>{
   try{await tx('readwrite',s=>s.add({kind:'vfc',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,mode:x.mode,valid:x.valid,rmssd:x.time?x.time.rmssd:null,meanBpm:x.time?x.time.hr:null,exam:x}));vf.saved=true;vfResult();msg('Leitura salva no Histórico deste aparelho.')}
   catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Abra o relatório antes de sair.')}
 };
+// ===== Home =====
+// Sem dados de paciente na Home: só contagens, atalhos, tipo/data da última atividade salva (sem identificação) e dicas.
+const TIPS=[
+  'Umedeça os eletrodos da cinta antes de colocar: o sinal fica mais estável.',
+  'Desconecte o monitor de relógios e de outros aplicativos antes de parear.',
+  'Para comparar leituras de VFC, meça sempre no mesmo horário e na mesma postura.',
+  'Movimento e contato ruim geram artefatos nos intervalos RR e podem invalidar uma leitura de VFC.',
+  'Informe o VT1 e o VT2 do paciente para ver as zonas. O app não usa zonas padrão.',
+  'Com 2 ou mais monitores, use a visão de grupo e toque em ⤢ para ver os detalhes.',
+  'O ECG ao vivo usa mais Bluetooth e bateria: use em um monitor por vez.',
+  'Salve a sessão no Histórico antes de sair: os dados ficam só neste aparelho.',
+  'Mantenha o Bluefy aberto e a tela ligada durante a sessão, ou a conexão pode cair.',
+  'Troque a bateria do monitor antes da sessão se o app avisar bateria baixa.',
+  'A ausência de alerta não significa paciente seguro. Mantenha sempre a supervisão.',
+  'Em Ajustes você pode escolher o tema claro, escuro ou automático.'
+];
+const tp={i:0,t:Date.now(),box:null};
+function tipEl(i){const d=document.createElement('div');d.className='tp';d.textContent=TIPS[i];return d}
+function showTip(n,dir){
+  n=(n+TIPS.length)%TIPS.length;if(n===tp.i&&tp.box.firstChild)return;
+  while(tp.box.childNodes.length>1)tp.box.removeChild(tp.box.firstChild);   // sobras de uma troca anterior
+  const old=tp.box.firstChild,nw=tipEl(n);tp.i=n;tp.t=Date.now();
+  tp.box.appendChild(nw);
+  const calm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(old){
+    if(calm||!nw.animate){old.remove();return}
+    const s=dir||1,o=old.animate([{transform:'translateX(0)',opacity:1},{transform:'translateX('+(-s*100)+'%)',opacity:0}],{duration:420,easing:'ease'});
+    nw.animate([{transform:'translateX('+(s*100)+'%)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:420,easing:'ease'});
+    o.onfinish=o.oncancel=()=>old.remove();setTimeout(()=>old.remove(),700);   // não depende só do fim da animação
+  }
+}
+function initTips(){
+  tp.box=$('tp-box');   // só troca sozinha: sem pontos, toque ou deslizar
+  tp.i=Math.floor(Math.random()*TIPS.length);tp.box.appendChild(tipEl(tp.i));
+}
+function tipTick(){if(view!=='home'||document.hidden)return;if(Date.now()-tp.t>=7000)showTip(tp.i+1,1)}
+let homeLastAt=0;
+async function homeLast(){
+  homeLastAt=Date.now();const box=$('hm-last');
+  try{
+    const cur=await tx('readonly',s=>s.openCursor(null,'prev'));
+    const s=cur&&cur.value;if(!s){box.hidden=true;return}
+    const quando=new Date(s.endedAt).toLocaleString('pt-BR');
+    let tipo,det='';
+    if(s.kind==='ecg'){tipo='ECG de repouso';det=' · '+Math.round(s.durSec)+' s'+(s.valid?'':' · inconclusivo')}
+    else if(s.kind==='vfc'){tipo='Leitura de VFC';det=(HR.VFC.MODES[s.mode]?' · '+HR.VFC.MODES[s.mode].nome:'')+(s.valid?'':' · invalidada')}
+    else{tipo='Sessão de exercício';det=s.startedAt?' · '+dur(s.endedAt-s.startedAt):''}
+    $('hm-lt').textContent=tipo+' · '+quando+det;box.hidden=false;
+  }catch(_){box.hidden=true}   // sem IndexedDB: simplesmente não aparece
+}
+function renderHome(){
+  if(view!=='home')return;
+  const n=cards.size,nb=!!navigator.bluetooth;
+  $('hm-si').textContent=nb?'📡':'⚠️';
+  if(!nb){$('hm-s1').textContent='Sem Web Bluetooth neste navegador';$('hm-s2').textContent='No iPhone/iPad, abra o Pulsys no Bluefy para conectar monitores.'}
+  else if(!n){$('hm-s1').textContent='Nenhum monitor conectado';$('hm-s2').textContent='Conecte um monitor para começar.'}
+  else{const al=[...cards.values()].filter(c=>(c.al||[]).length>0).length;
+    $('hm-s1').textContent=n+(n===1?' monitor conectado':' monitores conectados');
+    $('hm-s2').textContent=al?al+(al===1?' com alerta ativo':' com alertas ativos')+' · veja em Agora':'Nenhum alerta ativo agora (isso não garante que o paciente está bem).'}
+  $('hm-conn').textContent=n?'＋ Adicionar monitor':'＋ Conectar monitor';
+  $('hm-ag').hidden=n===0;
+  $('hm-ses').hidden=!sess.on;if(sess.on)$('hm-ses-t').textContent='Sessão em andamento · '+dur(Date.now()-sess.t0);
+  if(Date.now()-homeLastAt>30000)homeLast();
+}
+$('hm-conn').onclick=()=>$('add').click();$('hm-ag').onclick=()=>setView('agora');$('hm-ses').onclick=()=>setView('sessao');
+$('hm-s').onclick=()=>$('go-s2').click();$('hm-p').onclick=()=>$('go-p2').click();$('hm-v').onclick=()=>$('go-v2').click();$('hm-e').onclick=()=>$('go-e2').click();
+$('hm-lh').onclick=()=>setView('hist');
+initTips();
+setInterval(()=>{tipTick()},1000);
 setInterval(()=>{
   const now=Date.now();$('empty').hidden=cards.size>0;
   // "Adicionar cinta" do topo só depois da primeira cinta (antes, o botão do meio já cobre); exportar/copiar CSV só com dados de sessão
@@ -1706,7 +1810,7 @@ setInterval(()=>{
   renderSess();markTab();
   $('add').hidden=cards.size===0;const temDados=[...cards.values()].some(c=>c.cnt>0);$('exp').hidden=$('cp').hidden=!temDados;
   cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
-  applyMode();cards.forEach(draw);renderAgora();
+  applyMode();cards.forEach(draw);renderAgora();renderHome();
 },1000);
 setView('home');
 </script></body></html>
