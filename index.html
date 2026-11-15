@@ -237,7 +237,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .csph{text-align:center;font-weight:800;font-size:20px;min-height:28px}
 .cscrit{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.cscrit .tx{flex:1;min-width:0}.cscrit .go{min-height:36px;font-size:13px;padding:0 10px}.cscrit .ib{margin:0}
 .csal{padding:10px 12px;border-radius:12px;margin:8px 0;font-weight:700;font-size:14px}.csal.bad{background:var(--badbg);color:var(--bad)}.csal.warn{background:var(--warnbg);color:var(--warn)}
-.borg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:6px 0}.borg button{min-height:44px;padding:0}.borg button.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.borg{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin:6px 0}.borg button{min-height:44px;min-width:0;padding:0;font-size:15px;border-radius:8px}.borg button.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .cspend{border:1px solid var(--warn);border-radius:12px;padding:12px;margin:10px 0;background:var(--warnbg)}.cspend .f input{max-width:140px}
 #cs-res .t.main .v{font-size:26px}
 @media(prefers-reduced-motion:reduce){.cspulse i{transform:none!important}}
@@ -275,11 +275,13 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 .bpm::before,.vfhr span::before{content:"";display:inline-block;width:.3em;height:.3em;margin-right:.12em;vertical-align:.3em;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e11d48' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
 /* menu de parar (sobe acima do botão, como o menu do "+") */
 .spscrim{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.38);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}.spscrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
-.spm{position:fixed;right:16px;bottom:calc(166px + env(safe-area-inset-bottom));z-index:49;width:min(88vw,330px);max-height:calc(100vh - 230px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.spi{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.28);padding-right:10px;opacity:0;visibility:hidden;transform:translateY(16px) scale(.96);transition:opacity .15s ease,transform .2s ease,visibility 0s linear .2s}
-.spm.open{pointer-events:auto}.spm.open .spi{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease,transform .32s cubic-bezier(.2,.9,.3,1.25)}
-.spk{flex:1;text-align:left;border:0;background:transparent;min-height:50px;padding:8px 6px 8px 14px;font-size:15px;font-weight:600;line-height:1.25}
+.spm{position:fixed;right:16px;bottom:96px;z-index:49;width:58px;height:58px;pointer-events:none}   /* caixa do tamanho do botão: as opções ficam ao redor dele */
+.spi{position:absolute;display:flex;align-items:center;gap:4px;box-sizing:border-box;background:var(--sf);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.28);padding-right:8px;opacity:0;visibility:hidden;transform:translate(var(--fx,0),var(--fy,0)) scale(.4);transition:opacity .15s ease,transform .2s ease,visibility 0s linear .2s}
+.spm.open .spi{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:opacity .2s ease,transform .34s cubic-bezier(.2,.9,.3,1.2)}
+.spk{flex:1;min-width:0;text-align:left;border:0;background:transparent;height:100%;min-height:0;padding:0 4px 0 12px;font-size:13px;font-weight:600;line-height:1.2}
+.spi.sub .spk{font-size:12px}
 .spi.hit{border-color:var(--bad)}.spi.hit .spk{color:var(--bad)}.spi.mais .spk{color:var(--mut)}
+.csfab svg{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;display:block}   /* centro exato, sem depender de flex */
 .csfab .x{display:none}.csfab.on .x{display:block}.csfab.on .sq{display:none}
 @media(prefers-reduced-motion:reduce){.spscrim,.spi{transition:none!important}}
 </style></head><body data-view="home">
@@ -291,7 +293,6 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 <div class="card2 hst" id="hm-st" aria-live="polite">
 <div class="hst-r"><span class="hst-i" id="hm-si" aria-hidden="true">📡</span><div class="hst-t"><strong id="hm-s1">Nenhum monitor conectado</strong><span class="m" id="hm-s2"></span></div></div>
 <div class="hst-b"><button class="pri chip" id="hm-conn">＋ Conectar monitor</button><button class="chip" id="hm-ag" hidden>Ver em Agora</button></div>
-<button class="hst-ses" id="hm-ses" hidden><span class="rec" aria-hidden="true"><i></i></span><span id="hm-ses-t">Sessão em andamento</span><span aria-hidden="true">›</span></button>
 </div>
 <div class="card2 tipc" id="hm-tips" role="region" aria-label="Dicas de uso"><div class="sl">Dicas</div><div class="tips" id="tp-box"></div></div>
 <h2 class="hh2">O que você quer fazer?</h2>
@@ -538,6 +539,7 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 </nav>
 <div id="endd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="endt"><div class="dbox"><h3 id="endt">Encerrar a sessão?</h3><p class="m">Você pode salvar a sessão no Histórico deste aparelho antes de encerrar. Se encerrar sem salvar, as leituras desta sessão serão descartadas e não dá para recuperá-las.</p><div class="dacts"><button class="pri" id="e-save">Salvar e encerrar</button><button class="danger" id="e-no">Encerrar sem salvar</button><button id="e-cancel">Continuar sessão</button></div></div></div>
 <div id="chd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cht" aria-describedby="chp"><div class="dbox"><h3 id="cht"></h3><p class="m" id="chp"></p><div class="dacts"><button class="pri" id="ch-back"></button><button class="danger" id="ch-go">Mudar e descartar os dados</button></div></div></div>
+<div id="cfd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cf-t" aria-describedby="cf-p" style="z-index:70"><div class="dbox"><h3 id="cf-t">Confirmar</h3><p class="m" id="cf-p"></p><div class="dacts"><button class="danger" id="cf-ok"></button><button class="pri" id="cf-no"></button></div></div></div>
 <div id="prd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="prt" aria-describedby="prp"><div class="dbox"><h3 id="prt">Estimativa experimental</h3><p class="m" id="prp">Neste modo, os limiares são apenas ESTIMADOS a partir da variabilidade da frequência cardíaca (DFA-α1). Trata-se de um recurso experimental, ainda sem validação clínica: o resultado pode estar errado ou não aparecer e não equivale a um limiar ventilatório medido em teste cardiopulmonar. O VO2máx do Chester Step Test também é apenas uma estimativa submáxima, não uma medida direta. Não use esses valores sozinhos para prescrever intensidade nem para decidir a segurança do paciente.</p><div class="dacts"><button class="pri" id="pr-ok">Ok, entendi</button><button id="pr-no">Cancelar</button></div></div></div>
 <div id="scrim"></div>
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
@@ -1351,6 +1353,12 @@ const msg=t=>{const e=$('msg');clearTimeout(msgT);if(!t){e.classList.remove('sho
 $('msg').onclick=()=>{clearTimeout(msgT);$('msg').classList.remove('show')};
 const f1=v=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(1);
 const dur=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+// Confirmação dentro do app (não usa confirm() do navegador: no iPhone ele interrompe o áudio e o metrônomo para de tocar).
+let cfRes=null;
+function askConfirm(text,okLabel,noLabel){return new Promise(res=>{if(cfRes)cfRes(false);cfRes=res;$('cf-p').textContent=text;$('cf-ok').textContent=okLabel||'Confirmar';$('cf-no').textContent=noLabel||'Cancelar';$('cfd').hidden=false;$('cf-no').focus()})}
+function cfDone(v){$('cfd').hidden=true;const r=cfRes;cfRes=null;if(r)r(v)}
+$('cf-ok').onclick=()=>cfDone(true);$('cf-no').onclick=()=>cfDone(false);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('cfd').hidden)cfDone(false)});
 function mk(dev){
   const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,srv:null,ecg:{on:false,starting:false,buf:new Float32Array(780),n:0,msg:'',data:null,ctrl:null,onData:null,onCtrl:null,stamps:[],dirty:false},proto:null,auto:{pts:[],locks:null,st:null},outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
@@ -1369,7 +1377,7 @@ function mk(dev){
   c.lab.addEventListener('input',()=>{c.auto={pts:[],locks:null,st:null}});
   c.q('dev').textContent=(dev.name||'monitor')+' · #'+c.n;
   c.q('eb').onclick=()=>{if(c.ecg.on||c.ecg.starting)ecgOff(c,'Desligado.');else startEcg(c)};
-  c.q('rm').onclick=()=>{if(c.cnt&&!confirm('Remover este monitor? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
+  c.q('rm').onclick=async()=>{if(c.cnt&&!await askConfirm('Remover este monitor? As leituras desta sessão que não foram salvas ou exportadas serão perdidas.','Remover','Cancelar'))return;stopEcg(c);if(e.classList.contains('x'))toggleX(c);c.removed=true;clearTimeout(c.timer);try{dev.gatt.disconnect()}catch(_){}cards.delete(c.id);e.remove()};
   c.q('pr').onclick=()=>{
     if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=Date.now();draw(c);return}
     if(!c.rrSeen){msg('Este monitor não envia RR: protocolo de VFC indisponível.');return}
@@ -1641,11 +1649,11 @@ async function renderHist(){
     const item=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.setAttribute('role','menuitem');x.textContent=txt;if(cls)x.className=cls;x.onclick=()=>{closeHM();fn()};kl.appendChild(x)};
     item('Relatório',()=>isC?openRep(HR.cstReportHtml(s.exam),false):isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
     if(!isE&&!isV&&!isC)item('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
-    item('Apagar',async()=>{if(!confirm('Apagar este registro deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()},'danger');
+    item('Apagar',async()=>{if(!await askConfirm('Apagar este registro deste aparelho? Não dá para desfazer.','Apagar','Cancelar'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()},'danger');
     kb.onclick=e=>{e.stopPropagation();const abrir=kl.hidden;closeHM();if(abrir){kl.hidden=false;kb.setAttribute('aria-expanded','true');hmenu=kl}};
     box.appendChild(r)});
 }
-$('hx').onclick=async()=>{if(!confirm('Apagar TODO o histórico deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',s=>s.clear());msg('Histórico apagado.')}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()};
+$('hx').onclick=async()=>{if(!await askConfirm('Apagar TODO o histórico deste aparelho? Não dá para desfazer.','Apagar tudo','Cancelar'))return;try{await tx('readwrite',s=>s.clear());msg('Histórico apagado.')}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()};
 // Relatório em tela cheia (sessão: retrato; laudo de ECG: paisagem, para caber a tira de 10 s a 25 mm/s)
 function setLand(on){let st=$('pgl');if(on&&!st){st=document.createElement('style');st.id='pgl';st.textContent='@media print{@page{size:A4 landscape;margin:8mm}}';document.head.appendChild(st)}else if(!on&&st)st.remove()}
 function openRep(html,land){$('rb').innerHTML=html;$('rep').style.display='block';setLand(!!land)}
@@ -1958,7 +1966,7 @@ $('ex-symc').onclick=ev=>{
   msg('Sintoma marcado aos '+dur(ex.rec.length/EXS*1000)+': '+EXMARK[b.dataset.sym]+'.');
 };
 $('ex-c2').onclick=()=>exReset();
-$('ex-c3').onclick=()=>{if(confirm('Cancelar o exame? A gravação feita até agora será descartada.'))exReset()};
+$('ex-c3').onclick=async()=>{if(await askConfirm('Cancelar o exame? A gravação feita até agora será descartada.','Cancelar exame','Continuar exame'))exReset()};
 $('ex-new').onclick=()=>exReset();
 $('ex-pdf').onclick=()=>{if(ex.result)openRep(HR.ecgReportHtml(ex.result),true)};
 $('ex-sv').onclick=async()=>{
@@ -2076,7 +2084,7 @@ $('vf-go').onclick=()=>{
 };
 $('vf-go2').onclick=()=>{if(vf.step!==2||$('vf-go2').disabled)return;vf.step=3;vf.recT0=Date.now();vf.rr=[];vf.rrSum=0;vf.firstT=0;vf.lastRecT=0;vf.rrSumAfterFirst=0;vf.noContactMs=0;vf.lastData=Date.now();vfShow();vfRestartAnim()};
 $('vf-c2').onclick=()=>vfReset();
-$('vf-c3').onclick=()=>{if(confirm('Cancelar a leitura? A gravação feita até agora será descartada.'))vfReset()};
+$('vf-c3').onclick=async()=>{if(await askConfirm('Cancelar a leitura? A gravação feita até agora será descartada.','Cancelar leitura','Continuar leitura'))vfReset()};
 $('vf-new').onclick=()=>vfReset();
 $('vf-rep').onclick=()=>{if(vf.result)openRep(HR.vfcReportHtml(vf.result),false)};
 $('vf-sv').onclick=async()=>{
@@ -2273,8 +2281,13 @@ function csAudioInit(){
   try{if(!cs.ac)cs.ac=new(window.AudioContext||window.webkitAudioContext)();return cs.ac.state==='running'||!cs.ac.resume?Promise.resolve():cs.ac.resume().catch(()=>{})}
   catch(_){cs.ac=null;return Promise.resolve()}
 }
+// O iOS suspende ou "interrompe" o contexto de áudio (diálogos do sistema, ligações, troca de app). Retoma no próximo toque, ao voltar à página e a cada ciclo do metrônomo.
+function csAudioWake(){const a=cs.ac;if(a&&a.state!=='running'&&a.state!=='closed'&&a.resume)a.resume().catch(()=>{})}
+['pointerdown','touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,csAudioWake,{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)csAudioWake()});
 function csTone(freq,when,dur,vol,force){
   const a=cs.ac;if(!a||(!cs.sound&&!force))return;
+  if(a.state!=='running'){csAudioWake();return}   // não agenda bips com o relógio de áudio parado (acumulariam)
   try{const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+when,v=vol||.2;o.type='sine';o.frequency.value=freq;
     g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+0.008);g.gain.setValueAtTime(v,t0+Math.max(0.01,dur-0.02));g.gain.linearRampToValueAtTime(0,t0+dur);
     o.connect(g);g.connect(a.destination);o.start(t0);o.stop(t0+dur+0.02)}catch(_){}
@@ -2448,24 +2461,31 @@ function csBorgDlg(s){
 // botão de parar flutuante: abre a lista de critérios; selecionar um critério encerra o teste
 function csFab(){const h=!(cs.step===3&&view==='proto');$('cs-fab').hidden=h;if(h&&$('spm').classList.contains('open'))csStopMenu(false)}
 const SP_MAIN=['fc80','borg8','cadencia'],SP_LABEL={fc80:'FC atingiu 80% da FCmáx prevista',borg8:'Borg atingiu 8/10',cadencia:'Incapaz de manter a cadência'};
+const SP_SHORT={pedido:'Pedido do paciente',dor_toracica:'Dor torácica ou angina',tontura:'Tontura ou síncope',dispneia:'Dispneia desproporcional',spo2:'Dessaturação relevante',arritmia:'Arritmia ou ECG alterado',musculo:'Dor muscular ou risco de queda'};
+// As opções ficam em leque (quarto de elipse) ao redor do botão: a mais alta alinha com o botão e as de baixo vão para a esquerda dele.
 function csStopMenu(open,mode){
   const m=$('spm'),fab=$('cs-fab');
   if(!open){m.classList.remove('open');$('spscrim').classList.remove('open');fab.classList.remove('on');fab.setAttribute('aria-expanded','false');return}
   m.classList.remove('open');m.textContent='';
-  const items=mode==='other'?HR.CST_STOP.filter(x=>x[0]!=='conclusao'&&!SP_MAIN.includes(x[0])).map(x=>({k:x[0],t:x[1]})).concat([{k:'__main',t:'‹ Voltar'}])
+  const sub=mode==='other';
+  const items=sub?HR.CST_STOP.filter(x=>x[0]!=='conclusao'&&!SP_MAIN.includes(x[0])).map(x=>({k:x[0],t:SP_SHORT[x[0]]||x[1]})).concat([{k:'__main',t:'‹ Voltar'}])
     :SP_MAIN.map(k=>({k,t:SP_LABEL[k]})).concat([{k:'__other',t:'Outro'}]);
+  const n=items.length,h=sub?42:54,w=sub?150:156,step=sub?48:62,d0=sub?70:80,A=sub?166:176;
   items.forEach((it,i)=>{
-    const r=document.createElement('div');r.className='spi'+(cs.crit[it.k]?' hit':'')+(it.k==='__main'||it.k==='__other'?' mais':'');r.style.transitionDelay=((items.length-1-i)*0.045)+'s';
-    const b=document.createElement('button');b.type='button';b.className='spk';b.setAttribute('role','menuitem');b.textContent=it.t+(cs.crit[it.k]?' · ATINGIDO':'')+(it.k==='__other'?'  ›':'');
+    const k=n-1-i,d=d0+k*step,tt=n>1?k/(n-1):0,off=A*Math.cos(tt*Math.PI/2);   // k=0 é a opção mais baixa (junto do botão)
+    const r=document.createElement('div');r.className='spi'+(sub?' sub':'')+(cs.crit[it.k]?' hit':'')+(it.k==='__main'||it.k==='__other'?' mais':'');
+    r.style.cssText='right:'+(29+off)+'px;bottom:'+(29+d-h/2)+'px;width:'+w+'px;height:'+h+'px;--fx:'+(off+w/2)+'px;--fy:'+d+'px;transition-delay:'+(k*0.04)+'s';
+    const b=document.createElement('button');b.type='button';b.className='spk';b.setAttribute('role','menuitem');b.textContent=it.t+(cs.crit[it.k]?' · ATINGIDO':'');
     b.onclick=()=>{if(it.k==='__other')csStopMenu(true,'other');else if(it.k==='__main')csStopMenu(true,'main');else{csStopMenu(false);csEnd(it.k)}};
     r.appendChild(b);
-    if(it.k.slice(0,2)!=='__'){const ib=document.createElement('button');ib.type='button';ib.className='ib';ib.dataset.i='crit_'+it.k;ib.setAttribute('aria-label','Informações: '+it.t);ib.textContent='i';r.appendChild(ib)}
+    if(it.k.slice(0,2)!=='__'){const ib=document.createElement('button');ib.type='button';ib.className='ib';ib.dataset.i='crit_'+it.k;ib.setAttribute('aria-label','Informações: '+(HR.CST_STOP.find(x=>x[0]===it.k)||[0,it.t])[1]);ib.textContent='i';r.appendChild(ib)}
     m.appendChild(r)});
   void m.offsetWidth;m.classList.add('open');$('spscrim').classList.add('open');fab.classList.add('on');fab.setAttribute('aria-expanded','true');
 }
 // ---- metrônomo (som agendado pelo relógio de áudio) e feedback visual ----
 function csSched(){
   if(cs.step!==3||cs.ended)return;
+  if(cs.ac&&cs.ac.state!=='running')csAudioWake();
   const el=(Date.now()-cs.t0)/1000;
   if(el<0){const lead=-el-CS_WAIT;if(lead>0){const n=Math.ceil(lead);if(n!==cs.cdLast){cs.cdLast=n;csTone(600,0,.12,.25)}}return}   // bips só na contagem; na espera, silêncio
   for(;;){
@@ -2565,7 +2585,7 @@ $('cs-fab').onclick=()=>csStopMenu(!$('spm').classList.contains('open'),'main');
 $('cs-pend-open').onclick=()=>csRenderPend(true);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')csStopMenu(false)});
 $('cs-fin').onclick=()=>{if($('cs-fin').disabled)return;cs.result=null;cs.step=5;csShow()};
-$('cs-disc').onclick=()=>{if(confirm('Descartar este teste? Os dados não salvos serão perdidos.'))csReset()};
+$('cs-disc').onclick=async()=>{if(await askConfirm('Descartar este teste? Os dados não salvos serão perdidos.','Descartar','Voltar'))csReset()};
 $('cs-new').onclick=()=>csReset();
 $('cs-rep').onclick=()=>{if(cs.result)openRep(HR.cstReportHtml(cs.result),false)};
 $('cs-sv').onclick=async()=>{
@@ -2657,10 +2677,9 @@ function renderHome(){
     $('hm-s2').textContent=al?al+(al===1?' com alerta ativo':' com alertas ativos')+' · veja em Agora':'Nenhum alerta ativo agora (isso não garante que o paciente está bem).'}
   $('hm-conn').textContent=n?'＋ Adicionar monitor':'＋ Conectar monitor';
   $('hm-ag').hidden=n===0;
-  $('hm-ses').hidden=!sess.on;if(sess.on)$('hm-ses-t').textContent='Sessão em andamento · '+dur(Date.now()-sess.t0);
   if(Date.now()-homeLastAt>30000)homeLast();
 }
-$('hm-conn').onclick=()=>$('add').click();$('hm-ag').onclick=()=>setView('agora');$('hm-ses').onclick=()=>setView('sessao');
+$('hm-conn').onclick=()=>$('add').click();$('hm-ag').onclick=()=>setView('agora');
 $('hm-s').onclick=()=>$('go-s2').click();$('hm-p').onclick=()=>$('go-p2').click();$('hm-v').onclick=()=>$('go-v2').click();$('hm-e').onclick=()=>$('go-e2').click();
 $('hm-lh').onclick=()=>setView('hist');
 initTips();
