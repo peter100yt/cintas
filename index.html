@@ -222,7 +222,8 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .tp{grid-area:1/1;font-size:13px;line-height:18px;max-height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--mut);align-self:start}
 .hsafe{margin-top:14px}.hsafe summary{cursor:pointer;font-weight:600;min-height:32px;display:flex;align-items:center}.hsafe ul{margin:8px 0 0;padding-left:18px}.hsafe li{margin:4px 0}
 /* Protocolo progressivo: Chester Step Test */
-.ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;min-height:26px;min-width:26px;padding:0;border-radius:50%;border:1.5px solid var(--acc);color:var(--acc);background:transparent;font:italic 700 14px Georgia,serif;margin-left:4px;vertical-align:middle;box-shadow:none}
+.ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-height:18px;min-width:18px;padding:0;border-radius:50%;border:1.2px solid var(--acc);color:var(--acc);background:transparent;font:italic 700 11px Georgia,serif;margin-left:4px;vertical-align:middle;box-shadow:none;position:relative}
+.ib::after{content:"";position:absolute;inset:-9px}   /* área de toque maior que o desenho */
 .ibr{display:flex;align-items:center;gap:8px;margin:0 0 4px 36px}
 .ifbox{max-height:86vh;overflow:auto}.iftag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accbg);color:var(--acc)}
 .ifbox .ifr{margin:10px 0}.ifbox .ifr b{display:block;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}.ifbox .ifr p{margin:2px 0 0;font-size:14px}
@@ -240,6 +241,16 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .cspend{border:1px solid var(--warn);border-radius:12px;padding:12px;margin:10px 0;background:var(--warnbg)}.cspend .f input{max-width:140px}
 #cs-res .t.main .v{font-size:26px}
 @media(prefers-reduced-motion:reduce){.cspulse i{transform:none!important}}
+.g2c{display:grid;grid-template-columns:1fr 1fr;gap:12px}.g2c .f{justify-content:flex-end;min-width:0}
+#cs-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px}#cs-steps .stepopt{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.evrow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.evrow button{min-height:34px;padding:0 4px;font-size:12px;border-radius:999px}
+#cs-cd.low{color:var(--warn)}
+#cs-hr.hr-near{color:var(--warn)}#cs-hr.hr-lim{color:var(--bad)}
+.csfab{position:fixed;right:16px;bottom:96px;z-index:50;width:58px;height:58px;min-height:58px;padding:0;border-radius:50%;border:0;background:var(--bad);color:var(--accfg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.35)}.csfab[hidden]{display:none}
+.sprow{display:flex;align-items:center;gap:8px;margin:6px 0}.spb{flex:1;text-align:left;min-height:46px;padding:8px 12px;font-size:14px;line-height:1.25}.spb.hit{border-color:var(--bad);color:var(--bad);font-weight:700}
+.spsel{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font:inherit;color:var(--fg)}.spsel:disabled{opacity:.5}
+.vo2big{text-align:center;margin:4px 0 12px}.vo2big .vk{font-size:13px;font-weight:700;color:var(--mut)}.vo2big .n{font-size:76px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums}.vo2big .u{font-size:16px;font-weight:700;color:var(--mut);margin-bottom:10px}
+.lvl{display:inline-block;padding:8px 22px;border-radius:999px;font-weight:800;font-size:16px;color:var(--accfg)}.lv0{background:var(--bad)}.lv1{background:var(--warn)}.lv2{background:var(--ok)}.lv3{background:var(--acc)}.lv4{background:var(--z1)}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -303,14 +314,16 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="cs-1" class="card2" hidden>
 <div class="prh"><strong id="cs-t1">CST original</strong></div>
 <div class="rbn bad" id="cs-adbn" hidden>CST ADAPTADO: não é equivalente ao CST original e não deve ser comparado diretamente com ele.</div>
-<label class="ckr"><input type="checkbox" id="cs-triage"><span>Houve triagem clínica prévia e o paciente não apresenta sintomas de alarme.</span></label><div class="ibr"><button type="button" class="ib" data-i="triagem" aria-label="Informações: triagem clínica prévia">i</button></div>
 <div class="sl" style="margin-top:14px">Dados do teste</div>
 <div class="exf">
 <label class="f"><span>Monitor</span><select id="cs-dev"></select></label>
 <button class="chip" id="cs-addm" type="button" style="align-self:flex-start">＋ Adicionar monitor</button>
-<label class="f"><span>Nome (opcional) <button type="button" class="ib" data-i="nome" aria-label="Informações: nome">i</button></span><input id="cs-name" maxlength="40" placeholder="Em branco = registro anônimo" autocomplete="off"></label>
-<label class="f"><span>Idade (anos completos) <button type="button" class="ib" data-i="idade" aria-label="Informações: idade">i</button></span><input id="cs-age" type="number" inputmode="numeric" min="10" max="100" step="1"></label>
+<div class="g2c">
+<label class="f"><span>Nome (opcional) <button type="button" class="ib" data-i="nome" aria-label="Informações: nome">i</button></span><input id="cs-name" maxlength="40" placeholder="Em branco = anônimo" autocomplete="off"></label>
+<label class="f"><span>Idade (anos) <button type="button" class="ib" data-i="idade" aria-label="Informações: idade">i</button></span><input id="cs-age" type="number" inputmode="numeric" min="10" max="100" step="1"></label>
+<label class="f"><span>Sexo <button type="button" class="ib" data-i="sexo" aria-label="Informações: sexo">i</button></span><select id="cs-sex"><option value="">Selecione</option><option value="F">Feminino</option><option value="M">Masculino</option></select></label>
 <label class="f"><span>FC de repouso (bpm) <button type="button" class="ib" data-i="fcrep" aria-label="Informações: FC de repouso">i</button></span><input id="cs-hrr" type="number" inputmode="numeric" min="30" max="200" step="1"></label>
+</div>
 </div>
 <div class="sl" style="margin-top:14px">Altura do degrau <button type="button" class="ib" data-i="step" aria-label="Informações: altura do degrau">i</button></div>
 <div id="cs-steps"></div>
@@ -348,27 +361,18 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </div>
 <div id="cs-al"></div>
 <div class="card2">
-<div class="sl">Registro de fim de estágio <button type="button" class="ib" data-i="borg" aria-label="Informações: Borg">i</button></div>
-<div id="cs-pend" class="m">Os registros pendentes aparecem aqui ao final de cada estágio.</div>
-</div>
-<div class="card2">
 <div class="sl">Eventos e sintomas <button type="button" class="ib" data-i="eventos" aria-label="Informações: eventos">i</button></div>
-<div class="symc"><button id="cs-ev-ritmo">Perdeu o ritmo</button><button id="cs-ev-pausa">Pausa</button><button id="cs-ev-trop">Tropeço</button></div>
+<div class="evrow"><button id="cs-ev-ritmo">Perdeu o ritmo</button><button id="cs-ev-pausa">Pausa</button><button id="cs-ev-trop">Tropeço</button></div>
 <div class="f g2"><label><span>Sintoma <button type="button" class="ib" data-i="sintomas" aria-label="Informações: sintomas">i</button></span><select id="cs-sym"><option value="Palpitação">Palpitação</option><option value="Tontura">Tontura</option><option value="Falta de ar">Falta de ar</option><option value="Dor">Dor</option><option value="Outro sintoma">Outro sintoma</option></select></label><label style="justify-content:flex-end"><button id="cs-ev-sym">Marcar sintoma</button></label></div>
 <div class="m" id="cs-evl" style="margin-top:8px"></div>
-</div>
-<div class="card2">
-<div class="sl">Critérios de interrupção <button type="button" class="ib" data-i="motivo" aria-label="Informações: motivo de interrupção">i</button></div>
-<div class="m" style="margin-bottom:6px">Registrar um critério encerra o teste. O app não oferece continuar após um critério. <b>A decisão clínica final é do profissional.</b></div>
-<div id="cs-crit"></div>
 </div>
 </div>
 
 <div id="cs-4" class="card2" hidden>
 <div class="rbn bad" id="cs-stopbn"></div>
 <div class="sl">Fechamento dos registros</div>
-<div class="m" style="margin-bottom:8px">Informe o Borg dos estágios concluídos (obrigatório) e a SpO2 (opcional), no bloco abaixo.</div>
-<div id="cs-pend4"></div>
+<div class="m" style="margin-bottom:8px">Informe o Borg dos estágios concluídos (obrigatório) e a SpO2 (opcional) na janela que se abre.</div>
+<div id="cs-pend4" class="m"></div><button class="chip" id="cs-pend-open" style="margin-top:6px">Abrir registros pendentes</button>
 <div class="exf" style="margin-top:10px">
 <label class="f"><span>Motivo da escolha da altura (opcional) <button type="button" class="ib" data-i="step" aria-label="Informações: altura do degrau">i</button></span><input id="cs-reason" maxlength="160" autocomplete="off"></label>
 <label class="f"><span>Profissional responsável (opcional)</span><input id="cs-prof" maxlength="60" autocomplete="off"></label>
@@ -383,6 +387,14 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </div>
 </section>
 
+<button id="cs-fab" class="csfab" type="button" hidden aria-label="Interromper o teste" title="Interromper o teste"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg></button>
+<div id="bgd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="bg-t" style="z-index:44"><div class="dbox"><h3 id="bg-t"></h3><div class="m" id="bg-hr" style="margin-bottom:8px"></div>
+<div class="sl">Borg (0 a 10) · obrigatório <button type="button" class="ib" data-i="borg" aria-label="Informações: Borg">i</button></div><div class="borg" id="bg-borg"></div>
+<div class="sl" style="margin-top:12px">SpO2 (opcional) <button type="button" class="ib" data-i="spo2" aria-label="Informações: SpO2">i</button></div>
+<label class="ckr" style="border-top:0;padding:4px 0"><input type="checkbox" id="bg-sp-on"><span>Registrar SpO2</span></label>
+<select id="bg-sp" class="spsel" disabled aria-label="SpO2 em porcentagem"><option value="100">100%</option><option value="99">99%</option><option value="98">98%</option><option value="97">97%</option><option value="96">96%</option><option value="95">95%</option><option value="94">94%</option><option value="93">93%</option><option value="92">92%</option><option value="91">91%</option><option value="90">90%</option><option value="89">89%</option><option value="88">88%</option><option value="87">87%</option><option value="86">86%</option><option value="85">85%</option><option value="84">84%</option><option value="83">83%</option><option value="82">82%</option><option value="81">81%</option><option value="80">80%</option><option value="79">79%</option><option value="78">78%</option><option value="77">77%</option><option value="76">76%</option><option value="75">75%</option><option value="74">74%</option><option value="73">73%</option><option value="72">72%</option><option value="71">71%</option><option value="70">70%</option><option value="69">69%</option><option value="68">68%</option><option value="67">67%</option><option value="66">66%</option><option value="65">65%</option><option value="64">64%</option><option value="63">63%</option><option value="62">62%</option><option value="61">61%</option><option value="60">60%</option><option value="59">59%</option><option value="58">58%</option><option value="57">57%</option><option value="56">56%</option><option value="55">55%</option><option value="54">54%</option><option value="53">53%</option><option value="52">52%</option><option value="51">51%</option><option value="50">50%</option></select>
+<div class="dacts"><button class="pri" id="bg-ok" disabled>Registrar</button><button id="bg-skip" hidden>Pular</button></div></div></div>
+<div id="spd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="sp-t" style="z-index:55"><div class="dbox ifbox"><h3 id="sp-t">Interromper o teste <button type="button" class="ib" data-i="motivo" aria-label="Informações: motivo de interrupção">i</button></h3><p class="m">Selecione o critério. Ao selecionar, o teste é encerrado. A decisão clínica final é do profissional.</p><div id="sp-list"></div><div class="dacts"><button class="pri" id="sp-back">Voltar ao teste</button></div></div></div>
 <div id="ifd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ift" style="z-index:60"><div class="dbox ifbox"><span class="iftag" id="ifg"></span><h3 id="ift" style="margin-top:8px"></h3><div id="ifb"></div><div class="dacts"><button class="pri" id="if-ok">Fechar</button></div></div></div>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
@@ -1224,6 +1236,31 @@ const HR = (() => {
     ['musculo', 'Dor musculoesquelética, instabilidade, risco de queda ou limitação que impeça a execução correta', 'manual'], ['conclusao', 'Conclusão dos cinco estágios', 'auto'],
   ];
   const cstStopText = k => (CST_STOP.find(x => x[0] === k) || [0, 'Interrompido pelo profissional'])[1];
+  // Zona da FC durante o teste: "próximo" a partir de 75% da FCmáx prevista (critério de trabalho), "limite" a partir de 80%.
+  CST.NEAR_HR_FRAC = 0.75;
+  function cstHrZone(bpm, hrMax) {
+    if (bpm === null || bpm === undefined || !isFinite(bpm) || !(hrMax > 0)) return 'ok';
+    const r = bpm / hrMax; return r >= CST.STOP_HR_FRAC ? 'limit' : r >= CST.NEAR_HR_FRAC ? 'near' : 'ok';
+  }
+  // Classificação populacional do VO2máx por sexo e faixa etária (20 a 79 anos). Valores de corte de percentis (P40, P60, P80, P95)
+  // das tabelas de referência do Cooper Institute, conforme reproduzidas pela Garmin (fēnix 5, "VO2 Max. Standard Ratings").
+  // Conferidos por extração automática da página: CONFIRMAR contra a publicação original antes de uso clínico.
+  const CST_NORMS = {
+    M: { sup: [55.4, 54, 52.5, 48.9, 45.7, 42.1], exc: [51.1, 48.3, 46.4, 43.4, 39.5, 36.7], good: [45.4, 44, 42.4, 39.2, 35.5, 32.3], fair: [41.7, 40.5, 38.5, 35.6, 32.3, 29.4] },
+    F: { sup: [49.6, 47.4, 45.3, 41.1, 37.8, 36.7], exc: [43.9, 42.4, 39.7, 36.7, 33, 30.9], good: [39.5, 37.8, 36.3, 33, 30, 28.1], fair: [36.1, 34.4, 33, 30.1, 27.5, 25.9] },
+  };
+  const CST_LEVELS = [
+    { key: 'abaixo', label: 'Abaixo da média', pct: 'abaixo do percentil 40' }, { key: 'media', label: 'Dentro da média', pct: 'percentil 40 a 59' },
+    { key: 'acima', label: 'Acima da média', pct: 'percentil 60 a 79' }, { key: 'excelente', label: 'Excelente', pct: 'percentil 80 a 94' },
+    { key: 'superior', label: 'Superior', pct: 'percentil 95 ou mais' },
+  ];
+  function cstClass(vo2, sex, age) {
+    if (!(vo2 > 0) || (sex !== 'M' && sex !== 'F') || !Number.isInteger(age) || age < 20 || age > 79) return null;
+    const b = Math.min(5, Math.floor((age - 20) / 10)), t = CST_NORMS[sex];
+    const lv = vo2 >= t.sup[b] ? 4 : vo2 >= t.exc[b] ? 3 : vo2 >= t.good[b] ? 2 : vo2 >= t.fair[b] ? 1 : 0;
+    const lo = 20 + 10 * b;
+    return { level: lv, ...CST_LEVELS[lv], band: lo + ' a ' + (lo + 9) + ' anos', sex, ref: 'Cooper Institute (percentis populacionais)' };
+  }
   function cstReportHtml(x) {
     const row = (k, v) => '<tr><th>' + esc(k) + '</th><td>' + v + '</td></tr>', f1 = (v, d = 1) => v === null || v === undefined || !isFinite(v) ? '—' : v.toFixed(d).replace('.', ',');
     const ad = x.kind === 'adaptado', e = x.estimate;
@@ -1241,7 +1278,7 @@ const HR = (() => {
     o += row('FC de repouso', x.hrRest + ' bpm');
     o += row('FCmáx prevista', x.hrMax + ' bpm (fórmula: 220 − idade; estimativa populacional)');
     o += row('Equipamento', esc(x.device || '—'));
-    o += row('Triagem clínica prévia', x.triage ? 'confirmada pelo avaliador' : '—');
+    o += row('Sexo (para a classificação)', x.sex === 'M' ? 'masculino' : x.sex === 'F' ? 'feminino' : 'não informado');
     o += '</table><h3>Estágios</h3><table><tr>' + ['Est.', 'Tempo', 'Cadência', 'Subidas', 'FC (bpm)', 'Borg', 'SpO2', 'VO2 est.', 'Status'].map(h => '<th style="width:auto">' + h + '</th>').join('') + '</tr>';
     for (const s of x.stages) {
       const st = s.completed ? 'concluído' : s.effectiveSec > 0 ? 'interrompido (' + Math.round(s.effectiveSec) + ' s)' : 'não realizado';
@@ -1256,6 +1293,7 @@ const HR = (() => {
     if (x.lastHr) o += row('FC final / % da FCmáx prevista', Math.round(x.lastHr) + ' bpm · ' + f1(x.lastHr / x.hrMax * 100, 0) + '%');
     o += row('VO2máx estimado pelo CST', e && e.state === 'estimated' ? '<b>' + f1(e.vo2max) + ' ml/kg/min (ESTIMATIVA)</b> · confiabilidade ' + e.confidence + ' · ' + e.n + ' estágio(s) (' + e.stagesUsed.join(', ') + ') · R² ' + f1(e.r2, 2) + ' · FC = ' + f1(e.intercept, 1) + ' + ' + f1(e.slope, 2) + ' × VO2'
       : '<b>não estimado</b>: ' + esc(e ? e.reason : 'sem dados'));
+    o += row('Classificação do nível de capacidade', e && e.state === 'estimated' ? (x.cls ? '<b>' + esc(x.cls.label) + '</b> (' + esc(x.cls.pct) + ', ' + (x.cls.sex === 'M' ? 'homens' : 'mulheres') + ' de ' + esc(x.cls.band) + '; referência: ' + esc(x.cls.ref) + '). Comparação populacional com um VO2máx ESTIMADO: não é diagnóstico.' : 'sem classificação (informe sexo e idade de 20 a 79 anos)') : '—');
     o += row('Limiar (indireto, experimental)', cstDfaHtml(x.dfa));
     o += row('Sintomas e eventos', x.events && x.events.length ? x.events.map(v => esc(v.text) + ' (' + Math.floor(v.tSec / 60) + ':' + String(Math.round(v.tSec % 60)).padStart(2, '0') + ')').join('<br>') : 'nenhum registrado');
     o += row('Qualidade da execução', esc(x.quality || '—'));
@@ -1272,7 +1310,7 @@ const HR = (() => {
     return one('DFA-α1 0,75', d.e1) + '<br>' + one('DFA-α1 0,50', d.e2) + '<br><span class="m">O CST em si não identifica limiares; método indireto: cruzamento do DFA-α1 (experimental).</span>';
   }
 
-  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT, CST, cstLoad, cstHrMax, cstStages, cstStageAt, cstHrCheck, cstRegress, cstEstimate, CST_STOP, cstStopText, cstReportHtml, cstDfaHtml };
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT, CST, cstLoad, cstHrMax, cstStages, cstStageAt, cstHrCheck, cstRegress, cstEstimate, CST_STOP, cstStopText, cstReportHtml, cstDfaHtml, cstHrZone, cstClass, CST_NORMS };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -1613,7 +1651,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='proto')csShow();if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='proto')csShow();csFab();if(v!=='proto'){$('bgd').hidden=true;$('spd').hidden=true}if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -2049,7 +2087,7 @@ const INFO={
   step30:stepInfo(30,'Adultos jovens e fisicamente ativos, com boa capacidade funcional e sem limitações relevantes.','Maior amplitude de carga e menor chance de efeito teto em pessoas aptas.','A carga inicial e a progressão podem ser altas para sedentários, idosos ou pessoas com limitações clínicas.','Idade, condicionamento, prática regular de exercício, ausência de limitação osteomuscular, equilíbrio, risco cardiovascular e objetivo da avaliação.','Recomenda-se triagem rigorosa e supervisão adequada.'),
   cadencia:{t:'Cadência',tag:'Protocolo original',rows:[
     ['O que significa','Uma "subida" é o ciclo completo: subir um pé, subir o outro, descer um pé e descer o outro. A cadência é o número de subidas por minuto (15, 20, 25, 30 e 35 no protocolo original).'],
-    ['Como é guiada','Por áudio (metrônomo, um toque por movimento, com acento no início de cada subida) e feedback visual. O paciente deve iniciar cada estágio no ritmo correto.'],
+    ['Como é guiada','Por áudio (metrônomo com um bip por movimento, 4 por subida: 2 bips agudos na subida dos pés e 2 bips médios na descida dos pés) e feedback visual. O paciente deve iniciar cada estágio no ritmo correto.'],
     ['Se não mantiver','Registre o estágio como incompleto e interrompa o teste. Não altere a cadência para compensar fadiga ou dificuldade: a resposta correta é encerrar.'],
     ['Limite do app','O app NÃO mede a cadência real do paciente. Ele registra a cadência alvo e os eventos que você marcar (perdeu o ritmo, pausa, tropeço).'],
     ['Uso nos cálculos e no relatório','A cadência de cada estágio entra na fórmula do VO2 e na tabela do relatório.']]},
@@ -2097,11 +2135,17 @@ const INFO={
     ['O que o Pulsys faz','Estima, de forma INDIRETA e experimental, a FC em que o DFA-α1 cruza 0,75 e 0,50 durante o teste. Sempre rotulado "estimado por VFC", com o método.'],
     ['Limites','Hipóteses de pesquisa sem validação clínica; a FC fica atrasada pela janela de 120 s; precisa de RR de boa qualidade. Pode resultar em "não identificado" ou "inconclusivo".'],
     ['Uso no relatório','Aparece separado do VO2máx, com o estágio em que o cruzamento ocorreu.']]},
-  triagem:{t:'Triagem clínica prévia',tag:'Decisão do avaliador',rows:[
-    ['O que significa','Confirmação de que o paciente passou por triagem clínica e não apresenta sintomas de alarme (dor torácica, tontura importante, dispneia desproporcional, instabilidade) antes do teste.'],
-    ['Por que importa','O app não faz a triagem. Sem ela, o teste não deve começar.'],
-    ['Se houver sintomas','Não inicie. Oriente a avaliação médica conforme o protocolo do serviço.'],
-    ['Uso no relatório','A confirmação do avaliador é registrada.']]},
+  sexo:{t:'Sexo',tag:'Decisão do avaliador',rows:IR(
+    'Sexo usado apenas para escolher a tabela de referência da classificação do nível de capacidade (feminino ou masculino).',
+    'Os valores de VO2máx de referência diferem entre homens e mulheres. O sexo NÃO altera o VO2máx estimado nem a FCmáx prevista.',
+    'Informe o sexo conforme o padrão do serviço para comparação com a tabela.',
+    'Se a tabela não se aplicar ao paciente, considere a classificação apenas como referência aproximada ou desconsidere-a.',
+    'Entra na classificação por sexo e idade (20 a 79 anos) e é registrado no relatório.')},
+  classe:{t:'Classificação do nível de capacidade',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Comparação do VO2máx ESTIMADO com valores de referência populacionais, por sexo e faixa etária (20 a 79 anos): abaixo da média (abaixo do percentil 40), dentro da média (40 a 59), acima da média (60 a 79), excelente (80 a 94) e superior (95 ou mais).'],
+    ['Fonte','Percentis do Cooper Institute, conforme tabela de referência reproduzida pela Garmin. Os valores foram extraídos automaticamente e devem ser conferidos na publicação original antes de uso clínico.'],
+    ['Limites','É uma comparação com a população de referência (não brasileira), aplicada a um valor estimado e com erro próprio do CST. Não é diagnóstico, não define prescrição e não substitui a avaliação clínica. Sem classificação para idade fora de 20 a 79 anos ou sem sexo informado.'],
+    ['Uso no relatório','O nível, o percentil, o sexo, a faixa etária e a fonte constam no relatório.']]},
   spo2min:{t:'SpO2 mínima aceita (opcional)',tag:'Decisão do avaliador',rows:[
     ['O que significa','Valor de SpO2, definido pelo critério do SERVIÇO, abaixo do qual a dessaturação é considerada clinicamente relevante.'],
     ['Sem valor padrão','O app não sugere valor. Se você deixar em branco, ele não compara a SpO2 com nenhum limite (o alerta fica só manual).'],
@@ -2119,7 +2163,7 @@ const INFO={
     ['Por que importa','Toda adaptação deve ser justificada e registrada para reprodutibilidade e para evitar comparação indevida.'],
     ['Uso no relatório','Aparece no relatório. Obrigatória no modo adaptado.']]},
   som:{t:'Metrônomo sonoro',tag:'Protocolo original',rows:[
-    ['O que significa','Toque a cada movimento (4 por subida), com tom mais agudo no início de cada subida, mais o feedback visual na tela.'],
+    ['O que significa','Um bip a cada movimento (4 por subida): 2 bips agudos para a subida dos pés e 2 bips médios para a descida dos pés, mais o feedback visual na tela.'],
     ['Limites','No iPhone o som pode não tocar com o modo silencioso ligado ou com a tela bloqueada. Use o feedback visual como apoio.'],
     ['Se desligar','O feedback visual continua.']]},
   sintomas:{t:'Sintomas',tag:'Decisão do avaliador',rows:[
@@ -2157,7 +2201,7 @@ const INFO={
 // Teste submáximo: o VO2máx é ESTIMADO. O app também estima limiares por DFA-α1 (experimental) a partir dos RR do mesmo monitor.
 // O app NÃO mede a cadência real, NÃO decide a segurança do paciente e NUNCA preenche FC ou SpO2 sem leitura real.
 // Parâmetros de confiança e critérios de FC plausível são de trabalho, sem validação clínica.
-const csNew=()=>({step:0,kind:'original',c:null,label:'',age:0,hrRest:0,stepCm:0,cad0:15,stageSec:120,why:'',spo2Min:null,triage:false,
+const csNew=()=>({step:0,kind:'original',c:null,label:'',age:0,sex:'',hrRest:0,stepCm:0,cad0:15,stageSec:120,why:'',spo2Min:null,popN:0,
   stages:[],t0:0,started:false,ended:false,ac:null,sound:true,nb:{i:0,k:0},cdLast:99,recent:[],lastPk:0,cur:null,events:[],crit:{},stop:null,endEl:0,endHr:null,continued:'',
   hrMax:0,hrStop:0,result:null,saved:false,pendSig:'',critSig:''});
 let cs=csNew();
@@ -2206,16 +2250,16 @@ function csCheck(){
   const ad=cs.kind==='adaptado';
   document.querySelectorAll('#cs-steps .stepopt').forEach(r=>{const h=+r.dataset.h,off=ad&&h>20,i=r.querySelector('input');r.classList.toggle('off',off);i.disabled=off;if(off&&i.checked)i.checked=false});
   $('cs-adf').hidden=!ad;$('cs-adbn').hidden=!ad;$('cs-t1').textContent=ad?'CST adaptado/clínico':'CST original';
-  const dev=cards.get($('cs-dev').value),live=!!dev&&csLive(dev),age=parseInt($('cs-age').value,10),hrr=parseInt($('cs-hrr').value,10);
+  const dev=cards.get($('cs-dev').value),live=!!dev&&csLive(dev),age=parseInt($('cs-age').value,10),hrr=parseInt($('cs-hrr').value,10),sex=$('cs-sex').value;
   const sel=document.querySelector('#cs-steps input:checked'),ageOk=Number.isInteger(age)&&age>=10&&age<=100,hrrOk=Number.isInteger(hrr)&&hrr>=30&&hrr<=200;
   $('cs-fcmax').textContent=ageOk?'FCmáx prevista: '+HR.cstHrMax(age)+' bpm (220 − idade) · critério de 80%: '+Math.round(.8*HR.cstHrMax(age))+' bpm':'FCmáx prevista: informe a idade.';
   csTable();
   const why=$('cs-why').value.trim(),raw=$('cs-spo2min').value.trim(),sp=raw===''?null:parseInt(raw,10),spOk=raw===''||(Number.isInteger(sp)&&sp>=50&&sp<=100);
   let m;
-  if(!$('cs-triage').checked)m='Confirme a triagem clínica prévia.';
-  else if(!dev)m='Selecione um monitor (use "＋ Adicionar monitor").';
+  if(!dev)m='Selecione um monitor (use "＋ Adicionar monitor").';
   else if(!live)m='Aguardando a FC do monitor selecionado…';
   else if(!ageOk)m='Informe a idade (10 a 100 anos).';
+  else if(!sex)m='Informe o sexo (usado na classificação do nível de capacidade).';
   else if(!hrrOk)m='Informe a FC de repouso (30 a 200 bpm).';
   else if(!sel)m='Escolha a altura do degrau.';
   else if(ad&&!why)m='Justifique a adaptação.';
@@ -2228,9 +2272,10 @@ function csShow(){
   $('cs-stp').textContent=['','Etapa 1 · dados','Etapa 2 · preparação','Em andamento','Fechamento','Resultado'][cs.step];
   if(cs.step===1){csFillDevs();csCheck()}
   if(cs.step===2){$('cs-snd').checked=cs.sound}
-  if(cs.step===3){csBuildCrit();csRenderPend(true)}
+  if(cs.step===3)csRenderPend(true);
   if(cs.step===4){$('cs-stopbn').textContent='Teste encerrado: '+(cs.stop?cs.stop.text:'');csRenderPend(true)}
   if(cs.step===5)csResult();
+  csFab();
 }
 function csReset(){
   const c=cs.c;if(c&&c.proto&&c.proto.on)c.proto={on:false,t0:0,end:0,pts:[]};
@@ -2243,16 +2288,6 @@ function csSummary(){
     +'<br>Estágios: '+cs.stages.map(s=>s.cad).join(' · ')+' subidas/min, '+(cs.stages[0].durSec/60)+' min cada. '+(ad?'Adaptação: '+HR.esc(cs.why)+'.':'');
 }
 // ---- etapa 3: teste ----
-function csBuildCrit(){
-  const box=$('cs-crit');box.textContent='';
-  HR.CST_STOP.forEach(([k,t])=>{
-    const r=document.createElement('div');r.className='cscrit';r.dataset.k=k;
-    const d=document.createElement('span');d.className='dot';const tx=document.createElement('span');tx.className='tx';tx.textContent=t;
-    const i=document.createElement('button');i.type='button';i.className='ib';i.dataset.i='crit_'+k;i.setAttribute('aria-label','Informações: '+t);i.textContent='i';
-    r.appendChild(d);r.appendChild(tx);r.appendChild(i);
-    if(k!=='conclusao'){const b=document.createElement('button');b.className='go danger';b.textContent='Registrar e interromper';b.onclick=()=>csEnd(k);r.appendChild(b)}
-    box.appendChild(r)});
-}
 function csStageNow(el){const i=cs.stages.findIndex(s=>el<s.endSec);return i<0?cs.stages.length-1:i}
 function csEvent(text){if(cs.step!==3||!cs.started)return;const el=(Date.now()-cs.t0)/1000;cs.events.push({tSec:Math.max(0,el),text});csEvList();msg(text+' registrado.')}
 function csEvList(){$('cs-evl').textContent=cs.events.length?'Registrados: '+cs.events.map(e=>e.text+' ('+dur(e.tSec*1000)+')').join(' · '):''}
@@ -2268,6 +2303,7 @@ function csCloseDone(el){
   });
 }
 function csTick(){
+  csFab();
   if(cs.step===1){if(view==='proto')csCheck();return}
   if(cs.step!==3||cs.ended)return;
   const now=Date.now(),el=(now-cs.t0)/1000,c=cs.c,tot=cs.stages[cs.stages.length-1].endSec,vis=view==='proto';
@@ -2290,8 +2326,10 @@ function csTick(){
   const si=csStageNow(el),s=cs.stages[si];
   $('cs-stg').textContent='Estágio '+(si+1)+' de '+cs.stages.length;$('cs-cad').textContent=s.cad+' subidas/min · '+s.subidas+' subidas no estágio';
   $('cs-cd').textContent=dur((s.endSec-el)*1000);$('cs-pg').style.width=Math.min(100,el/tot*100)+'%';$('cs-tt').textContent=dur(el*1000)+' / '+dur(tot*1000);
-  $('cs-hr').textContent=cs.cur===null?'—':cs.cur;
-  $('cs-hrm').textContent=cs.cur===null?'FC não registrada (sem leitura)':Math.round(cs.cur/cs.hrMax*100)+'% da FCmáx prevista ('+cs.hrMax+' bpm) · limite de 80%: '+Math.round(cs.hrStop)+' bpm';
+  const zn=HR.cstHrZone(cs.cur,cs.hrMax);
+  $('cs-hr').textContent=cs.cur===null?'—':cs.cur;$('cs-hr').className=zn==='limit'?'hr-lim':zn==='near'?'hr-near':'';
+  $('cs-cd').classList.toggle('low',s.endSec-el<=20);   // últimos 20 s do estágio
+  $('cs-hrm').textContent=cs.cur===null?'FC não registrada (sem leitura)':Math.round(cs.cur/cs.hrMax*100)+'% da FCmáx prevista ('+cs.hrMax+' bpm) · limite de 80%: '+Math.round(cs.hrStop)+' bpm'+(zn==='near'?' · PRÓXIMA DO LIMITE':zn==='limit'?' · LIMITE ATINGIDO':'');
   // alertas ativos
   const al=[];
   if(cs.crit.fc80)al.push(['bad','FC ≥ 80% da FCmáx prevista ('+cs.crit.fc80.hr+' bpm) aos '+dur(cs.crit.fc80.t*1000)+': critério de interrupção atingido. Interrompa o teste.']);
@@ -2301,7 +2339,6 @@ function csTick(){
   else if(!chk.ok)al.push(['warn','FC não aceita como dado ('+chk.reason+').']);
   const sig=al.map(a=>a.join('|')).join('||');
   if(sig!==cs.critSig){cs.critSig=sig;const box=$('cs-al');box.textContent='';al.forEach(([lv,t])=>{const d=document.createElement('div');d.className='csal '+lv;d.textContent=t;d.setAttribute('role','alert');box.appendChild(d)})}
-  document.querySelectorAll('#cs-crit .cscrit').forEach(r=>{const k=r.dataset.k;r.querySelector('.dot').className='dot'+(cs.crit[k]?' bad':'')});
 }
 function csEnd(key,text){
   if(cs.step!==3||cs.ended)return;
@@ -2316,44 +2353,51 @@ function csEnd(key,text){
   cs.continued=[['fc80','FC ≥ 80% da FCmáx prevista'],['borg8','Borg ≥ 8'],['spo2','SpO2 abaixo do mínimo do serviço']].filter(([k])=>cs.crit[k]&&key!==k&&el-cs.crit[k].t>5).map(x=>x[1]).join('; ');
   cs.stop={key,text:text||HR.cstStopText(key)};
   const c=cs.c;if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=now}
-  cs.step=4;cs.critSig='';$('cs-al').textContent='';csShow();
+  $('spd').hidden=true;cs.step=4;cs.critSig='';$('cs-al').textContent='';csShow();csFab();
   msg(key==='conclusao'?'Teste concluído: cinco estágios.':'Teste encerrado: '+cs.stop.text+'.');
   if(key!=='conclusao')csTone(500,0,.4,.3,true);
 }
-// ---- registros pendentes (Borg obrigatório; SpO2 opcional) ----
+// ---- registros de fim de estágio: pop-up (Borg obrigatório; SpO2 opcional, escolhida entre 100 e 50) ----
 function csPendList(){return cs.stages.filter(s=>s.borg===null&&((s.completed)||(cs.step===4&&!s.completed&&s.effectiveSec>0&&!s.skip)))}
 function csRenderPend(force){
-  const box=cs.step===4?$('cs-pend4'):$('cs-pend'),list=csPendList(),sig=cs.step+':'+list.map(s=>s.n).join(',');
-  const need=cs.stages.some(s=>s.completed&&s.borg===null);$('cs-fin').disabled=need;
-  if(!force&&sig===cs.pendSig)return;
-  cs.pendSig=sig;box.textContent='';
-  if(!list.length){box.textContent=cs.step===4?'Todos os registros obrigatórios foram feitos.':'Os registros pendentes aparecem aqui ao final de cada estágio.';box.className='m';return}
-  box.className='';
-  list.forEach(s=>{
-    const f=document.createElement('div');f.className='cspend';let sel=null;
-    const h=document.createElement('div');h.style.fontWeight='700';
-    h.textContent=s.completed?'Estágio '+s.n+' concluído · '+(s.hrOk?'FC registrada: '+Math.round(s.hr)+' bpm':s.hrNote):'Estágio '+s.n+' interrompido aos '+Math.round(s.effectiveSec)+' s (registro opcional)';
-    f.appendChild(h);
-    const lb=document.createElement('div');lb.className='m';lb.style.margin='8px 0 2px';lb.innerHTML='Borg (0 a 10)'+(s.completed?' · obrigatório':'');f.appendChild(lb);
-    const g=document.createElement('div');g.className='borg';
-    for(let v=0;v<=10;v++){const b=document.createElement('button');b.textContent=v;b.onclick=()=>{sel=v;[...g.children].forEach(x=>x.classList.toggle('on',x===b));ok.disabled=false};g.appendChild(b)}
-    f.appendChild(g);
-    const sl=document.createElement('label');sl.className='f';sl.innerHTML='<span>SpO2 (%, opcional) <button type="button" class="ib" data-i="spo2" aria-label="Informações: SpO2">i</button></span>';
-    const si=document.createElement('input');si.type='number';si.min=50;si.max=100;si.step=1;si.inputMode='numeric';sl.appendChild(si);f.appendChild(sl);
-    const ok=document.createElement('button');ok.className='pri';ok.style.marginTop='10px';ok.textContent='Registrar estágio '+s.n;ok.disabled=true;
-    ok.onclick=()=>{
-      if(sel===null)return;
-      const raw=si.value.trim(),sp=raw===''?null:parseInt(raw,10);
-      if(raw!==''&&!(Number.isInteger(sp)&&sp>=50&&sp<=100)){msg('SpO2 inválida (50 a 100) ou deixe em branco.');return}
-      s.borg=sel;s.spo2=sp;const el=Math.min(cs.stages[cs.stages.length-1].endSec,Math.max(0,(Date.now()-cs.t0)/1000));
-      if(sel>=HR.CST.STOP_BORG&&!cs.crit.borg8&&cs.step===3){cs.crit.borg8={t:el,v:sel};csAlertTone()}
-      if(sp!==null&&cs.spo2Min!==null&&sp<cs.spo2Min&&!cs.crit.spo2&&cs.step===3){cs.crit.spo2={t:el,v:sp};csAlertTone()}
-      csRenderPend(true);
-    };
-    f.appendChild(ok);
-    if(!s.completed){const sk=document.createElement('button');sk.style.marginLeft='8px';sk.textContent='Pular';sk.onclick=()=>{s.skip=true;csRenderPend(true)};f.appendChild(sk)}
-    box.appendChild(f);
-  });
+  const list=csPendList();
+  $('cs-fin').disabled=cs.stages.some(s=>s.completed&&s.borg===null);
+  if(cs.step===4){$('cs-pend4').textContent=list.length?'Registros pendentes: estágio(s) '+list.map(s=>s.n).join(', ')+'.':'Todos os registros obrigatórios foram feitos.';$('cs-pend-open').hidden=!list.length}
+  const d=$('bgd'),first=list[0];
+  if(!first||(cs.step!==3&&cs.step!==4)||view!=='proto'){d.hidden=true;cs.popN=0;return}
+  if(!d.hidden&&cs.popN===first.n&&!force)return;
+  csBorgDlg(first);
+}
+function csBorgDlg(s){
+  cs.popN=s.n;let sel=null;
+  $('bg-t').textContent=s.completed?'Estágio '+s.n+' concluído':'Estágio '+s.n+' interrompido (registro opcional)';
+  $('bg-hr').textContent=s.completed?(s.hrOk?'FC registrada: '+Math.round(s.hr)+' bpm':s.hrNote):'Interrompido aos '+Math.round(s.effectiveSec)+' s';
+  const g=$('bg-borg');g.textContent='';
+  for(let v=0;v<=10;v++){const b=document.createElement('button');b.type='button';b.textContent=v;b.onclick=()=>{sel=v;[...g.children].forEach(x=>x.classList.toggle('on',x===b));$('bg-ok').disabled=false};g.appendChild(b)}
+  const ck=$('bg-sp-on'),sp=$('bg-sp');ck.checked=false;sp.disabled=true;sp.value='100';
+  ck.onchange=()=>{sp.disabled=!ck.checked;if(ck.checked)sp.focus()};
+  $('bg-ok').disabled=true;$('bg-ok').textContent='Registrar estágio '+s.n;$('bg-skip').hidden=s.completed;
+  $('bg-ok').onclick=()=>{
+    if(sel===null)return;
+    s.borg=sel;s.spo2=ck.checked?parseInt(sp.value,10):null;
+    const el=Math.min(cs.stages[cs.stages.length-1].endSec,Math.max(0,(Date.now()-cs.t0)/1000));
+    if(sel>=HR.CST.STOP_BORG&&!cs.crit.borg8&&cs.step===3){cs.crit.borg8={t:el,v:sel};csAlertTone()}
+    if(s.spo2!==null&&cs.spo2Min!==null&&s.spo2<cs.spo2Min&&!cs.crit.spo2&&cs.step===3){cs.crit.spo2={t:el,v:s.spo2};csAlertTone()}
+    $('bgd').hidden=true;cs.popN=0;csRenderPend(true);
+  };
+  $('bg-skip').onclick=()=>{s.skip=true;$('bgd').hidden=true;cs.popN=0;csRenderPend(true)};
+  $('bgd').hidden=false;
+}
+// botão de parar flutuante: abre a lista de critérios; selecionar um critério encerra o teste
+function csFab(){$('cs-fab').hidden=!(cs.step===3&&view==='proto')}
+function csStopDlg(){
+  const box=$('sp-list');box.textContent='';
+  HR.CST_STOP.filter(x=>x[0]!=='conclusao').forEach(([k,txt])=>{
+    const r=document.createElement('div');r.className='sprow';
+    const b=document.createElement('button');b.type='button';b.className='spb'+(cs.crit[k]?' hit':'');b.textContent=txt+(cs.crit[k]?' · ATINGIDO':'');b.onclick=()=>{$('spd').hidden=true;csEnd(k)};
+    const i=document.createElement('button');i.type='button';i.className='ib';i.dataset.i='crit_'+k;i.setAttribute('aria-label','Informações: '+txt);i.textContent='i';
+    r.appendChild(b);r.appendChild(i);box.appendChild(r)});
+  $('spd').hidden=false;
 }
 // ---- metrônomo (som agendado pelo relógio de áudio) e feedback visual ----
 function csSched(){
@@ -2365,7 +2409,7 @@ function csSched(){
     const per=60/(s.cad*4),tm=s.startSec+cs.nb.k*per;
     if(tm>=s.endSec-1e-6){cs.nb.i++;cs.nb.k=0;continue}
     if(tm>el+0.15)return;
-    if(tm>=el-0.05)csTone(cs.nb.k%4===0?1000:700,Math.max(0,tm-el),.07,.25);
+    if(tm>=el-0.05)csTone(cs.nb.k%4<2?1000:700,Math.max(0,tm-el),.07,.25);   // 2 bips agudos (subida dos pés) e 2 médios (descida dos pés)
     cs.nb.k++;
   }
 }
@@ -2395,22 +2439,28 @@ function csBuild(){
   const lastOk=[...cs.stages].reverse().find(s=>s.hrOk);
   const rest=cs.stages.map(s=>({n:s.n,cad:s.cad,durSec:s.durSec,subidas:s.subidas,completed:s.completed,effectiveSec:s.effectiveSec,hr:s.hr,hrOk:s.hrOk,hrNote:s.hrNote,borg:s.borg,spo2:s.spo2}));
   return{version:HR.CST.VERSION,kind:cs.kind,label:cs.label,age:cs.age,startedAt:cs.t0,professional:$('cs-prof').value.trim(),stepCm:cs.stepCm,stepReason:$('cs-reason').value.trim(),
-    cad0:cs.cad0,stageSec:cs.stageSec,adaptWhy:cs.why,hrRest:cs.hrRest,hrMax:cs.hrMax,device:c.dev&&c.dev.name||'monitor',triage:cs.triage,stages:rest,
+    cad0:cs.cad0,stageSec:cs.stageSec,adaptWhy:cs.why,hrRest:cs.hrRest,hrMax:cs.hrMax,device:c.dev&&c.dev.name||'monitor',sex:cs.sex,stages:rest,
     totalSec:cs.endEl,stopText:cs.stop?cs.stop.text:'',continuedAfterCriterion:cs.continued,lastHr:cs.endHr!==null?cs.endHr:(lastOk?lastOk.hr:null),
-    estimate:e,dfa,events:cs.events.slice(),quality,obs:$('cs-obs').value.trim(),
+    estimate:e,cls:e&&e.state==='estimated'?HR.cstClass(e.vo2max,cs.sex,cs.age):null,dfa,events:cs.events.slice(),quality,obs:$('cs-obs').value.trim(),
     repeatNote:why.length?'Considere repetir o teste ('+why.join('; ')+'). A decisão é do profissional.':''};
 }
 function csResult(){
   if(!cs.result)cs.result=csBuild();
-  const x=cs.result,e=x.estimate,tile=(k,v,main)=>'<div class="t'+(main?' main':'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>',esc=HR.esc;
+  const x=cs.result,e=x.estimate,tile=(k,v)=>'<div class="t"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>',esc=HR.esc;
   let h=x.kind==='adaptado'?'<div class="rbn bad">CST ADAPTADO: não é equivalente ao CST original.</div>':'';
-  h+=e&&e.state==='estimated'?'<div class="rbn ok">VO2máx estimado pelo CST (estimativa, não medida)</div><div class="vfm">'+tile('VO2máx estimado (ml/kg/min)',csF(e.vo2max),1)+tile('Confiabilidade',e.confidence)+tile('Estágios usados',e.n)+tile('R² do ajuste',csF(e.r2,2))+tile('FC final / % da FCmáx',x.lastHr?Math.round(x.lastHr)+' bpm · '+csF(x.lastHr/x.hrMax*100,0)+'%':'—')+'</div>'
-    :'<div class="rbn bad">VO2máx não estimado</div><ul class="rlist"><li>'+esc(e?e.reason:'sem dados')+'</li></ul>';
-  h+='<div class="vfs">Estágios</div><div class="m">'+x.stages.map(s=>'E'+s.n+': '+(s.completed?'concluído':s.effectiveSec>0?'interrompido':'não realizado')+(s.hrOk?' · '+Math.round(s.hr)+' bpm':'')+(s.borg!==null&&s.borg!==undefined?' · Borg '+s.borg:'')).join('<br>')+'</div>';
+  if(e&&e.state==='estimated'){
+    const k=x.cls;
+    h+='<div class="vo2big"><div class="vk">VO2máx estimado pelo CST</div><div class="n">'+csF(e.vo2max)+'</div><div class="u">(ml/kg/min)</div>'
+      +(k?'<div><span class="lvl lv'+k.level+'">'+esc(k.label)+'</span><button type="button" class="ib" data-i="classe" aria-label="Informações: classificação do nível de capacidade">i</button></div><div class="m" style="margin-top:6px">'+esc(k.pct)+' · '+(k.sex==='M'?'homens':'mulheres')+' de '+esc(k.band)+'</div>'
+        :'<div class="m">Sem classificação (sexo não informado ou idade fora de 20 a 79 anos).</div>')
+      +'<div class="m" style="margin-top:6px">Estimativa, não medida direta.</div></div>'
+      +'<div class="vfm">'+tile('Confiabilidade',e.confidence)+tile('Estágios usados',e.n)+tile('R² do ajuste',csF(e.r2,2))+tile('FC final / % da FCmáx',x.lastHr?Math.round(x.lastHr)+' bpm · '+csF(x.lastHr/x.hrMax*100,0)+'%':'—')+'</div>';
+  }else h+='<div class="rbn bad">VO2máx não estimado</div><ul class="rlist"><li>'+esc(e?e.reason:'sem dados')+'</li></ul>';
+  h+='<div class="vfs">Estágios</div><div class="m">'+x.stages.map(s=>'E'+s.n+': '+(s.completed?'concluído':s.effectiveSec>0?'interrompido':'não realizado')+(s.hrOk?' · '+Math.round(s.hr)+' bpm':'')+(s.borg!==null&&s.borg!==undefined?' · Borg '+s.borg:'')+(s.spo2!==null&&s.spo2!==undefined?' · SpO2 '+s.spo2+'%':'')).join('<br>')+'</div>';
   h+='<div class="vfs">Término</div><div class="m">'+esc(x.stopText)+' · '+dur(x.totalSec*1000)+(x.continuedAfterCriterion?'<br><b>O teste continuou após critério de interrupção ('+esc(x.continuedAfterCriterion)+').</b>':'')+'</div>';
   h+='<div class="vfs">Limiares (indireto, experimental)</div><div class="m">'+HR.cstDfaHtml(x.dfa)+'</div>';
   if(x.repeatNote)h+='<div class="m" style="margin-top:8px">'+esc(x.repeatNote)+'</div>';
-  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> o resultado é uma ESTIMATIVA submáxima, não uma medida direta de VO2 nem limiar medido. O profissional define a conduta.</p>';
+  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> o resultado é uma ESTIMATIVA submáxima, não uma medida direta de VO2 nem limiar medido; a classificação é uma comparação populacional. O profissional define a conduta.</p>';
   $('cs-res').innerHTML=h;$('cs-sv').disabled=cs.saved;$('cs-sv').textContent=cs.saved?'Salvo no Histórico':'Salvar no Histórico';
 }
 // ---- eventos de tela ----
@@ -2420,13 +2470,13 @@ $('cs-back0').onclick=()=>setView('novo');
 $('cs-back1').onclick=()=>{cs=csNew();csShow()};
 $('cs-back2').onclick=()=>{cs.step=1;csShow()};
 $('cs-addm').onclick=()=>$('add').click();
-['cs-triage','cs-dev','cs-name','cs-age','cs-hrr','cs-cad0','cs-sec','cs-why','cs-spo2min'].forEach(id=>{$(id).addEventListener('input',csCheck);$(id).addEventListener('change',csCheck)});
+['cs-dev','cs-name','cs-age','cs-sex','cs-hrr','cs-cad0','cs-sec','cs-why','cs-spo2min'].forEach(id=>{$(id).addEventListener('input',csCheck);$(id).addEventListener('change',csCheck)});
 $('cs-go').onclick=()=>{
   if($('cs-go').disabled)return;
   const c=cards.get($('cs-dev').value),ad=cs.kind==='adaptado';if(!c)return;
   const raw=$('cs-spo2min').value.trim();
-  Object.assign(cs,{c,label:$('cs-name').value.trim(),age:parseInt($('cs-age').value,10),hrRest:parseInt($('cs-hrr').value,10),stepCm:+document.querySelector('#cs-steps input:checked').value,
-    cad0:ad?+$('cs-cad0').value:15,stageSec:ad?+$('cs-sec').value:120,why:ad?$('cs-why').value.trim():'',spo2Min:raw===''?null:parseInt(raw,10),triage:true});
+  Object.assign(cs,{c,label:$('cs-name').value.trim(),age:parseInt($('cs-age').value,10),sex:$('cs-sex').value,hrRest:parseInt($('cs-hrr').value,10),stepCm:+document.querySelector('#cs-steps input:checked').value,
+    cad0:ad?+$('cs-cad0').value:15,stageSec:ad?+$('cs-sec').value:120,why:ad?$('cs-why').value.trim():'',spo2Min:raw===''?null:parseInt(raw,10)});
   cs.hrMax=HR.cstHrMax(cs.age);cs.hrStop=HR.CST.STOP_HR_FRAC*cs.hrMax;
   cs.stages=HR.cstStages(ad?{kind:'adaptado',cad0:cs.cad0,stageSec:cs.stageSec}:{kind:'original'}).map(s=>({...s,completed:false,effectiveSec:0,hr:null,hrOk:false,hrNote:'',borg:null,spo2:null,closed:false}));
   cs.step=2;csSummary();csShow();
@@ -2441,6 +2491,9 @@ $('cs-start').onclick=()=>{
 };
 $('cs-ev-ritmo').onclick=()=>csEvent('Perdeu o ritmo');$('cs-ev-pausa').onclick=()=>csEvent('Pausa');$('cs-ev-trop').onclick=()=>csEvent('Tropeço');
 $('cs-ev-sym').onclick=()=>csEvent('Sintoma: '+$('cs-sym').value);
+$('cs-fab').onclick=csStopDlg;$('sp-back').onclick=()=>{$('spd').hidden=true};
+$('cs-pend-open').onclick=()=>csRenderPend(true);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('spd').hidden)$('spd').hidden=true});
 $('cs-fin').onclick=()=>{if($('cs-fin').disabled)return;cs.result=null;cs.step=5;csShow()};
 $('cs-disc').onclick=()=>{if(confirm('Descartar este teste? Os dados não salvos serão perdidos.'))csReset()};
 $('cs-new').onclick=()=>csReset();
