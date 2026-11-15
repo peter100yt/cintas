@@ -95,7 +95,7 @@ body.mod-sessao:not(.sess-on) .c [data-k="sv"]{display:none}
 @media(prefers-reduced-motion:reduce){#s-run .rec i{animation:none}#msg{transition:none!important}}
 /* telas e menu inferior */
 .view{display:none}
-body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-run,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
+body[data-view="home"] #v-home,body[data-view="agora"] #v-agora,body[data-view="novo"] #v-novo,body[data-view="sessao"] #v-run,body[data-view="proto"] #v-prt,body[data-view="hist"] #v-hist,body[data-view="ajustes"] #v-ajustes{display:block}
 #v-home{min-height:50vh}
 body:not([data-view="home"]) .top{display:none}   /* cabeçalho com a logomarca só na Home */
 .vh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}.vh h2{margin:0;font-size:22px}
@@ -221,6 +221,25 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .tips{display:grid;overflow:hidden;min-height:37px}   /* 2 linhas de 13 px */
 .tp{grid-area:1/1;font-size:13px;line-height:18px;max-height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--mut);align-self:start}
 .hsafe{margin-top:14px}.hsafe summary{cursor:pointer;font-weight:600;min-height:32px;display:flex;align-items:center}.hsafe ul{margin:8px 0 0;padding-left:18px}.hsafe li{margin:4px 0}
+/* Protocolo progressivo: Chester Step Test */
+.ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;min-height:26px;min-width:26px;padding:0;border-radius:50%;border:1.5px solid var(--acc);color:var(--acc);background:transparent;font:italic 700 14px Georgia,serif;margin-left:4px;vertical-align:middle;box-shadow:none}
+.ibr{display:flex;align-items:center;gap:8px;margin:0 0 4px 36px}
+.ifbox{max-height:86vh;overflow:auto}.iftag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--accbg);color:var(--acc)}
+.ifbox .ifr{margin:10px 0}.ifbox .ifr b{display:block;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}.ifbox .ifr p{margin:2px 0 0;font-size:14px}
+.prh{display:flex;align-items:center;gap:6px}.prh strong{font-size:19px}
+.prrow{display:flex;align-items:center;gap:8px;margin:8px 0}.prrow>button:not(.ib){flex:1}
+.stepopt{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}.stepopt:first-child{border-top:0}
+.stepopt label{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer}.stepopt input{width:22px;height:22px;accent-color:var(--acc);margin:0}.stepopt.off{opacity:.45}
+.cst-tbl{width:100%;border-collapse:collapse;font-size:14px}.cst-tbl th,.cst-tbl td{border-top:1px solid var(--line);padding:6px 4px;text-align:center}.cst-tbl th{color:var(--mut);font-weight:600;font-size:12px}
+.cspulse{width:140px;height:140px;border-radius:50%;background:var(--accbg);display:flex;align-items:center;justify-content:center;margin:8px auto}
+.cspulse i{display:block;width:70%;height:70%;border-radius:50%;background:var(--acc);transform:scale(1)}
+.csph{text-align:center;font-weight:800;font-size:20px;min-height:28px}
+.cscrit{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.cscrit .tx{flex:1;min-width:0}.cscrit .go{min-height:36px;font-size:13px;padding:0 10px}.cscrit .ib{margin:0}
+.csal{padding:10px 12px;border-radius:12px;margin:8px 0;font-weight:700;font-size:14px}.csal.bad{background:var(--badbg);color:var(--bad)}.csal.warn{background:var(--warnbg);color:var(--warn)}
+.borg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:6px 0}.borg button{min-height:44px;padding:0}.borg button.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.cspend{border:1px solid var(--warn);border-radius:12px;padding:12px;margin:10px 0;background:var(--warnbg)}.cspend .f input{max-width:140px}
+#cs-res .t.main .v{font-size:26px}
+@media(prefers-reduced-motion:reduce){.cspulse i{transform:none!important}}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -261,11 +280,110 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <h2 class="hh">O que você quer fazer?</h2>
 <div class="opts">
 <button class="hmb" id="go-s2"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo: FC, linha do tempo, zonas, alertas e ECG.</span></button>
-<button class="hmb" id="go-p2"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Teste com carga crescente para estimar limiares por VFC (DFA-α1). Experimental: não é limiar ventilatório medido.</span></button>
+<button class="hmb" id="go-p2"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Protocolos de carga crescente, começando pelo Chester Step Test: estimativa do VO2máx e de limiares por VFC (DFA-α1). Experimental: não são medidas diretas.</span></button>
 <button class="hmb" id="go-v2"><span class="hi">〰️</span><strong>Leitura de VFC</strong><span class="m">Variabilidade da frequência cardíaca em repouso padronizado: modo ultra-curto (60 s) ou padrão (5 min), com estabilização, respiração espontânea ou cadenciada e relatório. Descreve a resposta autonômica; não é diagnóstico.</span></button>
 <button class="hmb" id="go-e2"><span class="hi">🩺</span><strong>ECG de repouso</strong><span class="m">Exame guiado em 4 etapas, com traçado de 1 derivação, controle de qualidade do sinal, triagem de ritmo e laudo em PDF. É triagem: não diagnostica infarto nem isquemia.</span></button>
 </div>
 </section>
+
+<section class="view" id="v-prt" aria-label="Protocolo progressivo">
+<div class="vh"><h2>Protocolo progressivo</h2><span class="stp" id="cs-stp"></span></div>
+
+<div id="cs-0">
+<p class="m" style="margin:0 0 12px">Escolha o protocolo. Em todos, o app também estima limiares pelo DFA-α1 (experimental, sempre rotulado "estimado por VFC").</p>
+<div class="card2">
+<div class="prh"><strong>Chester Step Test</strong><button type="button" class="ib" data-i="cst" aria-label="Informações: Chester Step Test">i</button></div>
+<p class="m" style="margin:6px 0 12px">Teste submáximo de degrau, em 5 estágios de carga crescente. Estima o VO2máx (estimativa, não medida direta) a partir da relação entre FC e carga.</p>
+<div class="prrow"><button class="pri" id="cs-o">CST original</button><button type="button" class="ib" data-i="modo" aria-label="Informações: CST original ou adaptado">i</button></div>
+<div class="prrow"><button id="cs-a">CST adaptado/clínico</button><button type="button" class="ib" data-i="modo" aria-label="Informações: CST adaptado">i</button></div>
+</div>
+<button class="chip" id="cs-back0">‹ Modos</button>
+</div>
+
+<div id="cs-1" class="card2" hidden>
+<div class="prh"><strong id="cs-t1">CST original</strong></div>
+<div class="rbn bad" id="cs-adbn" hidden>CST ADAPTADO: não é equivalente ao CST original e não deve ser comparado diretamente com ele.</div>
+<label class="ckr"><input type="checkbox" id="cs-triage"><span>Houve triagem clínica prévia e o paciente não apresenta sintomas de alarme.</span></label><div class="ibr"><button type="button" class="ib" data-i="triagem" aria-label="Informações: triagem clínica prévia">i</button></div>
+<div class="sl" style="margin-top:14px">Dados do teste</div>
+<div class="exf">
+<label class="f"><span>Monitor</span><select id="cs-dev"></select></label>
+<button class="chip" id="cs-addm" type="button" style="align-self:flex-start">＋ Adicionar monitor</button>
+<label class="f"><span>Nome (opcional) <button type="button" class="ib" data-i="nome" aria-label="Informações: nome">i</button></span><input id="cs-name" maxlength="40" placeholder="Em branco = registro anônimo" autocomplete="off"></label>
+<label class="f"><span>Idade (anos completos) <button type="button" class="ib" data-i="idade" aria-label="Informações: idade">i</button></span><input id="cs-age" type="number" inputmode="numeric" min="10" max="100" step="1"></label>
+<label class="f"><span>FC de repouso (bpm) <button type="button" class="ib" data-i="fcrep" aria-label="Informações: FC de repouso">i</button></span><input id="cs-hrr" type="number" inputmode="numeric" min="30" max="200" step="1"></label>
+</div>
+<div class="sl" style="margin-top:14px">Altura do degrau <button type="button" class="ib" data-i="step" aria-label="Informações: altura do degrau">i</button></div>
+<div id="cs-steps"></div>
+<div style="display:flex;align-items:center;gap:6px;margin:10px 0"><span class="m" id="cs-fcmax"></span><button type="button" class="ib" data-i="fcmax" aria-label="Informações: FC máxima prevista">i</button></div>
+<div id="cs-adf" hidden>
+<div class="sl" style="margin-top:6px">Adaptação (decisão do profissional)</div>
+<div class="exf">
+<label class="f"><span>Cadência inicial <button type="button" class="ib" data-i="cad0" aria-label="Informações: cadência inicial">i</button></span><select id="cs-cad0"><option value="10">10 subidas/min</option><option value="15">15 subidas/min</option></select></label>
+<label class="f"><span>Duração de cada estágio <button type="button" class="ib" data-i="stagesec" aria-label="Informações: duração do estágio">i</button></span><select id="cs-sec"><option value="120">2 min</option><option value="180">3 min</option></select></label>
+<label class="f"><span>Justificativa da adaptação (obrigatória) <button type="button" class="ib" data-i="adaptwhy" aria-label="Informações: justificativa">i</button></span><input id="cs-why" maxlength="160" autocomplete="off"></label>
+</div></div>
+<label class="f" style="margin-top:12px"><span>SpO2 mínima aceita, critério do serviço (opcional) <button type="button" class="ib" data-i="spo2min" aria-label="Informações: SpO2 mínima">i</button></span><input id="cs-spo2min" type="number" inputmode="numeric" min="50" max="100" step="1" placeholder="Em branco = sem comparação automática"></label>
+<div class="sl" style="margin-top:14px">Estágios <button type="button" class="ib" data-i="estagio" aria-label="Informações: estágio">i</button> e cadência <button type="button" class="ib" data-i="cadencia" aria-label="Informações: cadência">i</button></div>
+<div id="cs-tbl"></div>
+<div class="m" id="cs-hint" style="margin:12px 0"></div>
+<button class="pri sbtn" id="cs-go" disabled>Continuar</button>
+<button class="sbtn" id="cs-back1" style="margin-top:8px">Voltar</button>
+</div>
+
+<div id="cs-2" class="card2" hidden>
+<div class="sl">Antes de iniciar</div>
+<div id="cs-sum" class="m"></div>
+<ul class="vfl"><li>Confirme o degrau com a <b>altura escolhida</b> e a área segura, sem tapete solto.</li><li>O paciente <b>acompanha o metrônomo</b>. Se não conseguir manter o ritmo, o teste é encerrado: não se altera a cadência.</li><li>Para o teste <b>imediatamente</b> diante de qualquer critério de interrupção. A decisão clínica é sua.</li></ul>
+<label class="ckr"><input type="checkbox" id="cs-snd" checked><span>Metrônomo sonoro</span></label><div class="ibr"><button type="button" class="ib" data-i="som" aria-label="Informações: metrônomo sonoro">i</button> <button class="chip" id="cs-sndt">Testar som</button></div>
+<div class="exb"><button class="pri sbtn" id="cs-start">▶ Iniciar teste (contagem de 5 s)</button><button class="sbtn" id="cs-back2">Voltar</button></div>
+</div>
+
+<div id="cs-3" hidden>
+<div class="card2">
+<div class="sq"><div class="sqt"><div class="qt" id="cs-stg">Estágio 1 de 5</div><div class="m" id="cs-cad"></div></div><div class="cd" id="cs-cd">02:00</div></div>
+<div class="prog"><i id="cs-pg"></i></div><div class="m" id="cs-tt" style="margin:6px 0 4px">00:00 / 10:00</div>
+<div class="cspulse"><i id="cs-pulse"></i></div><div class="csph" id="cs-ph">—</div>
+<div class="vfhr"><span id="cs-hr">—</span><small>bpm <button type="button" class="ib" data-i="fc" aria-label="Informações: frequência cardíaca">i</button></small></div>
+<div class="m" id="cs-hrm" style="text-align:center"></div>
+</div>
+<div id="cs-al"></div>
+<div class="card2">
+<div class="sl">Registro de fim de estágio <button type="button" class="ib" data-i="borg" aria-label="Informações: Borg">i</button></div>
+<div id="cs-pend" class="m">Os registros pendentes aparecem aqui ao final de cada estágio.</div>
+</div>
+<div class="card2">
+<div class="sl">Eventos e sintomas <button type="button" class="ib" data-i="eventos" aria-label="Informações: eventos">i</button></div>
+<div class="symc"><button id="cs-ev-ritmo">Perdeu o ritmo</button><button id="cs-ev-pausa">Pausa</button><button id="cs-ev-trop">Tropeço</button></div>
+<div class="f g2"><label><span>Sintoma <button type="button" class="ib" data-i="sintomas" aria-label="Informações: sintomas">i</button></span><select id="cs-sym"><option value="Palpitação">Palpitação</option><option value="Tontura">Tontura</option><option value="Falta de ar">Falta de ar</option><option value="Dor">Dor</option><option value="Outro sintoma">Outro sintoma</option></select></label><label style="justify-content:flex-end"><button id="cs-ev-sym">Marcar sintoma</button></label></div>
+<div class="m" id="cs-evl" style="margin-top:8px"></div>
+</div>
+<div class="card2">
+<div class="sl">Critérios de interrupção <button type="button" class="ib" data-i="motivo" aria-label="Informações: motivo de interrupção">i</button></div>
+<div class="m" style="margin-bottom:6px">Registrar um critério encerra o teste. O app não oferece continuar após um critério. <b>A decisão clínica final é do profissional.</b></div>
+<div id="cs-crit"></div>
+</div>
+</div>
+
+<div id="cs-4" class="card2" hidden>
+<div class="rbn bad" id="cs-stopbn"></div>
+<div class="sl">Fechamento dos registros</div>
+<div class="m" style="margin-bottom:8px">Informe o Borg dos estágios concluídos (obrigatório) e a SpO2 (opcional), no bloco abaixo.</div>
+<div id="cs-pend4"></div>
+<div class="exf" style="margin-top:10px">
+<label class="f"><span>Motivo da escolha da altura (opcional) <button type="button" class="ib" data-i="step" aria-label="Informações: altura do degrau">i</button></span><input id="cs-reason" maxlength="160" autocomplete="off"></label>
+<label class="f"><span>Profissional responsável (opcional)</span><input id="cs-prof" maxlength="60" autocomplete="off"></label>
+<label class="f"><span>Observações (opcional)</span><input id="cs-obs" maxlength="200" autocomplete="off"></label>
+</div>
+<div class="exb"><button class="pri sbtn" id="cs-fin" disabled>Ver resultado</button><button class="sbtn danger" id="cs-disc">Descartar o teste</button></div>
+</div>
+
+<div id="cs-5" hidden>
+<div class="card2"><div id="cs-res"></div></div>
+<div class="acts"><button class="pri" id="cs-rep">Relatório</button><button id="cs-sv">Salvar no Histórico</button><button id="cs-new">Novo teste</button></div>
+</div>
+</section>
+
+<div id="ifd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ift" style="z-index:60"><div class="dbox ifbox"><span class="iftag" id="ifg"></span><h3 id="ift" style="margin-top:8px"></h3><div id="ifb"></div><div class="dacts"><button class="pri" id="if-ok">Fechar</button></div></div></div>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
 <div class="vh"><h2 id="run-t">Sessão de exercício</h2><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div></div>
@@ -378,7 +496,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </nav>
 <div id="endd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="endt"><div class="dbox"><h3 id="endt">Encerrar a sessão?</h3><p class="m">Você pode salvar a sessão no Histórico deste aparelho antes de encerrar. Se encerrar sem salvar, as leituras desta sessão serão descartadas e não dá para recuperá-las.</p><div class="dacts"><button class="pri" id="e-save">Salvar e encerrar</button><button class="danger" id="e-no">Encerrar sem salvar</button><button id="e-cancel">Continuar sessão</button></div></div></div>
 <div id="chd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cht" aria-describedby="chp"><div class="dbox"><h3 id="cht"></h3><p class="m" id="chp"></p><div class="dacts"><button class="pri" id="ch-back"></button><button class="danger" id="ch-go">Mudar e descartar os dados</button></div></div></div>
-<div id="prd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="prt" aria-describedby="prp"><div class="dbox"><h3 id="prt">Estimativa experimental</h3><p class="m" id="prp">Neste modo, os limiares são apenas ESTIMADOS a partir da variabilidade da frequência cardíaca (DFA-α1). Trata-se de um recurso experimental, ainda sem validação clínica: o resultado pode estar errado ou não aparecer e não equivale a um limiar ventilatório medido em teste cardiopulmonar. Não use esses valores sozinhos para prescrever intensidade nem para decidir a segurança do paciente.</p><div class="dacts"><button class="pri" id="pr-ok">Ok, entendi</button><button id="pr-no">Cancelar</button></div></div></div>
+<div id="prd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="prt" aria-describedby="prp"><div class="dbox"><h3 id="prt">Estimativa experimental</h3><p class="m" id="prp">Neste modo, os limiares são apenas ESTIMADOS a partir da variabilidade da frequência cardíaca (DFA-α1). Trata-se de um recurso experimental, ainda sem validação clínica: o resultado pode estar errado ou não aparecer e não equivale a um limiar ventilatório medido em teste cardiopulmonar. O VO2máx do Chester Step Test também é apenas uma estimativa submáxima, não uma medida direta. Não use esses valores sozinhos para prescrever intensidade nem para decidir a segurança do paciente.</p><div class="dacts"><button class="pri" id="pr-ok">Ok, entendi</button><button id="pr-no">Cancelar</button></div></div></div>
 <div id="scrim"></div>
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
 <button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
@@ -1049,7 +1167,112 @@ const HR = (() => {
     return o;
   }
 
-  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT };
+  // ===================== Chester Step Test (CST) =====================
+  // Teste submáximo, incremental e multietápico. Estima o VO2máx por extrapolação linear FC x carga até a FCmáx prevista.
+  // É ESTIMATIVA (não é VO2 medido nem limiar). Parâmetros de confiança são critérios de trabalho, sem validação clínica.
+  const CST = {
+    VERSION: 'CST-1', HEIGHTS_CM: [15, 20, 25, 30], ORIG_CAD: [15, 20, 25, 30, 35], ORIG_STAGE_SEC: 120,
+    STOP_HR_FRAC: 0.80, STOP_BORG: 8, MIN_HR: 30, MAX_HR: 250, JUMP_BPM: 30,
+    R2_HIGH: 0.95, R2_MOD: 0.85, R2_MOD3: 0.90,
+  };
+  // VO2 (ml/kg/min) = 0,2 f + 1,33 x 1,8 x h x f + 3,5 (f = subidas/min; h = altura do degrau em metros)
+  function cstLoad(hCm, f) { return 0.2 * f + 1.33 * 1.8 * (hCm / 100) * f + 3.5; }
+  function cstHrMax(age) { return 220 - age; }
+  // Estágios: original = 15,20,25,30,35 subidas/min por 2 min. Adaptado: cadência inicial e duração do estágio escolhidas
+  // pelo profissional (+5 subidas/min por estágio); nunca é equivalente ao original.
+  function cstStages(cfg) {
+    const ad = !!cfg && cfg.kind === 'adaptado', cad0 = ad ? cfg.cad0 : CST.ORIG_CAD[0], sec = ad ? cfg.stageSec : CST.ORIG_STAGE_SEC;
+    return [0, 1, 2, 3, 4].map(i => { const cad = cad0 + 5 * i; return { n: i + 1, cad, durSec: sec, subidas: cad * sec / 60, startSec: i * sec, endSec: (i + 1) * sec }; });
+  }
+  function cstStageAt(tSec, stages) { for (const s of stages) if (tSec < s.endSec) return s.n; return stages.length; }
+  // FC aceitável como dado fisiológico: faixa plausível e sem salto abrupto em relação à mediana das leituras recentes.
+  function cstHrCheck(bpm, recent) {
+    if (bpm === null || bpm === undefined || !isFinite(bpm)) return { ok: false, reason: 'sem leitura' };
+    if (bpm < CST.MIN_HR || bpm > CST.MAX_HR) return { ok: false, reason: 'valor implausível (' + bpm + ' bpm)' };
+    const r = (recent || []).filter(v => isFinite(v) && v > 0);
+    if (r.length >= 3) { const s = r.slice().sort((a, b) => a - b), m = s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2;
+      if (Math.abs(bpm - m) > CST.JUMP_BPM) return { ok: false, reason: 'variação abrupta (' + bpm + ' bpm contra mediana ' + Math.round(m) + ')' }; }
+    return { ok: true, reason: '' };
+  }
+  function cstRegress(pts) {
+    const n = pts.length; if (n < 2) return null;
+    const mx = pts.reduce((a, p) => a + p.vo2, 0) / n, my = pts.reduce((a, p) => a + p.hr, 0) / n;
+    let sxx = 0, sxy = 0, syy = 0; for (const p of pts) { sxx += (p.vo2 - mx) ** 2; sxy += (p.vo2 - mx) * (p.hr - my); syy += (p.hr - my) ** 2; }
+    if (sxx === 0) return null;
+    const slope = sxy / sxx, icpt = my - slope * mx, r2 = syy === 0 ? 1 : (sxy * sxy) / (sxx * syy);
+    return { slope, intercept: icpt, r2 };   // FC = intercept + slope x VO2
+  }
+  // Só estágios CONCLUÍDOS e com FC registrada entram. Interrompidos ou sem FC ficam fora.
+  function cstEstimate(stages, hrMax, hCm) {
+    const used = stages.filter(s => s.completed && s.hrOk && isFinite(s.hr)).map(s => ({ n: s.n, hr: s.hr, vo2: cstLoad(hCm, s.cad) }));
+    const base = { n: used.length, stagesUsed: used.map(u => u.n), hrMax, label: 'VO2máx estimado pelo CST' };
+    if (used.length < 2) return { ...base, state: 'insufficient', reason: 'menos de 2 estágios concluídos com FC registrada: não dá para ajustar a reta' };
+    const g = cstRegress(used);
+    if (!g) return { ...base, state: 'inconclusive', reason: 'cargas sem variação: não dá para ajustar a reta' };
+    if (!(g.slope > 0)) return { ...base, state: 'inconclusive', slope: g.slope, intercept: g.intercept, r2: g.r2, reason: 'a FC não aumentou com a carga (inclinação ≤ 0): extrapolação sem sentido' };
+    const vo2max = (hrMax - g.intercept) / g.slope;
+    if (!isFinite(vo2max) || vo2max <= 0) return { ...base, state: 'inconclusive', slope: g.slope, intercept: g.intercept, r2: g.r2, reason: 'extrapolação resultou em valor inválido' };
+    const n = used.length;
+    const conf = n === 2 ? 'baixa' : n === 3 ? (g.r2 >= CST.R2_MOD3 ? 'moderada' : 'baixa') : (g.r2 >= CST.R2_HIGH ? 'alta' : g.r2 >= CST.R2_MOD ? 'moderada' : 'baixa');
+    return { ...base, state: 'estimated', vo2max, slope: g.slope, intercept: g.intercept, r2: g.r2, confidence: conf, points: used };
+  }
+  const CST_STOP = [
+    ['fc80', 'FC atingiu 80% da FCmáx prevista', 'auto'], ['borg8', 'Borg atingiu 8/10', 'auto'], ['cadencia', 'Incapacidade de manter a cadência', 'manual'],
+    ['pedido', 'Solicitação do paciente para parar', 'manual'], ['dor_toracica', 'Dor torácica, angina ou desconforto torácico novo', 'manual'],
+    ['tontura', 'Tontura importante, presíncope ou síncope', 'manual'], ['dispneia', 'Dispneia desproporcional ou intolerância ao esforço', 'manual'],
+    ['spo2', 'Dessaturação clinicamente relevante (critério do serviço)', 'auto'], ['arritmia', 'Arritmia significativa ou alteração eletrocardiográfica relevante', 'manual'],
+    ['musculo', 'Dor musculoesquelética, instabilidade, risco de queda ou limitação que impeça a execução correta', 'manual'], ['conclusao', 'Conclusão dos cinco estágios', 'auto'],
+  ];
+  const cstStopText = k => (CST_STOP.find(x => x[0] === k) || [0, 'Interrompido pelo profissional'])[1];
+  function cstReportHtml(x) {
+    const row = (k, v) => '<tr><th>' + esc(k) + '</th><td>' + v + '</td></tr>', f1 = (v, d = 1) => v === null || v === undefined || !isFinite(v) ? '—' : v.toFixed(d).replace('.', ',');
+    const ad = x.kind === 'adaptado', e = x.estimate;
+    let o = '<div class="cstdoc"><h2>Pulsys · ' + (ad ? 'CST adaptado/clínico' : 'Chester Step Test (CST original)') + '</h2>';
+    if (ad) o += '<p class="m"><b>CST ADAPTADO: não é equivalente ao CST original e não deve ser comparado diretamente com ele.</b></p>';
+    o += '<table>';
+    o += row('Nome / identificação', esc(x.label) || 'sem nome (registro anônimo)');
+    o += row('Idade', x.age + ' anos');
+    o += row('Data e horário', x.startedAt ? esc(new Date(x.startedAt).toLocaleString('pt-BR')) : '—');
+    o += row('Profissional responsável', esc(x.professional) || 'não informado');
+    o += row('Protocolo', esc(ad ? 'CST adaptado/clínico' : 'CST original') + ' · versão ' + esc(x.version || CST.VERSION));
+    o += row('Altura do degrau', x.stepCm + ' cm (fixa durante todo o teste)');
+    o += row('Motivo da escolha da altura', esc(x.stepReason) || 'não informado');
+    if (ad) { o += row('Adaptação (cadência inicial · duração do estágio)', x.cad0 + ' subidas/min · ' + (x.stageSec / 60) + ' min, +5 subidas/min por estágio'); o += row('Justificativa da adaptação', esc(x.adaptWhy) || '—'); }
+    o += row('FC de repouso', x.hrRest + ' bpm');
+    o += row('FCmáx prevista', x.hrMax + ' bpm (fórmula: 220 − idade; estimativa populacional)');
+    o += row('Equipamento', esc(x.device || '—'));
+    o += row('Triagem clínica prévia', x.triage ? 'confirmada pelo avaliador' : '—');
+    o += '</table><h3>Estágios</h3><table><tr>' + ['Est.', 'Tempo', 'Cadência', 'Subidas', 'FC (bpm)', 'Borg', 'SpO2', 'VO2 est.', 'Status'].map(h => '<th style="width:auto">' + h + '</th>').join('') + '</tr>';
+    for (const s of x.stages) {
+      const st = s.completed ? 'concluído' : s.effectiveSec > 0 ? 'interrompido (' + Math.round(s.effectiveSec) + ' s)' : 'não realizado';
+      o += '<tr>' + [s.n, (s.durSec / 60) + ' min', s.cad + '/min', s.subidas, s.hrOk ? Math.round(s.hr) : (s.completed || s.effectiveSec > 0 ? esc(s.hrNote || 'FC não registrada') : '—'), s.borg === null || s.borg === undefined ? '—' : s.borg,
+        s.spo2 === null || s.spo2 === undefined ? '—' : s.spo2 + '%', f1(cstLoad(x.stepCm, s.cad)) + ' ml/kg/min', st].map(c => '<td>' + c + '</td>').join('') + '</tr>';
+    }
+    o += '</table><table>';
+    o += row('Estágios concluídos', x.stages.filter(s => s.completed).length + ' de ' + x.stages.length);
+    o += row('Tempo total efetivo', Math.floor(x.totalSec / 60) + ' min ' + Math.round(x.totalSec % 60) + ' s');
+    o += row('Motivo de término', esc(x.stopText || '—'));
+    if (x.continuedAfterCriterion) o += row('Atenção', '<b>O teste continuou após um critério de interrupção ter sido sinalizado (' + esc(x.continuedAfterCriterion) + ').</b>');
+    if (x.lastHr) o += row('FC final / % da FCmáx prevista', Math.round(x.lastHr) + ' bpm · ' + f1(x.lastHr / x.hrMax * 100, 0) + '%');
+    o += row('VO2máx estimado pelo CST', e && e.state === 'estimated' ? '<b>' + f1(e.vo2max) + ' ml/kg/min (ESTIMATIVA)</b> · confiabilidade ' + e.confidence + ' · ' + e.n + ' estágio(s) (' + e.stagesUsed.join(', ') + ') · R² ' + f1(e.r2, 2) + ' · FC = ' + f1(e.intercept, 1) + ' + ' + f1(e.slope, 2) + ' × VO2'
+      : '<b>não estimado</b>: ' + esc(e ? e.reason : 'sem dados'));
+    o += row('Limiar (indireto, experimental)', cstDfaHtml(x.dfa));
+    o += row('Sintomas e eventos', x.events && x.events.length ? x.events.map(v => esc(v.text) + ' (' + Math.floor(v.tSec / 60) + ':' + String(Math.round(v.tSec % 60)).padStart(2, '0') + ')').join('<br>') : 'nenhum registrado');
+    o += row('Qualidade da execução', esc(x.quality || '—'));
+    o += row('Recomendação de repetição', esc(x.repeatNote || '—'));
+    o += row('Observações', esc(x.obs) || '—');
+    o += row('Comparação com testes anteriores', 'não disponível nesta versão (exige altura, cadência, ambiente, medicação e condições comparáveis).');
+    o += '</table><p class="m"><b>Aviso:</b> o resultado é uma ESTIMATIVA submáxima, não uma medida direta de VO2, de limiar ventilatório nem de limiar de lactato. Depende da aderência à cadência, da resposta de FC, da FCmáx prevista (220 − idade) e das condições do teste, e não substitui o CPET, a avaliação clínica nem a supervisão profissional. A estimativa de limiares por DFA-α1 é experimental e sem validação clínica. A decisão clínica final é do fisioterapeuta e da equipe de saúde.</p></div>';
+    return o;
+  }
+  function cstDfaHtml(d) {
+    if (!d) return 'não calculado';
+    const one = (nome, r) => !r ? nome + ': —' : r.state === 'estimated' ? nome + ': ESTIMADO POR VFC, FC ' + r.bpm + ' bpm no estágio ' + r.stage + ' (hipótese de pesquisa, não é limiar ventilatório medido)'
+      : r.state === 'notIdentified' ? nome + ': não identificado' : nome + ': inconclusivo (' + esc(r.reason || '') + ')';
+    return one('DFA-α1 0,75', d.e1) + '<br>' + one('DFA-α1 0,50', d.e2) + '<br><span class="m">O CST em si não identifica limiares; método indireto: cruzamento do DFA-α1 (experimental).</span>';
+  }
+
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT, CST, cstLoad, cstHrMax, cstStages, cstStageAt, cstHrCheck, cstRegress, cstEstimate, CST_STOP, cstStopText, cstReportHtml, cstDfaHtml };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -1325,13 +1548,13 @@ async function renderHist(){
   if(!all.length){box.textContent='Nenhuma sessão salva.';return}
   all.sort((a,b)=>b.id-a.id).forEach(s=>{
     const r=document.createElement('div');r.className='r';
-    const isE=s.kind==='ecg',isV=s.kind==='vfc';   // exame de ECG de repouso, leitura de VFC ou sessão de exercício
+    const isE=s.kind==='ecg',isV=s.kind==='vfc',isC=s.kind==='cst';   // exame de ECG de repouso, leitura de VFC ou sessão de exercício
     const t=document.createElement('span');
-    t.textContent=isV?new Date(s.endedAt).toLocaleString('pt-BR')+' · Leitura de VFC · '+(s.label||'sem identificação')+' · '+(HR.VFC.MODES[s.mode]?HR.VFC.MODES[s.mode].nome:'')+(s.valid?' · RMSSD '+(s.rmssd==null?'—':s.rmssd.toFixed(1)+' ms'):' · invalidada'):
+    t.textContent=isC?new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(s.cstKind==='adaptado'?'CST adaptado/clínico':'Chester Step Test')+' · '+(s.label||'sem nome')+(s.vo2max==null?' · sem estimativa':' · VO2máx est. '+s.vo2max.toFixed(1).replace('.',',')+' ml/kg/min (estimativa)'):isV?new Date(s.endedAt).toLocaleString('pt-BR')+' · Leitura de VFC · '+(s.label||'sem identificação')+' · '+(HR.VFC.MODES[s.mode]?HR.VFC.MODES[s.mode].nome:'')+(s.valid?' · RMSSD '+(s.rmssd==null?'—':s.rmssd.toFixed(1)+' ms'):' · invalidada'):
       new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(isE?'ECG de repouso · ':'')+(s.label||'sem identificação')+' · '+(isE?Math.round(s.durSec)+' s':(s.startedAt?dur(s.endedAt-s.startedAt):'—'))+' · FC média '+(s.meanBpm==null?'—':Math.round(s.meanBpm))+(isE&&!s.valid?' · inconclusivo':'');r.appendChild(t);
     const b=(txt,fn)=>{const x=document.createElement('button');x.textContent=txt;x.onclick=fn;r.appendChild(x)};
-    b('Relatório',()=>isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
-    if(!isE&&!isV)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
+    b('Relatório',()=>isC?openRep(HR.cstReportHtml(s.exam),false):isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
+    if(!isE&&!isV&&!isC)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
     b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
     box.appendChild(r)});
 }
@@ -1390,7 +1613,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='proto')csShow();if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -1438,7 +1661,7 @@ document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('prd').hidden)
 const MODO_NOME={sessao:'Sessão de exercício',proto:'Protocolo progressivo',vfc:'Leitura de VFC',ecgr:'ECG de repouso'};
 function activeMode(){
   if(sess.on)return 'sessao';
-  if([...cards.values()].some(c=>c.proto&&c.proto.on))return 'proto';
+  if(cs.step===3||[...cards.values()].some(c=>c.proto&&c.proto.on))return 'proto';
   if(vf.step===2||vf.step===3)return 'vfc';
   if(ex.step===2||ex.step===3)return 'ecgr';
   return null;
@@ -1446,6 +1669,7 @@ function activeMode(){
 function discardActive(){
   if(sess.on)sess.on=false;
   cards.forEach(c=>{if(c.proto&&c.proto.on)c.proto={on:false,t0:0,end:0,pts:[]};resetCard(c)});
+  if(cs.step===3)csReset();
   if(vf.step===2||vf.step===3)vf=vfNew();
   if(ex.step===2||ex.step===3){if(ex.c)ecgOff(ex.c,'Desligado.');ex=exNew()}
   renderSess();markTab();
@@ -1771,6 +1995,464 @@ $('vf-sv').onclick=async()=>{
   try{await tx('readwrite',s=>s.add({kind:'vfc',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,mode:x.mode,valid:x.valid,rmssd:x.time?x.time.rmssd:null,meanBpm:x.time?x.time.hr:null,exam:x}));vf.saved=true;vfResult();msg('Leitura salva no Histórico deste aparelho.')}
   catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Abra o relatório antes de sair.')}
 };
+﻿// ===== Chester Step Test: textos dos botões "i" =====
+// Cada "i" explica: o que é, por que importa, como escolher, quando evitar/adaptar e como o dado entra nos cálculos e no relatório.
+// A etiqueta mostra a ORIGEM da informação: protocolo original, adaptação clínica ou decisão do avaliador.
+const IR=(o,p,c,e,u)=>[['O que significa',o],['Por que importa',p],['Critérios para escolher',c],['Quando evitar ou adaptar',e],['Uso nos cálculos e no relatório',u]];
+const CR=(why,how,act,saved)=>[['Por que existe',why],['Como identificar',how],['O que o app faz',act],['O que é salvo',saved],['Responsabilidade','A decisão clínica final é do profissional e da equipe de saúde. O app apenas sinaliza e registra; ele não decide a segurança do paciente.']];
+const OBS='Ausência de alerta do app não significa que o paciente está bem.';
+const stepInfo=(cm,ind,vant,lim,crit,atn)=>{
+  const f=cad=>HR.cstLoad(cm,cad).toFixed(1).replace('.',','),ref={15:'11 a 25',20:'12 a 29',25:'14 a 33',30:'16 a 37'}[cm];
+  return{t:'Degrau de '+cm+' cm',tag:'Protocolo original',rows:[['Indicação',ind],['Vantagem',vant],['Limitação',lim],
+    ['Custo energético estimado','Referência do protocolo: aproximadamente '+ref+' ml/kg/min entre os estágios 1 e 5. Calculado pelo app com a fórmula do protocolo: '+f(15)+' a '+f(35)+' ml/kg/min (os valores de referência são aproximados).'],
+    ['Critérios de escolha',crit],['Atenção',atn],['Uso nos cálculos e no relatório','A altura entra na fórmula do VO2 de cada estágio e é registrada no relatório. Não pode ser alterada durante o teste.']]};
+};
+const INFO={
+  cst:{t:'Chester Step Test (CST)',tag:'Protocolo original',rows:[
+    ['O que é','O CST avalia a resposta da frequência cardíaca a uma carga progressiva de subida de degraus. A carga depende da altura do degrau e da cadência.'],
+    ['Limites','É um teste submáximo e não deve ser usado como substituto do CPET. O VO2máx é ESTIMADO, não medido diretamente.'],
+    ['De que depende o resultado','Da aderência à cadência, da resposta de FC, da FCmáx prevista e das condições do teste.'],
+    ['Quando interromper','Diante de critérios de segurança, intolerância ou conclusão dos cinco estágios.'],
+    ['Limiares no Pulsys','O CST em si não identifica limiar ventilatório, de lactato ou anaeróbico. O Pulsys também estima limiares pelo DFA-α1 durante o teste (experimental, sempre rotulado "estimado por VFC").']]},
+  modo:{t:'CST original ou adaptado/clínico',tag:'Decisão do avaliador',rows:IR(
+    'Original: 5 estágios de 2 min, 15 a 35 subidas/min, degrau de 15, 20, 25 ou 30 cm. Adaptado/clínico: modo separado em que o profissional reduz a cadência inicial e/ou alonga os estágios, com degrau de 15 ou 20 cm.',
+    'O CST adaptado NÃO é equivalente ao original: seus resultados não devem ser comparados diretamente com os do CST original.',
+    'Escolha considerando segurança, tolerabilidade, SpO2, equilíbrio, dor e capacidade de manter o ritmo. O profissional deve justificar a adaptação.',
+    'Evite o original em baixa capacidade funcional, DPOC, idosos frágeis, limitação osteomuscular ou risco elevado; nesses casos avalie o adaptado.',
+    'Toda adaptação (degrau, cadência inicial, duração do estágio e justificativa) é registrada no relatório. O VO2 e a regressão usam a mesma fórmula, mas com as cargas do modo escolhido.')},
+  nome:{t:'Nome',tag:'Decisão do avaliador',rows:[
+    ['O que significa','O nome é opcional e serve apenas para identificação do registro.'],
+    ['Se ficar em branco','O teste pode ser salvo sem nome (registro anônimo).'],
+    ['Privacidade','Respeite as políticas de privacidade e de proteção de dados do serviço (LGPD). Prefira um código a um nome completo. Os dados ficam só neste aparelho.'],
+    ['Uso no relatório','Aparece no relatório e no Histórico. Não é usado em nenhum cálculo.']]},
+  idade:{t:'Idade',tag:'Protocolo original',rows:IR(
+    'Idade em anos completos.',
+    'É usada para calcular automaticamente a frequência cardíaca máxima prevista: FCmáx prevista = 220 − idade.',
+    'Informe a idade em anos completos.',
+    'A fórmula é uma estimativa populacional, não uma medida individual. Medicamentos, arritmias, idade avançada e condições clínicas podem reduzir a acurácia.',
+    'A FCmáx prevista é o ponto até onde a reta FC x carga é extrapolada para estimar o VO2máx e define o critério de 80% da FCmáx. A idade e a fórmula constam no relatório.')},
+  fcrep:{t:'FC de repouso',tag:'Protocolo original',rows:IR(
+    'Frequência cardíaca basal do paciente, em bpm.',
+    'Serve de referência para interpretar a resposta ao esforço.',
+    'Meça após pelo menos 5 minutos de repouso, sentado ou deitado, conforme o padrão do serviço.',
+    'Não colete logo após esforço, cafeína, estresse intenso ou deslocamento rápido.',
+    'É registrada no relatório e comparada com a FC de cada estágio. Não substitui a FC máxima nem é usada sozinha para estimar limiares.')},
+  step:{t:'Altura do degrau',tag:'Decisão do avaliador',rows:IR(
+    'Altura fixa do degrau: 15, 20, 25 ou 30 cm.',
+    'Define, junto com a cadência, o custo energético de cada estágio.',
+    'Capacidade funcional basal, idade, histórico de quedas, dor, equilíbrio, uso de dispositivos de apoio, limitação articular e objetivo do teste.',
+    'Não pode ser alterada durante o teste. Se precisar mudar, encerre e refaça o teste.',
+    'Entra na fórmula do VO2: 0,2 f + 1,33 × 1,8 × h × f + 3,5 (f em subidas/min, h em metros). É registrada no relatório com o motivo da escolha.')},
+  step15:stepInfo(15,'Idosos, sedentários, baixa capacidade funcional, limitação musculoesquelética, obesidade importante, medo de queda ou condição clínica que exija menor carga inicial.','Menor exigência cardiovascular e biomecânica, especialmente nos estágios iniciais.','Pode gerar efeito teto em adultos jovens, ativos ou com boa capacidade funcional.','Capacidade funcional basal, idade, histórico de quedas, dor, equilíbrio, uso de dispositivos de apoio, limitação articular e objetivo do teste.','A altura deve permanecer fixa durante todo o teste.'),
+  step20:stepInfo(20,'Adultos com capacidade funcional moderada e pacientes clínicos estáveis, incluindo doença respiratória crônica quando apropriado.','Equilíbrio entre segurança, tolerabilidade e capacidade de discriminar níveis de condicionamento.','Pode ser exigente para quem tolera mal a subida.','Tolerância à subida, equilíbrio, dor articular, SpO2 basal, capacidade de caminhada, uso de oxigenoterapia e limitações musculoesqueléticas.','Em DPOC ou baixa capacidade funcional, avalie se a cadência inicial de 15 subidas/min é tolerável; se não for, considere uma adaptação claramente identificada como CST adaptado.'),
+  step25:stepInfo(25,'Adultos ativos, especialmente acima de 40 anos, que precisam de uma faixa de carga intermediária.','Permite estimar a capacidade aeróbica em condicionamento moderado a bom.','Pode ser exigente demais para sedentários, idosos, limitação funcional ou doença cardiopulmonar.','Nível de atividade física, história de exercício, capacidade habitual de subir degraus, equilíbrio, dor, medo de queda e resposta esperada de FC.','Não altere a altura após o início do teste.'),
+  step30:stepInfo(30,'Adultos jovens e fisicamente ativos, com boa capacidade funcional e sem limitações relevantes.','Maior amplitude de carga e menor chance de efeito teto em pessoas aptas.','A carga inicial e a progressão podem ser altas para sedentários, idosos ou pessoas com limitações clínicas.','Idade, condicionamento, prática regular de exercício, ausência de limitação osteomuscular, equilíbrio, risco cardiovascular e objetivo da avaliação.','Recomenda-se triagem rigorosa e supervisão adequada.'),
+  cadencia:{t:'Cadência',tag:'Protocolo original',rows:[
+    ['O que significa','Uma "subida" é o ciclo completo: subir um pé, subir o outro, descer um pé e descer o outro. A cadência é o número de subidas por minuto (15, 20, 25, 30 e 35 no protocolo original).'],
+    ['Como é guiada','Por áudio (metrônomo, um toque por movimento, com acento no início de cada subida) e feedback visual. O paciente deve iniciar cada estágio no ritmo correto.'],
+    ['Se não mantiver','Registre o estágio como incompleto e interrompa o teste. Não altere a cadência para compensar fadiga ou dificuldade: a resposta correta é encerrar.'],
+    ['Limite do app','O app NÃO mede a cadência real do paciente. Ele registra a cadência alvo e os eventos que você marcar (perdeu o ritmo, pausa, tropeço).'],
+    ['Uso nos cálculos e no relatório','A cadência de cada estágio entra na fórmula do VO2 e na tabela do relatório.']]},
+  estagio:{t:'Estágio',tag:'Protocolo original',rows:[
+    ['O que significa','Cada estágio dura 2 minutos (no modo original). São cinco, num total de 10 minutos.'],
+    ['Registros','A FC (automática) e o Borg são registrados ao final de cada estágio concluído.'],
+    ['Concluído x interrompido','Se o estágio for interrompido antes do tempo, registre o tempo efetivo, mas ele NÃO é tratado como completo no cálculo da regressão. O app diferencia claramente "estágio concluído" de "estágio interrompido".'],
+    ['Uso nos cálculos e no relatório','Só estágios concluídos, com FC registrada, entram na regressão. O relatório lista o status de cada estágio.']]},
+  borg:{t:'Borg de 0 a 10',tag:'Protocolo original',rows:[
+    ['O que significa','Percepção global de esforço do paciente naquele momento. 0 = nenhum esforço; 1 = muito leve; 2 a 3 = leve; 4 a 6 = moderado; 7 a 8 = intenso; 9 a 10 = muito intenso ou máximo.'],
+    ['Quando registrar','Ao final de cada estágio concluído (obrigatório).'],
+    ['Limite','O Borg não substitui sinais clínicos nem critérios objetivos de interrupção.'],
+    ['Alerta','Borg 8 ou mais aciona o alerta de critério de interrupção.'],
+    ['Uso no relatório','Entra na tabela de estágios. Não entra na regressão do VO2máx.']]},
+  spo2:{t:'SpO2',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Saturação periférica de oxigênio. É opcional: registre só se houver oxímetro disponível.'],
+    ['Quando registrar','Ao final de cada estágio concluído.'],
+    ['Quando é mais relevante','Em doença respiratória, uso de oxigenoterapia ou risco de dessaturação.'],
+    ['Limite','O app registra o valor, mas não infere diagnóstico apenas a partir dele.'],
+    ['Alerta','Se houver dessaturação clinicamente relevante pelo critério do serviço (campo "SpO2 mínima aceita"), o app dispara o alerta de segurança e permite interromper o teste. Sem esse campo preenchido, o app não compara o valor com nenhum limite.'],
+    ['Uso no relatório','Aparece na tabela de estágios. Não entra na regressão.']]},
+  fcauto:{t:'FC automática',tag:'Protocolo original',rows:[
+    ['O que significa','A FC é capturada automaticamente pelo monitor conectado e registrada ao final de cada estágio concluído.'],
+    ['Se falhar','Se a leitura falhar, o app mostra "FC não registrada" e o estágio NÃO entra na estimativa. O app nunca preenche a FC com valor estimado ou inventado.'],
+    ['Valores implausíveis','O app não aceita FC igual a zero, negativa, fora de 30 a 250 bpm ou com salto abrupto (mais de 30 bpm em relação à mediana das leituras recentes).'],
+    ['Por que importa','A FC é a variável central da estimativa de VO2máx pelo CST.'],
+    ['Uso nos cálculos e no relatório','Cada FC de fim de estágio é um ponto da reta FC x VO2. Aparece na tabela do relatório.']]},
+  fc:{t:'Frequência cardíaca instantânea',tag:'Protocolo original',rows:[
+    ['O que significa','FC atual lida do monitor, atualizada a cada batimento recebido.'],
+    ['Faixa de atenção','Compare com o limite de 80% da FCmáx prevista, mostrado ao lado. FC igual a zero ou sem contato não é dado fisiológico.'],
+    ['Limites do sensor','Cinta de peito pode falhar com eletrodo seco, movimento, cabelo ou roupa; um valor isolado pode estar errado.'],
+    ['Uso no relatório','Só a FC do fim de cada estágio entra na regressão. A FC final e o % da FCmáx aparecem no relatório.']]},
+  fcmax:{t:'FC máxima prevista',tag:'Protocolo original',rows:[
+    ['O que significa','FCmáx prevista = 220 − idade. Estimativa populacional, não medida individual.'],
+    ['Limites','Medicamentos, arritmias, idade avançada e condições clínicas podem reduzir a acurácia.'],
+    ['Critério clássico','O CST clássico usa 80% da FCmáx prevista como critério de interrupção.'],
+    ['Uso nos cálculos e no relatório','É o ponto de extrapolação da reta FC x carga e o referencial dos 80%. A fórmula utilizada é obrigatoriamente registrada no relatório.']]},
+  vo2:{t:'VO2 estimado',tag:'Protocolo original',rows:[
+    ['O que significa','Valor ESTIMADO, não medido diretamente. VO2 de cada estágio = 0,2 f + 1,33 × 1,8 × h × f + 3,5 (ml/kg/min). A reta FC x VO2 dos estágios concluídos é extrapolada até a FCmáx prevista.'],
+    ['De que depende','Da relação FC-carga e da FCmáx prevista. Medicamentos, arritmias, medo, ansiedade, desidratação, calor, fadiga e erro de cadência alteram a resposta.'],
+    ['Confiabilidade','Rotulada como baixa, moderada ou alta conforme o número de pontos e o R² (critério de trabalho do app, sem validação clínica): 2 pontos = baixa; 3 pontos = moderada se R² ≥ 0,90; 4 ou 5 pontos = alta se R² ≥ 0,95, moderada se R² ≥ 0,85.'],
+    ['Limite','O resultado não deve ser usado isoladamente para decisões clínicas.']]},
+  limiar:{t:'Limiar',tag:'Decisão do avaliador',rows:[
+    ['O que o CST não faz','O CST não identifica diretamente limiar ventilatório, limiar de lactato ou limiar anaeróbico.'],
+    ['O que o Pulsys faz','Estima, de forma INDIRETA e experimental, a FC em que o DFA-α1 cruza 0,75 e 0,50 durante o teste. Sempre rotulado "estimado por VFC", com o método.'],
+    ['Limites','Hipóteses de pesquisa sem validação clínica; a FC fica atrasada pela janela de 120 s; precisa de RR de boa qualidade. Pode resultar em "não identificado" ou "inconclusivo".'],
+    ['Uso no relatório','Aparece separado do VO2máx, com o estágio em que o cruzamento ocorreu.']]},
+  triagem:{t:'Triagem clínica prévia',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Confirmação de que o paciente passou por triagem clínica e não apresenta sintomas de alarme (dor torácica, tontura importante, dispneia desproporcional, instabilidade) antes do teste.'],
+    ['Por que importa','O app não faz a triagem. Sem ela, o teste não deve começar.'],
+    ['Se houver sintomas','Não inicie. Oriente a avaliação médica conforme o protocolo do serviço.'],
+    ['Uso no relatório','A confirmação do avaliador é registrada.']]},
+  spo2min:{t:'SpO2 mínima aceita (opcional)',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Valor de SpO2, definido pelo critério do SERVIÇO, abaixo do qual a dessaturação é considerada clinicamente relevante.'],
+    ['Sem valor padrão','O app não sugere valor. Se você deixar em branco, ele não compara a SpO2 com nenhum limite (o alerta fica só manual).'],
+    ['Como é usado','Se preenchido e uma SpO2 registrada ficar abaixo dele, o app dispara o alerta de interrupção.']]},
+  cad0:{t:'Cadência inicial (adaptado)',tag:'Adaptação clínica',rows:[
+    ['O que significa','Cadência do estágio 1 no CST adaptado. Os estágios seguintes sobem 5 subidas/min cada.'],
+    ['Quando reduzir','Se 15 subidas/min não for tolerável (baixa capacidade funcional, DPOC, idoso frágil).'],
+    ['Importante','É adaptação: não equivale ao CST original e não deve ser comparada diretamente com ele. Registrada no relatório.']]},
+  stagesec:{t:'Duração do estágio (adaptado)',tag:'Adaptação clínica',rows:[
+    ['O que significa','Duração de cada um dos cinco estágios no CST adaptado (2 ou 3 min).'],
+    ['Quando alongar','Para dar mais tempo de adaptação da FC em cada carga.'],
+    ['Importante','É adaptação: não equivale ao CST original. Registrada no relatório.']]},
+  adaptwhy:{t:'Justificativa da adaptação',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Motivo clínico da adaptação (por exemplo: DPOC com baixa tolerância a 15 subidas/min).'],
+    ['Por que importa','Toda adaptação deve ser justificada e registrada para reprodutibilidade e para evitar comparação indevida.'],
+    ['Uso no relatório','Aparece no relatório. Obrigatória no modo adaptado.']]},
+  som:{t:'Metrônomo sonoro',tag:'Protocolo original',rows:[
+    ['O que significa','Toque a cada movimento (4 por subida), com tom mais agudo no início de cada subida, mais o feedback visual na tela.'],
+    ['Limites','No iPhone o som pode não tocar com o modo silencioso ligado ou com a tela bloqueada. Use o feedback visual como apoio.'],
+    ['Se desligar','O feedback visual continua.']]},
+  sintomas:{t:'Sintomas',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Sintomas relatados ou observados durante o teste (palpitação, tontura, falta de ar, dor, outro).'],
+    ['Faixa de atenção','Qualquer sintoma de alarme deve levar à interrupção imediata e à avaliação conforme o protocolo do serviço.'],
+    ['Uso no relatório','Cada sintoma é salvo com o instante do teste.']]},
+  motivo:{t:'Motivo de interrupção',tag:'Protocolo original',rows:[
+    ['O que significa','Razão pela qual o teste terminou: um dos critérios de interrupção ou a conclusão dos cinco estágios.'],
+    ['Por que importa','Permite saber se a estimativa vem de um teste completo ou interrompido.'],
+    ['Uso no relatório','Fica registrado com o tempo total efetivo.']]},
+  eventos:{t:'Eventos da execução',tag:'Decisão do avaliador',rows:[
+    ['O que significa','Marcações de perda de ritmo, pausa e tropeço, feitas por você durante o teste.'],
+    ['Limite','O app não mede a cadência real: depende da sua observação.'],
+    ['Uso no relatório','Entram na qualidade da execução e na recomendação de repetição.']]},
+  dfa:{t:'Estimativa por DFA-α1 (experimental)',tag:'Decisão do avaliador',rows:[
+    ['O que significa','O app analisa a variabilidade da FC (intervalos RR) durante o teste e procura o cruzamento do DFA-α1 por 0,75 e 0,50.'],
+    ['Limites','São hipóteses de pesquisa, sem validação clínica. Não é limiar ventilatório medido. Exige monitor que envie RR.'],
+    ['Uso no relatório','Resultado "estimado por VFC", "não identificado" ou "inconclusivo", sempre separado do VO2máx.']]},
+  // critérios de interrupção
+  crit_fc80:{t:'Critério: FC ≥ 80% da FCmáx prevista',tag:'Protocolo original',rows:CR('É o critério clássico do CST para encerrar um teste submáximo.','O app compara a FC válida com 80% da FCmáx prevista (220 − idade). '+OBS,'Mostra alerta vermelho persistente e emite sinal sonoro; não oferece continuar. Registra o instante e se o teste seguiu depois.','Instante, FC e se houve continuação após o critério.')},
+  crit_borg8:{t:'Critério: Borg ≥ 8/10',tag:'Protocolo original',rows:CR('Esforço percebido intenso a muito intenso indica proximidade do limite do paciente.','Acontece quando o Borg informado ao final de um estágio é 8 ou mais.','Mostra alerta de interrupção e registra o valor.','Borg e instante.')},
+  crit_cadencia:{t:'Critério: incapacidade de manter a cadência',tag:'Protocolo original',rows:CR('Sem a cadência correta a carga real deixa de corresponder ao protocolo e a estimativa perde validade.','Observação direta: o paciente perde o ritmo do metrônomo e não consegue retomá-lo.','Ao registrar, encerra o teste e marca o estágio como incompleto. Não altere a cadência para compensar.','Motivo, tempo efetivo do estágio e eventos de ritmo.')},
+  crit_pedido:{t:'Critério: solicitação do paciente para parar',tag:'Protocolo original',rows:CR('O paciente pode interromper a qualquer momento.','O paciente pede para parar.','Ao registrar, encerra o teste imediatamente.','Motivo e tempo efetivo.')},
+  crit_dor_toracica:{t:'Critério: dor torácica, angina ou desconforto torácico novo',tag:'Protocolo original',rows:CR('Pode indicar isquemia ou outra condição grave.','Relato do paciente ou expressão de dor e desconforto no peito.','Ao registrar, encerra o teste e orienta interrupção imediata e avaliação médica conforme o protocolo do serviço.','Motivo, instante e estágio.')},
+  crit_tontura:{t:'Critério: tontura importante, presíncope ou síncope',tag:'Protocolo original',rows:CR('Sinaliza possível queda do débito ou arritmia, com risco de queda.','Relato de tontura, escurecimento visual, palidez, perda do equilíbrio ou desmaio.','Ao registrar, encerra o teste e orienta interrupção imediata e avaliação médica conforme o protocolo do serviço.','Motivo, instante e estágio.')},
+  crit_dispneia:{t:'Critério: dispneia desproporcional ou intolerância ao esforço',tag:'Protocolo original',rows:CR('Falta de ar desproporcional à carga indica limite ou condição clínica.','Esforço respiratório visível, fala impossível, uso de musculatura acessória ou queixa do paciente.','Ao registrar, encerra o teste.','Motivo, instante e estágio.')},
+  crit_spo2:{t:'Critério: dessaturação clinicamente relevante',tag:'Decisão do avaliador',rows:CR('A queda de SpO2 pode indicar limitação ventilatória ou de troca gasosa.','Compara a SpO2 registrada ao fim do estágio com o valor mínimo informado pelo serviço. Sem esse valor, só vale a sua observação manual.','Mostra alerta e permite interromper o teste. Não infere diagnóstico.','SpO2 de cada estágio e o motivo.')},
+  crit_arritmia:{t:'Critério: arritmia significativa ou alteração eletrocardiográfica relevante',tag:'Protocolo original',rows:CR('Arritmias ou alterações do ECG durante esforço podem ser graves.','Só é possível se houver monitoramento adequado (ECG) e profissional habilitado; o app NÃO interpreta ritmo neste teste.','Ao registrar, encerra o teste e orienta avaliação médica conforme o protocolo do serviço.','Motivo, instante e estágio.')},
+  crit_musculo:{t:'Critério: dor musculoesquelética, instabilidade ou risco de queda',tag:'Protocolo original',rows:CR('Impede a execução correta e expõe o paciente a lesão ou queda.','Observação direta: dor, perda de equilíbrio, tropeços repetidos ou técnica inadequada.','Ao registrar, encerra o teste.','Motivo, instante e estágio.')},
+  crit_conclusao:{t:'Critério: conclusão dos cinco estágios',tag:'Protocolo original',rows:CR('Fim previsto do protocolo (10 minutos no original).','Ocorre quando o quinto estágio termina.','Encerra o teste automaticamente e passa ao fechamento dos registros.','Tempo total e dados de todos os estágios.')},
+};
+
+// ===================== Protocolo progressivo: Chester Step Test (CST) =====================
+// 0 lista de protocolos · 1 dados · 2 preparação · 3 teste em andamento · 4 fechamento dos registros · 5 resultado.
+// Teste submáximo: o VO2máx é ESTIMADO. O app também estima limiares por DFA-α1 (experimental) a partir dos RR do mesmo monitor.
+// O app NÃO mede a cadência real, NÃO decide a segurança do paciente e NUNCA preenche FC ou SpO2 sem leitura real.
+// Parâmetros de confiança e critérios de FC plausível são de trabalho, sem validação clínica.
+const csNew=()=>({step:0,kind:'original',c:null,label:'',age:0,hrRest:0,stepCm:0,cad0:15,stageSec:120,why:'',spo2Min:null,triage:false,
+  stages:[],t0:0,started:false,ended:false,ac:null,sound:true,nb:{i:0,k:0},cdLast:99,recent:[],lastPk:0,cur:null,events:[],crit:{},stop:null,endEl:0,endHr:null,continued:'',
+  hrMax:0,hrStop:0,result:null,saved:false,pendSig:'',critSig:''});
+let cs=csNew();
+const csLive=c=>c.state==='conectado'&&c.t&&(Date.now()-c.t)/1000<=5&&c.bpm!==null;
+const csCalm=window.matchMedia?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+const csF=(v,d=1)=>v===null||v===undefined||!isFinite(v)?'—':v.toFixed(d).replace('.',',');
+// ---- botões "i" ----
+function showInfo(k){
+  const x=INFO[k];if(!x)return;
+  $('ift').textContent=x.t;$('ifg').textContent='Origem: '+x.tag.toLowerCase();
+  const b=$('ifb');b.textContent='';
+  x.rows.forEach(([l,t])=>{const d=document.createElement('div');d.className='ifr';const bb=document.createElement('b');bb.textContent=l;const p=document.createElement('p');p.textContent=t;d.appendChild(bb);d.appendChild(p);b.appendChild(d)});
+  $('ifd').hidden=false;document.querySelector('#ifd .ifbox').scrollTop=0;$('if-ok').focus();
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.ib[data-i]');if(b){e.preventDefault();e.stopPropagation();showInfo(b.dataset.i)}},true);
+$('if-ok').onclick=()=>{$('ifd').hidden=true};
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('ifd').hidden)$('ifd').hidden=true});
+// ---- áudio do metrônomo ----
+function csAudioInit(){try{if(!cs.ac)cs.ac=new(window.AudioContext||window.webkitAudioContext)();if(cs.ac.resume)cs.ac.resume()}catch(_){cs.ac=null}}
+function csTone(freq,when,dur,vol,force){
+  const a=cs.ac;if(!a||(!cs.sound&&!force))return;
+  try{const o=a.createOscillator(),g=a.createGain();o.frequency.value=freq;g.gain.value=vol||.2;o.connect(g);g.connect(a.destination);o.start(a.currentTime+when);o.stop(a.currentTime+when+dur)}catch(_){}
+}
+const csAlertTone=()=>{csTone(880,0,.25,.35,true);csTone(660,.3,.25,.35,true);csTone(880,.6,.25,.35,true)};
+// ---- etapa 1: dados ----
+const CSH=[15,20,25,30];
+function csBuildSteps(){
+  const box=$('cs-steps');box.textContent='';
+  CSH.forEach(h=>{const r=document.createElement('div');r.className='stepopt';r.dataset.h=h;
+    r.innerHTML='<label><input type="radio" name="cs-h" value="'+h+'"><span>'+h+' cm</span></label><button type="button" class="ib" data-i="step'+h+'" aria-label="Informações: degrau de '+h+' cm">i</button>';box.appendChild(r)});
+  box.addEventListener('change',csCheck);
+}
+function csFillDevs(){
+  const sel=$('cs-dev'),list=[...cards.values()],ids=list.map(c=>c.id).join('|');
+  const txt=c=>(c.lab.value||'Monitor #'+c.n)+' · '+(c.dev.name||'monitor')+(csLive(c)?'':' (sem dados)')+(c.rrSeen?'':' (sem RR)');
+  if(sel.dataset.ids!==ids){const prev=sel.value;sel.textContent='';list.forEach(c=>{const o=document.createElement('option');o.value=c.id;sel.appendChild(o)});sel.dataset.ids=ids;if(prev&&cards.has(prev))sel.value=prev}
+  [...sel.options].forEach(o=>{const c=cards.get(o.value);if(c)o.textContent=txt(c)});
+}
+function csTable(){
+  const ad=cs.kind==='adaptado',cfg=ad?{kind:'adaptado',cad0:+$('cs-cad0').value,stageSec:+$('cs-sec').value}:{kind:'original'},st=HR.cstStages(cfg);
+  let h='<table class="cst-tbl"><tr><th>Estágio</th><th>Tempo</th><th>Cadência</th><th>Subidas</th><th>Acumulado</th></tr>';
+  st.forEach(s=>{h+='<tr><td>'+s.n+'</td><td>'+(s.startSec/60)+'–'+(s.endSec/60)+' min</td><td>'+s.cad+'/min</td><td>'+s.subidas+'</td><td>'+(s.endSec/60)+' min</td></tr>'});
+  $('cs-tbl').innerHTML=h+'</table>';
+}
+function csCheck(){
+  const ad=cs.kind==='adaptado';
+  document.querySelectorAll('#cs-steps .stepopt').forEach(r=>{const h=+r.dataset.h,off=ad&&h>20,i=r.querySelector('input');r.classList.toggle('off',off);i.disabled=off;if(off&&i.checked)i.checked=false});
+  $('cs-adf').hidden=!ad;$('cs-adbn').hidden=!ad;$('cs-t1').textContent=ad?'CST adaptado/clínico':'CST original';
+  const dev=cards.get($('cs-dev').value),live=!!dev&&csLive(dev),age=parseInt($('cs-age').value,10),hrr=parseInt($('cs-hrr').value,10);
+  const sel=document.querySelector('#cs-steps input:checked'),ageOk=Number.isInteger(age)&&age>=10&&age<=100,hrrOk=Number.isInteger(hrr)&&hrr>=30&&hrr<=200;
+  $('cs-fcmax').textContent=ageOk?'FCmáx prevista: '+HR.cstHrMax(age)+' bpm (220 − idade) · critério de 80%: '+Math.round(.8*HR.cstHrMax(age))+' bpm':'FCmáx prevista: informe a idade.';
+  csTable();
+  const why=$('cs-why').value.trim(),raw=$('cs-spo2min').value.trim(),sp=raw===''?null:parseInt(raw,10),spOk=raw===''||(Number.isInteger(sp)&&sp>=50&&sp<=100);
+  let m;
+  if(!$('cs-triage').checked)m='Confirme a triagem clínica prévia.';
+  else if(!dev)m='Selecione um monitor (use "＋ Adicionar monitor").';
+  else if(!live)m='Aguardando a FC do monitor selecionado…';
+  else if(!ageOk)m='Informe a idade (10 a 100 anos).';
+  else if(!hrrOk)m='Informe a FC de repouso (30 a 200 bpm).';
+  else if(!sel)m='Escolha a altura do degrau.';
+  else if(ad&&!why)m='Justifique a adaptação.';
+  else if(!spOk)m='SpO2 mínima inválida (50 a 100) ou deixe em branco.';
+  else m=dev.rrSeen?'Tudo pronto.':'Tudo pronto. Este monitor não envia RR: o VO2máx será estimado, mas o DFA-α1 (limiares) não estará disponível.';
+  $('cs-hint').textContent=m;$('cs-go').disabled=!m.startsWith('Tudo pronto');
+}
+function csShow(){
+  for(let k=0;k<=5;k++)$('cs-'+k).hidden=cs.step!==k;
+  $('cs-stp').textContent=['','Etapa 1 · dados','Etapa 2 · preparação','Em andamento','Fechamento','Resultado'][cs.step];
+  if(cs.step===1){csFillDevs();csCheck()}
+  if(cs.step===2){$('cs-snd').checked=cs.sound}
+  if(cs.step===3){csBuildCrit();csRenderPend(true)}
+  if(cs.step===4){$('cs-stopbn').textContent='Teste encerrado: '+(cs.stop?cs.stop.text:'');csRenderPend(true)}
+  if(cs.step===5)csResult();
+}
+function csReset(){
+  const c=cs.c;if(c&&c.proto&&c.proto.on)c.proto={on:false,t0:0,end:0,pts:[]};
+  cs=csNew();csShow();
+}
+// ---- etapa 2: preparação ----
+function csSummary(){
+  const ad=cs.kind==='adaptado';
+  $('cs-sum').innerHTML='<b>'+(ad?'CST adaptado/clínico':'CST original')+'</b> · degrau de '+cs.stepCm+' cm · idade '+cs.age+' · FC de repouso '+cs.hrRest+' bpm · FCmáx prevista '+cs.hrMax+' bpm (critério de 80%: '+Math.round(cs.hrStop)+' bpm) · monitor: '+HR.esc(cs.c.lab.value||'#'+cs.c.n)
+    +'<br>Estágios: '+cs.stages.map(s=>s.cad).join(' · ')+' subidas/min, '+(cs.stages[0].durSec/60)+' min cada. '+(ad?'Adaptação: '+HR.esc(cs.why)+'.':'');
+}
+// ---- etapa 3: teste ----
+function csBuildCrit(){
+  const box=$('cs-crit');box.textContent='';
+  HR.CST_STOP.forEach(([k,t])=>{
+    const r=document.createElement('div');r.className='cscrit';r.dataset.k=k;
+    const d=document.createElement('span');d.className='dot';const tx=document.createElement('span');tx.className='tx';tx.textContent=t;
+    const i=document.createElement('button');i.type='button';i.className='ib';i.dataset.i='crit_'+k;i.setAttribute('aria-label','Informações: '+t);i.textContent='i';
+    r.appendChild(d);r.appendChild(tx);r.appendChild(i);
+    if(k!=='conclusao'){const b=document.createElement('button');b.className='go danger';b.textContent='Registrar e interromper';b.onclick=()=>csEnd(k);r.appendChild(b)}
+    box.appendChild(r)});
+}
+function csStageNow(el){const i=cs.stages.findIndex(s=>el<s.endSec);return i<0?cs.stages.length-1:i}
+function csEvent(text){if(cs.step!==3||!cs.started)return;const el=(Date.now()-cs.t0)/1000;cs.events.push({tSec:Math.max(0,el),text});csEvList();msg(text+' registrado.')}
+function csEvList(){$('cs-evl').textContent=cs.events.length?'Registrados: '+cs.events.map(e=>e.text+' ('+dur(e.tSec*1000)+')').join(' · '):''}
+// Fim de cada estágio: FC lida automaticamente do monitor (nunca estimada). Estágio cujo fim já passou vira "concluído".
+function csCloseDone(el){
+  const prior=cs.recent.slice(0,-1);
+  cs.stages.forEach((s,i)=>{
+    if(s.closed||el<s.endSec)return;
+    s.closed=true;s.completed=true;s.effectiveSec=s.durSec;
+    if(el-s.endSec>3){s.hrOk=false;s.hr=null;s.hrNote='FC não registrada (registro atrasado: aba ou aparelho em segundo plano)'}
+    else{const k=HR.cstHrCheck(cs.cur,prior);s.hrOk=k.ok;s.hr=k.ok?cs.cur:null;s.hrNote=k.ok?'':'FC não registrada ('+k.reason+')'}
+    if(i<cs.stages.length-1)msg('Estágio '+(i+2)+': '+cs.stages[i+1].cad+' subidas/min.');
+  });
+}
+function csTick(){
+  if(cs.step===1){if(view==='proto')csCheck();return}
+  if(cs.step!==3||cs.ended)return;
+  const now=Date.now(),el=(now-cs.t0)/1000,c=cs.c,tot=cs.stages[cs.stages.length-1].endSec,vis=view==='proto';
+  if(!cards.has(c.id)){csEnd('monitor','O monitor foi removido durante o teste.');return}
+  const live=csLive(c);
+  if(live&&c.t!==cs.lastPk){cs.lastPk=c.t;cs.recent.push(c.bpm);if(cs.recent.length>10)cs.recent.shift()}
+  cs.cur=live?c.bpm:null;
+  if(el<0){
+    if(vis){$('cs-stg').textContent='Prepare-se';$('cs-cd').textContent=String(Math.ceil(-el));$('cs-cad').textContent='';$('cs-ph').textContent='O teste começa em '+Math.ceil(-el)+' s';$('cs-hr').textContent=cs.cur===null?'—':cs.cur;$('cs-tt').textContent='';$('cs-pg').style.width='0'}
+    return;
+  }
+  if(!cs.started){cs.started=true;c.proto={on:true,t0:cs.t0,end:0,pts:[]};c.snapAt=0;csTone(1300,0,.3,.3);msg('Teste iniciado.')}
+  const prior=cs.recent.slice(0,-1),chk=HR.cstHrCheck(cs.cur,prior);
+  // O alerta de 80% usa só a faixa plausível (sem o filtro de salto abrupto): por segurança, na dúvida o alerta aparece.
+  if(cs.cur!==null&&HR.cstHrCheck(cs.cur,[]).ok&&cs.cur>=cs.hrStop&&!cs.crit.fc80){cs.crit.fc80={t:el,hr:cs.cur};csAlertTone();msg('FC atingiu 80% da FCmáx prevista: critério de interrupção.')}
+  csCloseDone(el);
+  csRenderPend(false);
+  if(el>=tot){csEnd('conclusao');return}
+  if(!vis)return;
+  const si=csStageNow(el),s=cs.stages[si];
+  $('cs-stg').textContent='Estágio '+(si+1)+' de '+cs.stages.length;$('cs-cad').textContent=s.cad+' subidas/min · '+s.subidas+' subidas no estágio';
+  $('cs-cd').textContent=dur((s.endSec-el)*1000);$('cs-pg').style.width=Math.min(100,el/tot*100)+'%';$('cs-tt').textContent=dur(el*1000)+' / '+dur(tot*1000);
+  $('cs-hr').textContent=cs.cur===null?'—':cs.cur;
+  $('cs-hrm').textContent=cs.cur===null?'FC não registrada (sem leitura)':Math.round(cs.cur/cs.hrMax*100)+'% da FCmáx prevista ('+cs.hrMax+' bpm) · limite de 80%: '+Math.round(cs.hrStop)+' bpm';
+  // alertas ativos
+  const al=[];
+  if(cs.crit.fc80)al.push(['bad','FC ≥ 80% da FCmáx prevista ('+cs.crit.fc80.hr+' bpm) aos '+dur(cs.crit.fc80.t*1000)+': critério de interrupção atingido. Interrompa o teste.']);
+  if(cs.crit.borg8)al.push(['bad','Borg '+cs.crit.borg8.v+' (8 ou mais): critério de interrupção atingido. Interrompa o teste.']);
+  if(cs.crit.spo2)al.push(['bad','SpO2 '+cs.crit.spo2.v+'% abaixo do mínimo do serviço ('+cs.spo2Min+'%): critério de interrupção atingido. Interrompa o teste.']);
+  if(cs.cur===null)al.push(['warn','Sem FC do monitor: a FC do fim do estágio não será registrada. Verifique o monitor e considere interromper.']);
+  else if(!chk.ok)al.push(['warn','FC não aceita como dado ('+chk.reason+').']);
+  const sig=al.map(a=>a.join('|')).join('||');
+  if(sig!==cs.critSig){cs.critSig=sig;const box=$('cs-al');box.textContent='';al.forEach(([lv,t])=>{const d=document.createElement('div');d.className='csal '+lv;d.textContent=t;d.setAttribute('role','alert');box.appendChild(d)})}
+  document.querySelectorAll('#cs-crit .cscrit').forEach(r=>{const k=r.dataset.k;r.querySelector('.dot').className='dot'+(cs.crit[k]?' bad':'')});
+}
+function csEnd(key,text){
+  if(cs.step!==3||cs.ended)return;
+  const now=Date.now(),tot=cs.stages[cs.stages.length-1].endSec;let el=(now-cs.t0)/1000;
+  if(el<0){csReset();msg('Teste cancelado antes de começar.');return}
+  el=Math.min(el,tot);cs.ended=true;cs.endEl=el;cs.endHr=cs.cur;
+  csCloseDone(el);   // estágios cujo fim já passou, mas que o relógio ainda não tinha fechado
+  const s=cs.stages.find(x=>!x.closed&&el>=x.startSec&&el<x.endSec);
+  if(s){s.closed=true;s.completed=false;s.effectiveSec=Math.max(0,el-s.startSec);s.hr=null;s.hrOk=false;
+    s.hrNote=cs.cur!==null?'FC no fim: '+Math.round(cs.cur)+' bpm (estágio interrompido; não entra no cálculo)':'FC não registrada'}
+  cs.stages.forEach(x=>{x.closed=true});
+  cs.continued=[['fc80','FC ≥ 80% da FCmáx prevista'],['borg8','Borg ≥ 8'],['spo2','SpO2 abaixo do mínimo do serviço']].filter(([k])=>cs.crit[k]&&key!==k&&el-cs.crit[k].t>5).map(x=>x[1]).join('; ');
+  cs.stop={key,text:text||HR.cstStopText(key)};
+  const c=cs.c;if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=now}
+  cs.step=4;cs.critSig='';$('cs-al').textContent='';csShow();
+  msg(key==='conclusao'?'Teste concluído: cinco estágios.':'Teste encerrado: '+cs.stop.text+'.');
+  if(key!=='conclusao')csTone(500,0,.4,.3,true);
+}
+// ---- registros pendentes (Borg obrigatório; SpO2 opcional) ----
+function csPendList(){return cs.stages.filter(s=>s.borg===null&&((s.completed)||(cs.step===4&&!s.completed&&s.effectiveSec>0&&!s.skip)))}
+function csRenderPend(force){
+  const box=cs.step===4?$('cs-pend4'):$('cs-pend'),list=csPendList(),sig=cs.step+':'+list.map(s=>s.n).join(',');
+  const need=cs.stages.some(s=>s.completed&&s.borg===null);$('cs-fin').disabled=need;
+  if(!force&&sig===cs.pendSig)return;
+  cs.pendSig=sig;box.textContent='';
+  if(!list.length){box.textContent=cs.step===4?'Todos os registros obrigatórios foram feitos.':'Os registros pendentes aparecem aqui ao final de cada estágio.';box.className='m';return}
+  box.className='';
+  list.forEach(s=>{
+    const f=document.createElement('div');f.className='cspend';let sel=null;
+    const h=document.createElement('div');h.style.fontWeight='700';
+    h.textContent=s.completed?'Estágio '+s.n+' concluído · '+(s.hrOk?'FC registrada: '+Math.round(s.hr)+' bpm':s.hrNote):'Estágio '+s.n+' interrompido aos '+Math.round(s.effectiveSec)+' s (registro opcional)';
+    f.appendChild(h);
+    const lb=document.createElement('div');lb.className='m';lb.style.margin='8px 0 2px';lb.innerHTML='Borg (0 a 10)'+(s.completed?' · obrigatório':'');f.appendChild(lb);
+    const g=document.createElement('div');g.className='borg';
+    for(let v=0;v<=10;v++){const b=document.createElement('button');b.textContent=v;b.onclick=()=>{sel=v;[...g.children].forEach(x=>x.classList.toggle('on',x===b));ok.disabled=false};g.appendChild(b)}
+    f.appendChild(g);
+    const sl=document.createElement('label');sl.className='f';sl.innerHTML='<span>SpO2 (%, opcional) <button type="button" class="ib" data-i="spo2" aria-label="Informações: SpO2">i</button></span>';
+    const si=document.createElement('input');si.type='number';si.min=50;si.max=100;si.step=1;si.inputMode='numeric';sl.appendChild(si);f.appendChild(sl);
+    const ok=document.createElement('button');ok.className='pri';ok.style.marginTop='10px';ok.textContent='Registrar estágio '+s.n;ok.disabled=true;
+    ok.onclick=()=>{
+      if(sel===null)return;
+      const raw=si.value.trim(),sp=raw===''?null:parseInt(raw,10);
+      if(raw!==''&&!(Number.isInteger(sp)&&sp>=50&&sp<=100)){msg('SpO2 inválida (50 a 100) ou deixe em branco.');return}
+      s.borg=sel;s.spo2=sp;const el=Math.min(cs.stages[cs.stages.length-1].endSec,Math.max(0,(Date.now()-cs.t0)/1000));
+      if(sel>=HR.CST.STOP_BORG&&!cs.crit.borg8&&cs.step===3){cs.crit.borg8={t:el,v:sel};csAlertTone()}
+      if(sp!==null&&cs.spo2Min!==null&&sp<cs.spo2Min&&!cs.crit.spo2&&cs.step===3){cs.crit.spo2={t:el,v:sp};csAlertTone()}
+      csRenderPend(true);
+    };
+    f.appendChild(ok);
+    if(!s.completed){const sk=document.createElement('button');sk.style.marginLeft='8px';sk.textContent='Pular';sk.onclick=()=>{s.skip=true;csRenderPend(true)};f.appendChild(sk)}
+    box.appendChild(f);
+  });
+}
+// ---- metrônomo (som agendado pelo relógio de áudio) e feedback visual ----
+function csSched(){
+  if(cs.step!==3||cs.ended)return;
+  const el=(Date.now()-cs.t0)/1000;
+  if(el<0){const n=Math.ceil(-el);if(n!==cs.cdLast){cs.cdLast=n;csTone(600,0,.12,.25)}return}
+  for(;;){
+    const s=cs.stages[cs.nb.i];if(!s)return;
+    const per=60/(s.cad*4),tm=s.startSec+cs.nb.k*per;
+    if(tm>=s.endSec-1e-6){cs.nb.i++;cs.nb.k=0;continue}
+    if(tm>el+0.15)return;
+    if(tm>=el-0.05)csTone(cs.nb.k%4===0?1000:700,Math.max(0,tm-el),.07,.25);
+    cs.nb.k++;
+  }
+}
+const CSPH=['↑ Suba (1º pé)','↑ Suba (2º pé)','↓ Desça (1º pé)','↓ Desça (2º pé)'];
+function csRaf(){
+  requestAnimationFrame(csRaf);
+  if(cs.step!==3||cs.ended||view!=='proto')return;
+  const el=(Date.now()-cs.t0)/1000;if(el<0)return;
+  const s=cs.stages[csStageNow(el)],x=(el-s.startSec)/(60/(s.cad*4)),idx=((Math.floor(x)%4)+4)%4,fr=x-Math.floor(x);
+  $('cs-ph').textContent=CSPH[idx];
+  $('cs-pulse').style.transform=csCalm.matches?'':'scale('+(0.6+0.4*(1-Math.min(1,fr*3)))+')';
+  $('cs-pulse').style.opacity=idx===0?'1':'.75';
+}
+// ---- resultado ----
+function csBuild(){
+  const c=cs.c,ad=cs.kind==='adaptado',e=HR.cstEstimate(cs.stages,cs.hrMax,cs.stepCm),pts=(c.proto&&c.proto.pts)||[];
+  const m=thr=>{const r=HR.thresholdEstimate(pts,thr);return Object.assign({},r,{stage:r.state==='estimated'?HR.cstStageAt(r.tSec,cs.stages):null})};
+  const none={state:'inconclusive',reason:'sem análises de VFC (monitor sem RR ou teste muito curto)'};
+  const dfa=pts.length?{e1:m(HR.THR_VT1_HYP),e2:m(HR.THR_VT2_HYP),nPoints:pts.length}:{e1:none,e2:none,nPoints:0};
+  const cnt=t=>cs.events.filter(v=>v.text===t).length,nr=cnt('Perdeu o ritmo'),np=cnt('Pausa'),nt=cnt('Tropeço');
+  const quality='Eventos marcados pelo avaliador: perdeu o ritmo '+nr+', pausas '+np+', tropeços '+nt+'. O app não mede a cadência real.'+(cs.stop&&cs.stop.key==='cadencia'?' Teste encerrado por incapacidade de manter a cadência.':'');
+  const why=[];
+  if(!e||e.state!=='estimated')why.push('sem estimativa de VO2máx');else if(e.confidence==='baixa')why.push('confiabilidade baixa');
+  if(cs.stages.some(s=>s.completed&&!s.hrOk))why.push('FC não registrada em algum estágio concluído');
+  if(cs.stages.filter(s=>s.completed).length<3)why.push('menos de 3 estágios concluídos');
+  if(cs.continued)why.push('teste continuou após critério de interrupção');
+  const lastOk=[...cs.stages].reverse().find(s=>s.hrOk);
+  const rest=cs.stages.map(s=>({n:s.n,cad:s.cad,durSec:s.durSec,subidas:s.subidas,completed:s.completed,effectiveSec:s.effectiveSec,hr:s.hr,hrOk:s.hrOk,hrNote:s.hrNote,borg:s.borg,spo2:s.spo2}));
+  return{version:HR.CST.VERSION,kind:cs.kind,label:cs.label,age:cs.age,startedAt:cs.t0,professional:$('cs-prof').value.trim(),stepCm:cs.stepCm,stepReason:$('cs-reason').value.trim(),
+    cad0:cs.cad0,stageSec:cs.stageSec,adaptWhy:cs.why,hrRest:cs.hrRest,hrMax:cs.hrMax,device:c.dev&&c.dev.name||'monitor',triage:cs.triage,stages:rest,
+    totalSec:cs.endEl,stopText:cs.stop?cs.stop.text:'',continuedAfterCriterion:cs.continued,lastHr:cs.endHr!==null?cs.endHr:(lastOk?lastOk.hr:null),
+    estimate:e,dfa,events:cs.events.slice(),quality,obs:$('cs-obs').value.trim(),
+    repeatNote:why.length?'Considere repetir o teste ('+why.join('; ')+'). A decisão é do profissional.':''};
+}
+function csResult(){
+  if(!cs.result)cs.result=csBuild();
+  const x=cs.result,e=x.estimate,tile=(k,v,main)=>'<div class="t'+(main?' main':'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>',esc=HR.esc;
+  let h=x.kind==='adaptado'?'<div class="rbn bad">CST ADAPTADO: não é equivalente ao CST original.</div>':'';
+  h+=e&&e.state==='estimated'?'<div class="rbn ok">VO2máx estimado pelo CST (estimativa, não medida)</div><div class="vfm">'+tile('VO2máx estimado (ml/kg/min)',csF(e.vo2max),1)+tile('Confiabilidade',e.confidence)+tile('Estágios usados',e.n)+tile('R² do ajuste',csF(e.r2,2))+tile('FC final / % da FCmáx',x.lastHr?Math.round(x.lastHr)+' bpm · '+csF(x.lastHr/x.hrMax*100,0)+'%':'—')+'</div>'
+    :'<div class="rbn bad">VO2máx não estimado</div><ul class="rlist"><li>'+esc(e?e.reason:'sem dados')+'</li></ul>';
+  h+='<div class="vfs">Estágios</div><div class="m">'+x.stages.map(s=>'E'+s.n+': '+(s.completed?'concluído':s.effectiveSec>0?'interrompido':'não realizado')+(s.hrOk?' · '+Math.round(s.hr)+' bpm':'')+(s.borg!==null&&s.borg!==undefined?' · Borg '+s.borg:'')).join('<br>')+'</div>';
+  h+='<div class="vfs">Término</div><div class="m">'+esc(x.stopText)+' · '+dur(x.totalSec*1000)+(x.continuedAfterCriterion?'<br><b>O teste continuou após critério de interrupção ('+esc(x.continuedAfterCriterion)+').</b>':'')+'</div>';
+  h+='<div class="vfs">Limiares (indireto, experimental)</div><div class="m">'+HR.cstDfaHtml(x.dfa)+'</div>';
+  if(x.repeatNote)h+='<div class="m" style="margin-top:8px">'+esc(x.repeatNote)+'</div>';
+  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> o resultado é uma ESTIMATIVA submáxima, não uma medida direta de VO2 nem limiar medido. O profissional define a conduta.</p>';
+  $('cs-res').innerHTML=h;$('cs-sv').disabled=cs.saved;$('cs-sv').textContent=cs.saved?'Salvo no Histórico':'Salvar no Histórico';
+}
+// ---- eventos de tela ----
+$('cs-o').onclick=()=>{cs=csNew();cs.kind='original';cs.step=1;csShow()};
+$('cs-a').onclick=()=>{cs=csNew();cs.kind='adaptado';cs.step=1;csShow()};
+$('cs-back0').onclick=()=>setView('novo');
+$('cs-back1').onclick=()=>{cs=csNew();csShow()};
+$('cs-back2').onclick=()=>{cs.step=1;csShow()};
+$('cs-addm').onclick=()=>$('add').click();
+['cs-triage','cs-dev','cs-name','cs-age','cs-hrr','cs-cad0','cs-sec','cs-why','cs-spo2min'].forEach(id=>{$(id).addEventListener('input',csCheck);$(id).addEventListener('change',csCheck)});
+$('cs-go').onclick=()=>{
+  if($('cs-go').disabled)return;
+  const c=cards.get($('cs-dev').value),ad=cs.kind==='adaptado';if(!c)return;
+  const raw=$('cs-spo2min').value.trim();
+  Object.assign(cs,{c,label:$('cs-name').value.trim(),age:parseInt($('cs-age').value,10),hrRest:parseInt($('cs-hrr').value,10),stepCm:+document.querySelector('#cs-steps input:checked').value,
+    cad0:ad?+$('cs-cad0').value:15,stageSec:ad?+$('cs-sec').value:120,why:ad?$('cs-why').value.trim():'',spo2Min:raw===''?null:parseInt(raw,10),triage:true});
+  cs.hrMax=HR.cstHrMax(cs.age);cs.hrStop=HR.CST.STOP_HR_FRAC*cs.hrMax;
+  cs.stages=HR.cstStages(ad?{kind:'adaptado',cad0:cs.cad0,stageSec:cs.stageSec}:{kind:'original'}).map(s=>({...s,completed:false,effectiveSec:0,hr:null,hrOk:false,hrNote:'',borg:null,spo2:null,closed:false}));
+  cs.step=2;csSummary();csShow();
+};
+$('cs-snd').onchange=()=>{cs.sound=$('cs-snd').checked};
+$('cs-sndt').onclick=()=>{csAudioInit();csTone(1000,0,.07,.25);csTone(700,.5,.07,.25);csTone(700,1,.07,.25);csTone(700,1.5,.07,.25)};
+$('cs-start').onclick=()=>{
+  const c=cs.c;if(!c||!cards.has(c.id)){msg('O monitor não está mais conectado.');cs.step=1;csShow();return}
+  csAudioInit();resetCard(c);c.proto={on:false,t0:0,end:0,pts:[]};
+  cs.t0=Date.now()+5000;cs.started=false;cs.ended=false;cs.nb={i:0,k:0};cs.cdLast=99;cs.recent=[];cs.events=[];cs.crit={};cs.critSig='';csEvList();
+  cs.step=3;csShow();keepAwake();
+};
+$('cs-ev-ritmo').onclick=()=>csEvent('Perdeu o ritmo');$('cs-ev-pausa').onclick=()=>csEvent('Pausa');$('cs-ev-trop').onclick=()=>csEvent('Tropeço');
+$('cs-ev-sym').onclick=()=>csEvent('Sintoma: '+$('cs-sym').value);
+$('cs-fin').onclick=()=>{if($('cs-fin').disabled)return;cs.result=null;cs.step=5;csShow()};
+$('cs-disc').onclick=()=>{if(confirm('Descartar este teste? Os dados não salvos serão perdidos.'))csReset()};
+$('cs-new').onclick=()=>csReset();
+$('cs-rep').onclick=()=>{if(cs.result)openRep(HR.cstReportHtml(cs.result),false)};
+$('cs-sv').onclick=async()=>{
+  const x=cs.result;if(!x||cs.saved)return;
+  try{await tx('readwrite',s=>s.add({kind:'cst',endedAt:Date.now(),startedAt:x.startedAt,label:x.label,cstKind:x.kind,vo2max:x.estimate&&x.estimate.state==='estimated'?x.estimate.vo2max:null,meanBpm:null,exam:x}));cs.saved=true;csResult();msg('Teste salvo no Histórico deste aparelho.')}
+  catch(e){msg('Não foi possível salvar neste aparelho: '+(e&&e.message||e)+'. Abra o relatório antes de sair.')}
+};
+csBuildSteps();csTable();
+setInterval(csTick,250);setInterval(csSched,40);requestAnimationFrame(csRaf);
+
 // ===== Home =====
 // Sem dados de paciente na Home: só contagens, atalhos, tipo/data da última atividade salva (sem identificação) e dicas.
 const TIPS=[
@@ -1816,6 +2498,7 @@ async function homeLast(){
     const quando=new Date(s.endedAt).toLocaleString('pt-BR');
     let tipo,det='';
     if(s.kind==='ecg'){tipo='ECG de repouso';det=' · '+Math.round(s.durSec)+' s'+(s.valid?'':' · inconclusivo')}
+    else if(s.kind==='cst'){tipo=s.cstKind==='adaptado'?'CST adaptado/clínico':'Chester Step Test';det=s.vo2max==null?' · sem estimativa':' · VO2máx estimado'}
     else if(s.kind==='vfc'){tipo='Leitura de VFC';det=(HR.VFC.MODES[s.mode]?' · '+HR.VFC.MODES[s.mode].nome:'')+(s.valid?'':' · invalidada')}
     else{tipo='Sessão de exercício';det=s.startedAt?' · '+dur(s.endedAt-s.startedAt):''}
     $('hm-lt').textContent=tipo+' · '+quando+det;box.hidden=false;
