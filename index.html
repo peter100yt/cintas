@@ -377,6 +377,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <button class="nb" data-v="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
 </nav>
 <div id="endd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="endt"><div class="dbox"><h3 id="endt">Encerrar a sessão?</h3><p class="m">Você pode salvar a sessão no Histórico deste aparelho antes de encerrar. Se encerrar sem salvar, as leituras desta sessão serão descartadas e não dá para recuperá-las.</p><div class="dacts"><button class="pri" id="e-save">Salvar e encerrar</button><button class="danger" id="e-no">Encerrar sem salvar</button><button id="e-cancel">Continuar sessão</button></div></div></div>
+<div id="chd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cht" aria-describedby="chp"><div class="dbox"><h3 id="cht"></h3><p class="m" id="chp"></p><div class="dacts"><button class="pri" id="ch-back"></button><button class="danger" id="ch-go">Mudar e descartar os dados</button></div></div></div>
 <div id="prd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="prt" aria-describedby="prp"><div class="dbox"><h3 id="prt">Estimativa experimental</h3><p class="m" id="prp">Neste modo, os limiares são apenas ESTIMADOS a partir da variabilidade da frequência cardíaca (DFA-α1). Trata-se de um recurso experimental, ainda sem validação clínica: o resultado pode estar errado ou não aparecer e não equivale a um limiar ventilatório medido em teste cardiopulmonar. Não use esses valores sozinhos para prescrever intensidade nem para decidir a segurança do paciente.</p><div class="dacts"><button class="pri" id="pr-ok">Ok, entendi</button><button id="pr-no">Cancelar</button></div></div></div>
 <div id="scrim"></div>
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
@@ -1426,14 +1427,44 @@ document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>{
 });
 $('scrim').onclick=()=>toggleMenu(false);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('fabm').classList.contains('open'))toggleMenu(false)});
-$('go-s').onclick=()=>{toggleMenu(false);setView('sessao')};
+$('go-s').onclick=()=>{toggleMenu(false);enterMode('sessao')};
 // Protocolo progressivo: qualquer caminho (menu "+", tela de modos, Home) passa por este aviso e só avança com "Ok".
 function askProto(){$('prd').hidden=false;$('pr-ok').focus()}
 $('pr-ok').onclick=()=>{$('prd').hidden=true;setView('proto')};
 $('pr-no').onclick=()=>{$('prd').hidden=true};
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('prd').hidden)$('prd').hidden=true});
-$('go-p').onclick=()=>{toggleMenu(false);askProto()};
-$('go-s2').onclick=()=>setView('sessao');$('go-p2').onclick=askProto;
+// Atividade em andamento: sessão de exercício, protocolo rodando, leitura de VFC ou ECG de repouso (etapas 2 e 3).
+// Ao escolher OUTRO modo por qualquer caminho, avisa que os dados não salvos serão perdidos; só muda se a pessoa confirmar.
+const MODO_NOME={sessao:'Sessão de exercício',proto:'Protocolo progressivo',vfc:'Leitura de VFC',ecgr:'ECG de repouso'};
+function activeMode(){
+  if(sess.on)return 'sessao';
+  if([...cards.values()].some(c=>c.proto&&c.proto.on))return 'proto';
+  if(vf.step===2||vf.step===3)return 'vfc';
+  if(ex.step===2||ex.step===3)return 'ecgr';
+  return null;
+}
+function discardActive(){
+  if(sess.on)sess.on=false;
+  cards.forEach(c=>{if(c.proto&&c.proto.on)c.proto={on:false,t0:0,end:0,pts:[]};resetCard(c)});
+  if(vf.step===2||vf.step===3)vf=vfNew();
+  if(ex.step===2||ex.step===3){if(ex.c)ecgOff(ex.c,'Desligado.');ex=exNew()}
+  renderSess();markTab();
+}
+function goMode(m){if(m==='proto')askProto();else setView(m)}
+let chTarget=null;
+function enterMode(m){
+  const a=activeMode();
+  if(!a||a===m){goMode(m);return}
+  chTarget=m;$('cht').textContent='Já há uma atividade em andamento';
+  $('chp').textContent=MODO_NOME[a]+' em andamento. Se você mudar para '+MODO_NOME[m]+', os dados desta atividade que ainda não foram salvos serão perdidos e não dá para recuperá-los.';
+  $('ch-back').textContent='Voltar para '+MODO_NOME[a];$('ch-back').dataset.m=a;
+  $('chd').hidden=false;$('ch-back').focus();
+}
+$('ch-back').onclick=()=>{$('chd').hidden=true;chTarget=null;const m=$('ch-back').dataset.m;if(m==='proto')setView('proto');else setView(m)};
+$('ch-go').onclick=()=>{$('chd').hidden=true;const m=chTarget;chTarget=null;discardActive();goMode(m);msg('Atividade anterior descartada.')};
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('chd').hidden){$('chd').hidden=true;chTarget=null}});
+$('go-p').onclick=()=>{toggleMenu(false);enterMode('proto')};
+$('go-s2').onclick=()=>enterMode('sessao');$('go-p2').onclick=()=>enterMode('proto');
 $('sw').onclick=()=>setView('novo');   // "‹ Modos": volta à tela "O que você quer fazer?", com a descrição de cada modo
 function applyMode(){
   // Visão de grupo e o botão que alterna só existem com 2 ou mais cintas (com uma só, sempre a visão detalhada)
@@ -1595,8 +1626,8 @@ function exTick(){
   }
 }
 setInterval(exTick,250);
-$('go-e').onclick=()=>{toggleMenu(false);setView('ecgr')};
-$('go-e2').onclick=()=>setView('ecgr');
+$('go-e').onclick=()=>{toggleMenu(false);enterMode('ecgr')};
+$('go-e2').onclick=()=>enterMode('ecgr');
 $('add5').onclick=()=>$('add').click();
 document.querySelectorAll('.exck').forEach(i=>i.onchange=exCheck);$('ex-dev').onchange=exCheck;
 $('ex-go').onclick=async()=>{
@@ -1720,8 +1751,8 @@ function vfTick(){
   }
 }
 setInterval(vfTick,250);
-$('go-v').onclick=()=>{toggleMenu(false);setView('vfc')};
-$('go-v2').onclick=()=>setView('vfc');
+$('go-v').onclick=()=>{toggleMenu(false);enterMode('vfc')};
+$('go-v2').onclick=()=>enterMode('vfc');
 $('add6').onclick=()=>$('add').click();
 $('vf-ok').onchange=vfCheck;$('vf-dev').onchange=vfCheck;$('vf-br').onchange=vfCheck;
 $('vf-go').onclick=()=>{
