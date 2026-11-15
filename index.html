@@ -250,7 +250,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .sprow{display:flex;align-items:center;gap:8px;margin:6px 0}.spb{flex:1;text-align:left;min-height:46px;padding:8px 12px;font-size:14px;line-height:1.25}.spb.hit{border-color:var(--bad);color:var(--bad);font-weight:700}
 .spsel{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font:inherit;color:var(--fg)}.spsel:disabled{opacity:.5}
 .vo2big{text-align:center;margin:4px 0 12px}.vo2big .vk{font-size:13px;font-weight:700;color:var(--mut)}.vo2big .n{font-size:76px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums}.vo2big .u{font-size:16px;font-weight:700;color:var(--mut);margin-bottom:10px}
-.lvl{display:inline-block;padding:8px 22px;border-radius:999px;font-weight:800;font-size:16px;color:var(--accfg)}.lv0{background:var(--bad)}.lv1{background:var(--warn)}.lv2{background:var(--ok)}.lv3{background:var(--acc)}.lv4{background:var(--z1)}
+.lvl{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;line-height:1.35;color:var(--accfg)}.lv0{background:var(--bad)}.lv1{background:var(--warn)}.lv2{background:var(--ok)}.lv3{background:var(--acc)}.lv4{background:var(--z1)}
 .vt{display:flex;align-items:center;gap:6px;min-width:0}.bk{flex:none;width:36px;height:36px;min-height:36px;padding:0;border-radius:50%;border:0;background:var(--sf2);font-size:26px;line-height:1;font-weight:700;color:var(--fg);display:inline-flex;align-items:center;justify-content:center;padding-bottom:3px}
 input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px var(--badbg)}
 #cs-steps.miss{outline:2px solid var(--bad);outline-offset:3px;border-radius:10px}
@@ -350,7 +350,7 @@ input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px va
 <div id="cs-sum" class="m"></div>
 <ul class="vfl"><li>Confirme o degrau com a <b>altura escolhida</b> e a área segura, sem tapete solto.</li><li>O paciente <b>acompanha o metrônomo</b>. Se não conseguir manter o ritmo, o teste é encerrado: não se altera a cadência.</li><li>Para o teste <b>imediatamente</b> diante de qualquer critério de interrupção. A decisão clínica é sua.</li></ul>
 <label class="ckr"><input type="checkbox" id="cs-snd" checked><span>Metrônomo sonoro</span></label><div class="ibr"><button type="button" class="ib" data-i="som" aria-label="Informações: metrônomo sonoro">i</button> <button class="chip" id="cs-sndt">Testar som</button></div>
-<div class="exb"><button class="pri sbtn" id="cs-start">▶ Iniciar teste (contagem de 5 s)</button><div class="m" style="text-align:center">Após a contagem, há uns 3 s de espera antes de o cronômetro e o metrônomo começarem.</div><button class="sbtn" id="cs-back2">Voltar</button></div>
+<div class="exb"><button class="pri sbtn" id="cs-start">▶ Iniciar teste (contagem de 5 s)</button><button class="sbtn" id="cs-back2">Voltar</button></div>
 </div>
 
 <div id="cs-3" hidden>
@@ -2200,7 +2200,7 @@ const INFO={
 // Teste submáximo: o VO2máx é ESTIMADO. O app também estima limiares por DFA-α1 (experimental) a partir dos RR do mesmo monitor.
 // O app NÃO mede a cadência real, NÃO decide a segurança do paciente e NUNCA preenche FC ou SpO2 sem leitura real.
 // Parâmetros de confiança e critérios de FC plausível são de trabalho, sem validação clínica.
-const CS_WAIT=3;   // segundos de espera depois da contagem regressiva
+const CS_WAIT=0;   // sem espera: o cronômetro e o metrônomo começam logo depois da contagem regressiva de 5 s
 const csNew=()=>({tried:false,step:0,kind:'original',c:null,label:'',age:0,sex:'',hrRest:0,stepCm:0,cad0:15,stageSec:120,spo2Min:null,popN:0,
   stages:[],t0:0,started:false,ended:false,ac:null,sound:true,nb:{i:0,k:0},cdLast:99,recent:[],lastPk:0,cur:null,events:[],crit:{},stop:null,endEl:0,endHr:null,continued:'',
   hrMax:0,hrStop:0,result:null,saved:false,pendSig:'',critSig:''});
@@ -2323,7 +2323,7 @@ function csTick(){
     if(vis){$('cs-stg').textContent=lead>0?'Prepare-se':'Aguarde';$('cs-cd').textContent=lead>0?String(Math.ceil(lead)):'…';$('cs-cad').textContent='';$('cs-ph').textContent=lead>0?'Contagem regressiva':'Posicione-se: o teste já vai começar';$('cs-hr').textContent=cs.cur===null?'—':cs.cur;$('cs-tt').textContent='';$('cs-pg').style.width='0'}
     return;
   }
-  if(!cs.started){cs.started=true;c.proto={on:true,t0:cs.t0,end:0,pts:[]};c.snapAt=0;csTone(1300,0,.3,.3);msg('Teste iniciado.')}
+  if(!cs.started){cs.started=true;c.proto={on:true,t0:cs.t0,end:0,pts:[]};c.snapAt=0;msg('Teste iniciado.')}   // sem bip extra: o primeiro bip agudo do metrônomo já marca o início
   const prior=cs.recent.slice(0,-1),chk=HR.cstHrCheck(cs.cur,prior);
   // O alerta de 80% usa só a faixa plausível (sem o filtro de salto abrupto): por segurança, na dúvida o alerta aparece.
   if(cs.cur!==null&&HR.cstHrCheck(cs.cur,[]).ok&&cs.cur>=cs.hrStop&&!cs.crit.fc80){cs.crit.fc80={t:el,hr:cs.cur};csAlertTone();msg('FC atingiu 80% da FCmáx prevista: critério de interrupção.')}
@@ -2416,7 +2416,7 @@ function csSched(){
     const s=cs.stages[cs.nb.i];if(!s)return;
     const per=60/(s.cad*4),tm=s.startSec+cs.nb.k*per;
     if(tm>=s.endSec-1e-6){cs.nb.i++;cs.nb.k=0;continue}
-    if(tm>el+0.15)return;
+    if(tm>el+0.35)return;   // agenda com folga no relógio de áudio (tolera atraso do temporizador)
     if(tm>=el-0.05)csTone(cs.nb.k%4<2?1000:700,Math.max(0,tm-el),.07,.25);   // 2 bips agudos (subida dos pés) e 2 médios (descida dos pés)
     cs.nb.k++;
   }
@@ -2499,7 +2499,8 @@ $('cs-sndt').onclick=()=>{csAudioInit().then(()=>{if(!cs.ac){msg('Este navegador
 $('cs-start').onclick=()=>{
   const c=cs.c;if(!c||!cards.has(c.id)){msg('O monitor não está mais conectado.');cs.step=1;csShow();return}
   csAudioInit();resetCard(c);c.proto={on:false,t0:0,end:0,pts:[]};
-  cs.t0=Date.now()+(5+CS_WAIT)*1000;   // contagem regressiva de 5 s, depois ~3 s de espera, e só então cronômetro e metrônomocs.started=false;cs.ended=false;cs.nb={i:0,k:0};cs.cdLast=99;cs.recent=[];cs.events=[];cs.crit={};cs.critSig='';csEvList();
+  cs.t0=Date.now()+(5+CS_WAIT)*1000;   // contagem regressiva de 5 s e, logo depois, cronômetro e metrônomo
+  cs.started=false;cs.ended=false;cs.nb={i:0,k:0};cs.cdLast=99;cs.recent=[];cs.events=[];cs.crit={};cs.critSig='';csEvList();
   cs.step=3;csShow();keepAwake();
 };
 $('cs-ev-ritmo').onclick=()=>csEvent('Perdeu o ritmo');$('cs-ev-pausa').onclick=()=>csEvent('Pausa');$('cs-ev-trop').onclick=()=>csEvent('Tropeço');
