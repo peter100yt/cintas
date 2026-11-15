@@ -236,7 +236,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <h2 class="hh2">O que você quer fazer?</h2>
 <div class="hgrid">
 <button class="hmb hs" id="hm-s"><span class="hi">🏃</span><strong>Sessão de exercício</strong><span class="m">Monitorar um ou vários pacientes ao vivo.</span></button>
-<button class="hmb hs" id="hm-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Carga crescente, com estimativa experimental por VFC.</span></button>
+<button class="hmb hs" id="hm-p"><span class="hi">📈</span><strong>Protocolo progressivo</strong><span class="m">Carga crescente, com estimativa de limiares.</span></button>
 <button class="hmb hs" id="hm-v"><span class="hi">〰️</span><strong>Leitura de VFC</strong><span class="m">Repouso padronizado: 60 s ou 5 min.</span></button>
 <button class="hmb hs" id="hm-e"><span class="hi">🩺</span><strong>ECG de repouso</strong><span class="m">Triagem de ritmo em 1 derivação.</span></button>
 </div>
@@ -377,6 +377,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <button class="nb" data-v="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Ajustes</span></button>
 </nav>
 <div id="endd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="endt"><div class="dbox"><h3 id="endt">Encerrar a sessão?</h3><p class="m">Você pode salvar a sessão no Histórico deste aparelho antes de encerrar. Se encerrar sem salvar, as leituras desta sessão serão descartadas e não dá para recuperá-las.</p><div class="dacts"><button class="pri" id="e-save">Salvar e encerrar</button><button class="danger" id="e-no">Encerrar sem salvar</button><button id="e-cancel">Continuar sessão</button></div></div></div>
+<div id="prd" class="dlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="prt" aria-describedby="prp"><div class="dbox"><h3 id="prt">Estimativa experimental</h3><p class="m" id="prp">Neste modo, os limiares são apenas ESTIMADOS a partir da variabilidade da frequência cardíaca (DFA-α1). Trata-se de um recurso experimental, ainda sem validação clínica: o resultado pode estar errado ou não aparecer e não equivale a um limiar ventilatório medido em teste cardiopulmonar. Não use esses valores sozinhos para prescrever intensidade nem para decidir a segurança do paciente.</p><div class="dacts"><button class="pri" id="pr-ok">Ok, entendi</button><button id="pr-no">Cancelar</button></div></div></div>
 <div id="scrim"></div>
 <div id="fabm" role="menu" aria-label="Novo" aria-hidden="true">
 <button class="fmb" role="menuitem" id="go-s" tabindex="-1"><span class="hi">🏃</span><span class="ft"><strong>Sessão de exercício</strong><span class="m">Monitorar pacientes ao vivo</span></span></button>
@@ -1426,8 +1427,13 @@ document.querySelectorAll('#nav .nb').forEach(n=>n.onclick=()=>{
 $('scrim').onclick=()=>toggleMenu(false);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('fabm').classList.contains('open'))toggleMenu(false)});
 $('go-s').onclick=()=>{toggleMenu(false);setView('sessao')};
-$('go-p').onclick=()=>{toggleMenu(false);setView('proto')};
-$('go-s2').onclick=()=>setView('sessao');$('go-p2').onclick=()=>setView('proto');
+// Protocolo progressivo: qualquer caminho (menu "+", tela de modos, Home) passa por este aviso e só avança com "Ok".
+function askProto(){$('prd').hidden=false;$('pr-ok').focus()}
+$('pr-ok').onclick=()=>{$('prd').hidden=true;setView('proto')};
+$('pr-no').onclick=()=>{$('prd').hidden=true};
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('prd').hidden)$('prd').hidden=true});
+$('go-p').onclick=()=>{toggleMenu(false);askProto()};
+$('go-s2').onclick=()=>setView('sessao');$('go-p2').onclick=askProto;
 $('sw').onclick=()=>setView('novo');   // "‹ Modos": volta à tela "O que você quer fazer?", com a descrição de cada modo
 function applyMode(){
   // Visão de grupo e o botão que alterna só existem com 2 ou mais cintas (com uma só, sempre a visão detalhada)
