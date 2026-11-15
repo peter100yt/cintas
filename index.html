@@ -255,6 +255,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px var(--badbg)}
 #cs-steps.miss{outline:2px solid var(--bad);outline-offset:3px;border-radius:10px}
 #cs-hint.bad{color:var(--bad);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}   /* botão desabilitado precisa parecer desabilitado */
 /* sem zoom: duplo toque, pinça e zoom automático ao focar campos (o iOS dá zoom em campos com fonte menor que 16 px) */
 html,body{touch-action:manipulation}
 input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}
@@ -274,16 +275,21 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 @media(prefers-reduced-motion:reduce){.rtn .d{animation:none}}
 .bpm::before,.vfhr span::before{content:"";display:inline-block;width:.3em;height:.3em;margin-right:.12em;vertical-align:.3em;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e11d48' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
 /* menu de parar (sobe acima do botão, como o menu do "+") */
-.spscrim{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.38);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}.spscrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
+.spscrim{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}.spscrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
 .spm{position:fixed;right:16px;bottom:96px;z-index:49;width:58px;height:58px;pointer-events:none}   /* caixa do tamanho do botão: as opções ficam ao redor dele */
-.spi{position:absolute;display:flex;align-items:center;gap:4px;box-sizing:border-box;background:var(--sf);border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.28);padding-right:8px;opacity:0;visibility:hidden;transform:translate(var(--fx,0),var(--fy,0)) scale(.4);transition:opacity .15s ease,transform .2s ease,visibility 0s linear .2s}
+.spi{position:absolute;display:flex;align-items:center;justify-content:flex-end;gap:4px;box-sizing:border-box;background:none;border:0;box-shadow:none;padding:0;opacity:0;visibility:hidden;transform:translate(var(--fx,0),var(--fy,0)) scale(.4);transition:opacity .15s ease,transform .2s ease,visibility 0s linear .2s}
 .spm.open .spi{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:opacity .2s ease,transform .34s cubic-bezier(.2,.9,.3,1.2)}
-.spk{flex:1;min-width:0;text-align:left;border:0;background:transparent;height:100%;min-height:0;padding:0 4px 0 12px;font-size:13px;font-weight:600;line-height:1.2}
-.spi.sub .spk{font-size:12px}
-.spi.hit{border-color:var(--bad)}.spi.hit .spk{color:var(--bad)}.spi.mais .spk{color:var(--mut)}
+.spk{flex:0 1 auto;min-width:0;text-align:right;border:0;border-radius:0;background:transparent;height:auto;min-height:0;padding:2px;font-size:14px;font-weight:700;line-height:1.2;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.6)}
+.spi.sub .spk{font-size:13px}
+.spi .ib{border-color:#fff;color:#fff;margin-left:2px;background:rgba(0,0,0,.25)}
+.spi.hit .spk{color:#fecaca;text-decoration:underline}.spi.mais .spk{color:rgba(255,255,255,.85);font-weight:600}
 .csfab svg{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;display:block}   /* centro exato, sem depender de flex */
 .csfab .x{display:none}.csfab.on .x{display:block}.csfab.on .sq{display:none}
 @media(prefers-reduced-motion:reduce){.spscrim,.spi{transition:none!important}}
+.vfg{margin:18px 0 6px;font-size:13px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line);padding-bottom:4px}
+.tn{display:inline-block;padding:6px 16px;border-radius:999px;font-weight:800;font-size:15px;color:var(--accfg)}.tn-para{background:var(--z1)}.tn-eq{background:var(--ok)}.tn-simp{background:var(--warn)}
+.tbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 0 6px}.tbar .hf{background:var(--z1)}.tbar .lf{background:var(--warn)}
+.tleg{display:flex;justify-content:space-between;gap:8px;font-size:13px}.tleg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -386,7 +392,7 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 <div class="sq"><div class="sqt"><div class="qt" id="cs-stg">Estágio 1 de 5</div><div class="m" id="cs-cad"></div></div><div class="cd" id="cs-cd">02:00</div></div>
 <div class="prog"><i id="cs-pg"></i></div><div class="m" id="cs-tt" style="margin:6px 0 4px">00:00 / 10:00</div>
 <div class="cspulse"><i id="cs-pulse"></i></div><div class="csph" id="cs-ph">—</div>
-<div class="vfhr"><span id="cs-hr">—</span><small>bpm <button type="button" class="ib" data-i="fc" aria-label="Informações: frequência cardíaca">i</button></small></div>
+<div class="vfhr"><span id="cs-hr">—</span><small><button type="button" class="ib" data-i="fc" aria-label="Informações: frequência cardíaca">i</button></small></div>
 <div class="m" id="cs-hrm" style="text-align:center"></div>
 </div>
 <div id="cs-al"></div>
@@ -489,9 +495,10 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 <div class="exf">
 <label class="f"><span>Monitor</span><select id="vf-dev"></select></label>
 <label class="f"><span>Identificação do paciente (código)</span><input id="vf-id" maxlength="40" placeholder="Código, não o nome completo" autocomplete="off"></label>
-<label class="f"><span>Modo</span><select id="vf-mode"><option value="ultra">Ultra-curto (60 s): RMSSD, LnRMSSD e SDNN</option><option value="std">Padrão curto (5 min): tempo e frequência (LF, HF)</option></select></label>
-<div class="f g2"><label><span>Postura</span><select id="vf-pos"><option value="supino">Decúbito dorsal</option><option value="sentado">Sentado em repouso</option></select></label><label><span>Estabilização</span><select id="vf-stab"><option value="60">1 min</option><option value="120">2 min</option><option value="180">3 min</option></select></label></div>
-<div class="f g2"><label><span>Respiração</span><select id="vf-br"><option value="espontanea">Espontânea</option><option value="cadenciada">Cadenciada (guiada)</option></select></label><label class="vfpace" id="vf-pacel" hidden><span>Ritmo</span><select id="vf-pace"><option value="6">6 por min</option><option value="8">8 por min</option><option value="10">10 por min</option><option value="12">12 por min</option></select></label></div>
+<label class="f"><span>Modo</span><select id="vf-mode"><option value="ultra">Ultra-curto (60 s)</option><option value="std">Padrão curto (5 min)</option></select></label>
+<div class="m" id="vf-modeh" style="margin-top:-6px"></div>
+<div class="f g2"><label><span>Postura</span><select id="vf-pos"><option value="supino">Deitado</option><option value="sentado">Sentado</option></select></label><label><span>Estabilização</span><select id="vf-stab"><option value="60">1 min</option><option value="120">2 min</option><option value="180">3 min</option></select></label></div>
+<div class="f g2"><label><span>Respiração</span><select id="vf-br"><option value="espontanea">Espontânea</option><option value="cadenciada">Cadenciada</option></select></label><label class="vfpace" id="vf-pacel" hidden><span>Ritmo</span><select id="vf-pace"><option value="6">6 por min</option><option value="8">8 por min</option><option value="10">10 por min</option><option value="12">12 por min</option></select></label></div>
 </div>
 <div class="m" id="vf-hint" style="margin:10px 0"></div>
 <button class="pri sbtn" id="vf-go" disabled>Continuar</button>
@@ -499,14 +506,14 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 <div id="vf-2" class="card2" hidden>
 <div class="sl">Estabilização</div>
 <div class="sq"><div class="sqt"><div class="qt">Relaxe e deixe a frequência cardíaca cair</div><div class="m" id="vf-hint2"></div></div><div class="cd" id="vf-cd">01:00</div></div>
-<div class="vfhr"><span id="vf-hr2">—</span><small>bpm</small></div>
+<div class="vfhr"><span id="vf-hr2">—</span></div>
 <div class="brz" id="vf-bz2"><div class="brc"><i></i></div><div class="brt" id="vf-bt2"></div></div>
 <div class="exb"><button class="pri sbtn" id="vf-go2" disabled>● Iniciar gravação</button><button class="sbtn" id="vf-c2">Cancelar leitura</button></div>
 </div>
 <div id="vf-3" class="card2" hidden>
 <div class="sl">Gravando</div>
 <div class="prog"><i id="vf-pg"></i></div><div class="m" id="vf-pt" style="margin:6px 0 10px">00:00 / 01:00</div>
-<div class="vfhr"><span id="vf-hr3">—</span><small>bpm</small></div>
+<div class="vfhr"><span id="vf-hr3">—</span></div>
 <div class="brz" id="vf-bz3"><div class="brc"><i></i></div><div class="brt" id="vf-bt3"></div></div>
 <div class="m" id="vf-live" style="text-align:center;margin:6px 0 10px"></div>
 <button class="sbtn danger" id="vf-c3">Cancelar leitura</button>
@@ -1063,7 +1070,7 @@ const HR = (() => {
   // ===================== LEITURA DE VFC (repouso padronizado: 60 s ou 5 min) =====================
   // Parâmetros do roteiro do usuário; NÃO validados clinicamente. As métricas descrevem a resposta autonômica; o app não
   // classifica valores como "normais" nem define limiares.
-  const VFC = { DEV: 0.20, MAX_ART: 0.05, MIN_RR: 300, MAX_RR: 2000, FS: 4, SEG: 512, LOSS_MAX: 0.02,
+  const VFC = { DEV: 0.20, MAX_ART: 0.05, MIN_RR: 300, MAX_RR: 2000, FS: 4, SEG: 512, LOSS_MAX: 0.02, TONE_LO: 1.0, TONE_HI: 2.0,
     MODES: { ultra: { sec: 60, minBeats: 30, freq: false, nome: 'Ultra-curto (60 s)' }, std: { sec: 300, minBeats: 150, freq: true, nome: 'Padrão curto (5 min)' } } };
 
   // Interpolação polinomial de Lagrange por até 4 pontos válidos vizinhos (2 antes e 2 depois) = cúbica no caso completo.
@@ -1107,6 +1114,42 @@ const HR = (() => {
     const d = []; for (let i = 1; i < n; i++) d.push(c[i] - c[i - 1]);
     const rmssd = Math.sqrt(d.reduce((s, v) => s + v * v, 0) / d.length), mu = mean(c);
     return { n, meanRR: mu, hr: 60000 / mu, rmssd, lnRmssd: rmssd > 0 ? Math.log(rmssd) : null, sdnn: sstd(c), pnn50: 100 * d.filter(v => Math.abs(v) > 50).length / d.length };
+  }
+  // Gráfico de Poincaré (RR[n] x RR[n+1]) e índices SD1 (variabilidade batimento a batimento) e SD2 (variabilidade de longo prazo).
+  // SD1 = raiz de metade da variância das diferenças sucessivas; SD2 = raiz de (2 x variância dos RR - metade da variância das diferenças).
+  function vfcPoincare(c) {
+    const n = c.length; if (n < 4) return null;
+    const d = []; for (let i = 1; i < n; i++) d.push(c[i] - c[i - 1]);
+    const sdsd = sstd(d), sdnn = sstd(c), sd1 = Math.SQRT1_2 * sdsd, sd2 = Math.sqrt(Math.max(0, 2 * sdnn * sdnn - 0.5 * sdsd * sdsd));
+    return { sd1, sd2, ratio: sd2 > 0 ? sd1 / sd2 : null, meanRR: mean(c), points: c.slice(0, -1).map((v, i) => [Math.round(v * 10) / 10, Math.round(c[i + 1] * 10) / 10]) };
+  }
+  // Classificação do equilíbrio simpato-vagal pela razão LF/HF (SÓ no modo de 5 min). Critério de trabalho, sem validação clínica:
+  // abaixo de 1 = predomínio parassimpático (vagal), de 1 a 2 = equilíbrio, acima de 2 = predomínio simpático. O LF não é um marcador puro
+  // de atividade simpática (inclui modulação vagal e barorreflexa) e não há normas por idade: descreve, não diagnostica.
+  function vfcTone(x) {
+    const cfg = VFC.MODES[x.mode];
+    if (!cfg || !cfg.freq) return { state: 'indisponivel', reason: 'a classificação exige o modo de 5 min (a razão LF/HF não é confiável em 1 minuto)' };
+    if (x.breathing === 'cadenciada' && x.paceRpm < 9) return { state: 'indisponivel', reason: 'a respiração cadenciada abaixo de 9/min desloca a potência respiratória para a banda LF' };
+    const f = x.freq; if (!f || f.lfhf === null || f.lfhf === undefined || !isFinite(f.lfhf)) return { state: 'indisponivel', reason: 'sem análise de frequência' };
+    const lv = f.lfhf < VFC.TONE_LO ? 0 : f.lfhf <= VFC.TONE_HI ? 1 : 2;
+    return { state: 'ok', level: lv, key: ['para', 'eq', 'simp'][lv], label: ['Predomínio parassimpático (vagal)', 'Equilíbrio simpato-vagal', 'Predomínio simpático'][lv], lfhf: f.lfhf, lfNu: f.lfNu, hfNu: f.hfNu,
+      rule: 'razão LF/HF: abaixo de 1 = parassimpático; 1 a 2 = equilíbrio; acima de 2 = simpático' };
+  }
+  function poincareSvg(pc) {
+    if (!pc || !pc.points || pc.points.length < 3) return '';
+    const W = 320, H = 320, P = 34, all = pc.points.flat(), lo = Math.floor((Math.min(...all) - 25) / 10) * 10, hi = Math.ceil((Math.max(...all) + 25) / 10) * 10, k = (W - 2 * P) / (hi - lo);
+    const X = v => P + (v - lo) * k, Y = v => H - P - (v - lo) * k, cx = X(pc.meanRR), cy = Y(pc.meanRR), rx = pc.sd2 * k, ry = pc.sd1 * k, c45 = Math.SQRT1_2;
+    let s = '<svg class="poin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:340px;display:block;margin:6px auto" role="img" aria-label="Gráfico de Poincaré com SD1 e SD2">';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" rx="10" fill="#fafafa" stroke="#ddd"/>';
+    s += '<line x1="' + X(lo) + '" y1="' + Y(lo) + '" x2="' + X(hi) + '" y2="' + Y(hi) + '" stroke="#bbb" stroke-dasharray="4 4"/>';
+    pc.points.forEach(q => { s += '<circle cx="' + X(q[0]).toFixed(1) + '" cy="' + Y(q[1]).toFixed(1) + '" r="2.4" fill="#0f766e" fill-opacity=".55"/>'; });
+    s += '<g transform="rotate(-45 ' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')"><ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" rx="' + rx.toFixed(1) + '" ry="' + ry.toFixed(1) + '" fill="none" stroke="#334155" stroke-width="1.4"/>'
+      + '<line x1="' + (cx - rx).toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + (cx + rx).toFixed(1) + '" y2="' + cy.toFixed(1) + '" stroke="#2563eb" stroke-width="2.2"/>'
+      + '<line x1="' + cx.toFixed(1) + '" y1="' + (cy - ry).toFixed(1) + '" x2="' + cx.toFixed(1) + '" y2="' + (cy + ry).toFixed(1) + '" stroke="#ea580c" stroke-width="2.2"/></g>';
+    s += '<text x="' + (cx + rx * c45 + 4).toFixed(1) + '" y="' + (cy - rx * c45 - 4).toFixed(1) + '" font-size="12" font-weight="700" fill="#2563eb">SD2</text>';
+    s += '<text x="' + (cx - ry * c45 - 30).toFixed(1) + '" y="' + (cy - ry * c45 - 4).toFixed(1) + '" font-size="12" font-weight="700" fill="#ea580c">SD1</text>';
+    s += '<text x="' + P + '" y="' + (H - 8) + '" font-size="10" fill="#666">RR[n] (ms): ' + lo + ' a ' + hi + '</text><text x="6" y="' + (P - 8) + '" font-size="10" fill="#666">RR[n+1]</text>';
+    return s + '</svg>';
   }
   function naturalSpline(x, y) {
     const n = x.length, h = [], al = [0], l = [1], mu = [0], z = [0], c = new Array(n).fill(0), b = [], d = [];
@@ -1167,7 +1210,7 @@ const HR = (() => {
     if (lossFrac > VFC.LOSS_MAX) { valid = false; reasons.push('perda de dados ou de contato do monitor em ' + Math.round(lossFrac * 100) + '% da coleta (limite de ' + VFC.LOSS_MAX * 100 + '%)'); }
     const time = valid ? vfcTime(cl.cleaned) : null; let freq = null;
     if (valid && cfg.freq) { freq = vfcFreq(cl.cleaned); if (!freq) { valid = false; reasons.push('registro curto demais para a análise de frequência'); } }
-    return { valid, reasons, mode, nBeats: rr.length, artifactsPct: cl.pct, artifacts: cl.artifacts, cleaned: cl.cleaned, flags: cl.flags, time: valid ? time : null, freq: valid ? freq : null, lossFrac };
+    return { valid, reasons, mode, nBeats: rr.length, artifactsPct: cl.pct, artifacts: cl.artifacts, cleaned: cl.cleaned, flags: cl.flags, time: valid ? time : null, freq: valid ? freq : null, poincare: valid ? vfcPoincare(cl.cleaned) : null, lossFrac };
   }
 
   // ---- Laudo da leitura de VFC (HTML imprimível) ----
@@ -1194,20 +1237,27 @@ const HR = (() => {
     o += row('Estabilização antes da gravação', nf((x.stabSec || 0) / 60, 1).replace('.', ',') + ' min');
     o += row('Resultado', x.valid ? 'leitura válida' : '<b>LEITURA INVALIDADA: repetir a medição</b>');
     if (x.valid) {
-      const t = x.time, f = x.freq;
+      const t = x.time, f = x.freq, pc = x.poincare || (x.cleaned ? vfcPoincare(x.cleaned) : null), grp = s => '<tr><td colspan="2" style="background:#f1f5f9;font-weight:700">' + s + '</td></tr>';
+      o += grp('Domínio do tempo');
       o += row('RMSSD', nf(t.rmssd, 1) + ' ms');
       o += row('LnRMSSD', nf(t.lnRmssd, 2));
       o += row('SDNN', nf(t.sdnn, 1) + ' ms');
-      if (f) { o += row('pNN50', nf(t.pnn50, 1) + ' %');
-        o += row('LF', nf(f.lf, 0) + ' ms² (' + nf(f.lfNu, 0) + ' n.u.)'); o += row('HF', nf(f.hf, 0) + ' ms² (' + nf(f.hfNu, 0) + ' n.u.)'); o += row('LF/HF', f.lfhf === null ? '—' : nf(f.lfhf, 2)); }
+      if (f) o += row('pNN50', nf(t.pnn50, 1) + ' %');
       o += row('FC média', nf(t.hr, 0) + ' bpm');
+      o += grp('Domínio da frequência');
+      if (f) { o += row('LF', nf(f.lf, 0) + ' ms² (' + nf(f.lfNu, 0) + ' n.u.)'); o += row('HF', nf(f.hf, 0) + ' ms² (' + nf(f.hfNu, 0) + ' n.u.)'); o += row('LF/HF', f.lfhf === null ? '—' : nf(f.lfhf, 2)); }
+      else o += row('Frequência', 'disponível só no modo de 5 min (não é confiável em 1 minuto)');
+      if (pc) { o += grp('Poincaré'); o += row('SD1 (batimento a batimento)', nf(pc.sd1, 1) + ' ms'); o += row('SD2 (longo prazo)', nf(pc.sd2, 1) + ' ms'); o += row('SD1/SD2', pc.ratio === null ? '—' : nf(pc.ratio, 2)); }
+      const tn = vfcTone(x); o += grp('Equilíbrio simpato-vagal');
+      o += row('Classificação', tn.state === 'ok' ? '<b>' + esc(tn.label) + '</b> (LF/HF ' + nf(tn.lfhf, 2) + '; LF ' + nf(tn.lfNu, 0) + ' n.u. · HF ' + nf(tn.hfNu, 0) + ' n.u.). Critério: ' + esc(tn.rule) + '. Referência geral de repouso, sem normas por idade; LF não é marcador puro de atividade simpática.' : 'não disponível: ' + esc(tn.reason));
     } else o += row('Motivo', (x.reasons || []).map(esc).join('<br>') || '—');
     o += row('Batimentos e correção', nf(x.nBeats) + ' batimentos; ' + nf((x.artifactsPct || 0) * 100, 1) + '% corrigidos por interpolação cúbica (limite de 5%)');
     o += '</table>';
+    if (x.valid) { const pc2 = x.poincare || (x.cleaned ? vfcPoincare(x.cleaned) : null); if (pc2) o += '<h3>Gráfico de Poincaré</h3>' + poincareSvg(pc2); }
     if (x.cleaned && x.cleaned.length > 1) o += '<h3>Tacograma</h3>' + rrChartSvg(x.raw || x.cleaned, x.flags || [], x.cleaned);
     o += '<p class="m">' + (x.mode === 'ultra' ? 'Modo ultra-curto: só RMSSD, LnRMSSD e SDNN são válidos; as métricas de frequência (LF/HF) não são confiáveis em 1 minuto.' : 'Modo padrão de 5 minutos: métricas do domínio do tempo e da frequência (LF 0,04-0,15 Hz e HF 0,15-0,40 Hz).') + '</p>';
     if (x.breathing === 'cadenciada' && x.paceRpm < 9) o += '<p class="m">Com respiração cadenciada abaixo de 9 por minuto (0,15 Hz), a potência respiratória cai na banda LF: não compare LF e HF com leituras em respiração espontânea.</p>';
-    o += '<p class="m"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura e depende de horário, postura, respiração, sono, cafeína, medicamentos, idade e condição física. O app não classifica os valores como normais ou alterados, não define limiares e não é diagnóstico. Compare apenas leituras feitas no mesmo horário, na mesma postura e no mesmo modo. Os critérios de validade não foram validados clinicamente.</p></div>';
+    o += '<p class="m"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura e depende de horário, postura, respiração, sono, cafeína, medicamentos, idade e condição física. O app não classifica os valores como normais ou alterados, não define limiares e não é diagnóstico; a classificação do equilíbrio simpato-vagal é só uma descrição pela razão LF/HF (critério de trabalho). Compare apenas leituras feitas no mesmo horário, na mesma postura e no mesmo modo. Os critérios de validade não foram validados clinicamente.</p></div>';
     return o;
   }
 
@@ -1342,7 +1392,7 @@ const HR = (() => {
     return one('DFA-α1 0,75', d.e1) + '<br>' + one('DFA-α1 0,50', d.e2) + '<br><span class="m">O CST em si não identifica limiares; método indireto: cruzamento do DFA-α1 (experimental).</span>';
   }
 
-  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, POSTURE_TXT, CST, cstLoad, cstHrMax, cstStages, cstStageAt, cstHrCheck, cstRegress, cstEstimate, CST_STOP, cstStopText, cstReportHtml, cstDfaHtml, cstHrZone, cstClass, CST_NORMS };
+  return { parseHrm, cleanRr, PMD, parsePmdEcg, parsePmdResponse, autoZoneState, autoZoneText, autoZoneDetail, AUTO_ORIGIN, firstThresholdState, firstThresholdText, timeMetrics, spTrend, dfa, Analyzer, isValidSample, zone, alerts, thresholdEstimate, reportHtml, esc, needsRecovery, RECOVER_SEC, STALE_SEC, HOLD_SEC, BAT_LOW, ART_MAX, THR_VT1_HYP, THR_VT2_HYP, ECG, bq, bqRun, ecgSections, filtfilt, ecgFilter, ecgStream, ecgGapSamples, detectR, epochQuality, rrAnalysis, isIrregular, restEcgTriage, liveQuality, ecgStripSvg, ecgReportHtml, SYM_TXT, VFC, cubicFill, vfcClean, vfcTime, vfcFreq, vfcAnalyze, vfcLossMs, vfcReportHtml, vfcPoincare, vfcTone, poincareSvg, POSTURE_TXT, CST, cstLoad, cstHrMax, cstStages, cstStageAt, cstHrCheck, cstRegress, cstEstimate, CST_STOP, cstStopText, cstReportHtml, cstDfaHtml, cstHrZone, cstClass, CST_NORMS };
 })();
 if (typeof module !== 'undefined') module.exports = HR;
 
@@ -1363,7 +1413,7 @@ function mk(dev){
   const c={dev,id:dev.id||dev.name||('d'+seq),n:++seq,an:new HR.Analyzer(),log:[],hist:[],pk:0,bad:0,inv:0,gaps:0,retry:0,state:'conectando',everConn:false,busy:false,cid:0,busyId:0,quiet:false,err:'',t:0,bpm:null,contact:null,rrSeen:false,bat:null,snap:null,snapAt:0,srv:null,ecg:{on:false,starting:false,buf:new Float32Array(780),n:0,msg:'',data:null,ctrl:null,onData:null,onCtrl:null,stamps:[],dirty:false},proto:null,auto:{pts:[],locks:null,st:null},outSince:0,mutedUntil:0,lastBeep:0,removed:false,timer:null,t0:0,mn:null,mx:null,sum:0,cnt:0};
   const e=document.createElement('div');e.className='c';
   e.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação do paciente (código)" aria-label="Identificação do paciente"><span class="pill warn" data-k="pill">Conectando…</span><button class="mu2" data-k="mu2" aria-label="Silenciar o alerta sonoro por 60 segundos" title="Silenciar som por 60 s">🔔</button><button class="ex" data-k="ex" aria-label="Mostrar ou ocultar detalhes" title="Detalhes">⤢</button></div><div class="m" data-k="dev"></div><div class="al2" data-k="al2" role="alert"></div>'
-   +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu">bpm <span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
+   +'<div class="hero"><div class="bpmbox"><div class="bpm" data-k="bpm">—</div><div class="bpmu"><span data-k="pct"></span></div></div><canvas width="300" height="64" aria-hidden="true"></canvas></div>'
    +'<div class="zb" data-k="zb" hidden><div class="zc" data-k="zc"></div><div class="zbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b class="mk" data-k="mk"></b></div><div class="zl"><span>Zona 1<br>abaixo de <b data-k="l1"></b></span><span>Zona 2<br>VT1 a VT2</span><span>Zona 3<br>a partir de <b data-k="l2"></b></span></div><div class="m" data-k="zo"></div></div>'
    +'<div class="kv">'+['bt:Bateria','rr:RR (VFC)','ss:Tempo de sessão:w','fc:FC mín · média · máx:w','zn:Zona:w','st:Conexão:w','mt:VFC (ms):w','al:DFA-α1:w'].map(s=>{const p=s.split(':');return '<div class="t tk-'+p[0]+(p[2]?' w':'')+'"><span class="k">'+p[1]+'</span><span data-k="'+p[0]+'"></span></div>'}).join('')+'</div>'
    +'<div class="ecg"><div class="ehd"><strong>ECG ao vivo (1 derivação)</strong><button data-k="eb">Iniciar ECG</button></div><canvas class="ecv" data-k="ecv" width="750" height="150" aria-label="Traçado eletrocardiográfico de uma derivação"></canvas><div class="m" data-k="est">Desligado. O ECG aumenta o uso de Bluetooth e da bateria do monitor; só um monitor por vez.</div><div class="m enote">25 mm/s · 10 mm/mV · 1 derivação pelo monitor de peito. Apoio visual: não é ECG de 12 derivações, não serve para diagnóstico e o app não interpreta ritmo. O traçado não é gravado nem exportado.</div></div>'
@@ -1643,7 +1693,7 @@ async function renderHist(){
       linha='Duração <b>'+(s.startedAt?dur(s.endedAt-s.startedAt):'—')+'</b> · FC média <b>'+(s.meanBpm==null?'—':Math.round(s.meanBpm)+' bpm')+'</b>'}
     const r=document.createElement('div');r.className='hr';
     r.innerHTML='<span class="hr-i" aria-hidden="true">'+ico+'</span><div class="hr-b"><div class="hr-1"><b class="hr-t">'+tipo+'</b>'+(tag?'<span class="hr-tag">'+tag+'</span>':'')+'</div>'
-      +'<div class="hr-2">Paciente: <b>'+nome+'</b></div><div class="hr-3">'+fmtDT(s.endedAt)+'</div>'+(linha?'<div class="hr-4">'+linha+'</div>':'')+'</div>'
+      +'<div class="hr-2"><b>'+nome+'</b></div><div class="hr-3">'+fmtDT(s.endedAt)+'</div>'+(linha?'<div class="hr-4">'+linha+'</div>':'')+'</div>'
       +'<div class="hmenu"><button type="button" class="kb" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button><div class="kl" role="menu" hidden></div></div>';
     const kb=r.querySelector('.kb'),kl=r.querySelector('.kl');
     const item=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.setAttribute('role','menuitem');x.textContent=txt;if(cls)x.className=cls;x.onclick=()=>{closeHM();fn()};kl.appendChild(x)};
@@ -1804,7 +1854,7 @@ function renderAgora(){
     let r=agRows.get(c.id);
     if(!r){
       const el=document.createElement('div');el.className='c ar';
-      el.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação (código)" aria-label="Identificação do paciente"><span class="pill warn">Conectando…</span></div><div class="hero"><div class="bpmbox"><div class="bpm">—</div><div class="bpmu">bpm</div></div><canvas width="300" height="56" aria-hidden="true"></canvas></div><div class="ar-f"><span class="m ar-bt"></span><span class="ar-ic"></span></div>';
+      el.innerHTML='<div class="hd"><input class="nm" placeholder="Identificação (código)" aria-label="Identificação do paciente"><span class="pill warn">Conectando…</span></div><div class="hero"><div class="bpmbox"><div class="bpm">—</div></div><canvas width="300" height="56" aria-hidden="true"></canvas></div><div class="ar-f"><span class="m ar-bt"></span><span class="ar-ic"></span></div>';
       r={el,inp:el.querySelector('input'),pill:el.querySelector('.pill'),bpm:el.querySelector('.bpm'),cv:el.querySelector('canvas'),bt:el.querySelector('.ar-bt'),ic:el.querySelector('.ar-ic')};
       r.inp.addEventListener('input',()=>{c.lab.value=r.inp.value;c.lab.dispatchEvent(new Event('input'))});   // mesma identificação do cartão
       agRows.set(c.id,r);list.appendChild(el);
@@ -1999,6 +2049,7 @@ function vfFillDevs(){
 }
 function vfCheck(){
   $('vf-pacel').hidden=$('vf-br').value!=='cadenciada';
+  $('vf-modeh').textContent=$('vf-mode').value==='std'?'Mede RMSSD, LnRMSSD, SDNN, pNN50 e, no domínio da frequência, LF, HF e LF/HF.':'Mede só RMSSD, LnRMSSD e SDNN (LF/HF não é confiável em 1 minuto).';
   const ok=$('vf-ok').checked,c=cards.get($('vf-dev').value),live=!!c&&vfLive(c),rr=!!c&&c.rrSeen;
   $('vf-go').disabled=!(ok&&live&&rr);
   $('vf-hint').textContent=!ok?'Confirme as condições da coleta para continuar.':!c?'Selecione um monitor.':!live?'Aguardando dados do monitor selecionado…':!rr?'Este monitor ainda não enviou intervalos RR: a VFC não pode ser medida com ele.':'Tudo pronto.';
@@ -2031,22 +2082,31 @@ function vfFinish(){
   const raw=vf.rr.slice(),meanRR=raw.length?raw.reduce((a,b)=>a+b,0)/raw.length:900,wall=(vf.lastRecT-vf.firstT)||HR.VFC.MODES[vf.mode].sec*1000;
   const loss=HR.vfcLossMs(vf.firstT,vf.lastRecT,vf.rrSumAfterFirst,vf.noContactMs,meanRR);
   const a=HR.vfcAnalyze(raw,vf.mode,{lossMs:loss,noContactMs:vf.noContactMs,durMs:wall});
-  vf.result={valid:a.valid,reasons:a.reasons,mode:vf.mode,posture:vf.posture,breathing:vf.breathing,paceRpm:vf.pace,stabSec:vf.stabSec,label:vf.label,startedAt:vf.recT0,nBeats:a.nBeats,artifactsPct:a.artifactsPct,time:a.time,freq:a.freq,raw,flags:a.flags,cleaned:a.cleaned};
+  vf.result={valid:a.valid,reasons:a.reasons,mode:vf.mode,posture:vf.posture,breathing:vf.breathing,paceRpm:vf.pace,stabSec:vf.stabSec,label:vf.label,startedAt:vf.recT0,nBeats:a.nBeats,artifactsPct:a.artifactsPct,time:a.time,freq:a.freq,poincare:a.poincare,raw,flags:a.flags,cleaned:a.cleaned};
   vf.step=4;vfShow();vfResult();msg('Gravação concluída.');
 }
 function vfResult(){
   const r=vf.result,esc=HR.esc,f=(v,d=1)=>v==null||!isFinite(v)?'—':v.toFixed(d).replace('.',','),tile=(k,v,main)=>'<div class="t'+(main?' main':'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';
   let h='';
   if(r.valid){
-    const t=r.time,q=r.freq;
-    h+='<div class="rbn ok">Leitura válida</div><div class="vfs">Principais</div><div class="vfm">'+tile('RMSSD (ms)',f(t.rmssd),1)+tile('LnRMSSD',f(t.lnRmssd,2))+tile('SDNN (ms)',f(t.sdnn))+'</div>';
-    if(q)h+='<div class="vfs">Apoio e frequência (5 min)</div><div class="vfm">'+tile('pNN50 (%)',f(t.pnn50))+tile('LF/HF',f(q.lfhf,2))+tile('LF (ms² · n.u.)',f(q.lf,0)+' · '+f(q.lfNu,0))+tile('HF (ms² · n.u.)',f(q.hf,0)+' · '+f(q.hfNu,0))+'</div>';
-    else h+='<div class="m" style="margin-top:8px">Modo ultra-curto: só RMSSD, LnRMSSD e SDNN são válidos; LF/HF não é confiável em 1 minuto.</div>';
-    h+='<div class="vfs">Qualidade</div><div class="vfm">'+tile('FC média',Math.round(t.hr)+' bpm')+tile('Batimentos',r.nBeats)+tile('Corrigidos (cúbica)',f(r.artifactsPct*100)+'%')+tile('Modo',esc(HR.VFC.MODES[r.mode].nome))+'</div>';
+    const t=r.time,q=r.freq,pc=r.poincare||(r.cleaned?HR.vfcPoincare(r.cleaned):null),tn=HR.vfcTone(r);
+    h+='<div class="rbn ok">Leitura válida</div>';
+    h+='<div class="vfg">Domínio do tempo</div><div class="vfm">'+tile('RMSSD (ms)',f(t.rmssd),1)+tile('LnRMSSD',f(t.lnRmssd,2))+tile('SDNN (ms)',f(t.sdnn))+(q?tile('pNN50 (%)',f(t.pnn50))+tile('FC média',Math.round(t.hr)+' bpm'):'')+'</div>';
+    h+='<div class="vfg">Domínio da frequência</div>';
+    if(q)h+='<div class="vfm">'+tile('LF/HF',f(q.lfhf,2),1)+tile('LF (ms² · n.u.)',f(q.lf,0)+' · '+f(q.lfNu,0))+tile('HF (ms² · n.u.)',f(q.hf,0)+' · '+f(q.hfNu,0))+'</div>';
+    else h+='<div class="m">Disponível só no modo de 5 min: em 1 minuto o LF/HF não é confiável.</div>';
+    if(pc)h+='<div class="vfg">Poincaré</div>'+HR.poincareSvg(pc)+'<div class="vfm">'+tile('SD1 (ms)',f(pc.sd1))+tile('SD2 (ms)',f(pc.sd2))+'</div><div class="m" style="margin-top:6px">SD1: variabilidade batimento a batimento (modulação vagal). SD2: variabilidade de longo prazo. SD1/SD2: <b>'+f(pc.ratio,2)+'</b>.</div>';
+    h+='<div class="vfg">Equilíbrio simpato-vagal</div>';
+    if(tn.state==='ok'){
+      h+='<div style="text-align:center"><span class="tn tn-'+tn.key+'">'+esc(tn.label)+'</span></div><div class="tbar" role="img" aria-label="Parassimpático (HF) '+f(tn.hfNu,0)+' n.u. e simpático (LF) '+f(tn.lfNu,0)+' n.u."><span class="hf" style="width:'+tn.hfNu+'%"></span><span class="lf" style="width:'+tn.lfNu+'%"></span></div>'
+        +'<div class="tleg"><span><i style="background:var(--z1)"></i>Parassimpático (HF): <b>'+f(tn.hfNu,0)+' n.u.</b></span><span><i style="background:var(--warn)"></i>Simpático (LF): <b>'+f(tn.lfNu,0)+' n.u.</b></span></div>'
+        +'<div class="m" style="margin-top:8px">Critério (LF/HF '+f(tn.lfhf,2)+'): abaixo de 1 = parassimpático; 1 a 2 = equilíbrio; acima de 2 = simpático. Referência geral de repouso, sem normas por idade; o LF não é um marcador puro de atividade simpática. Descreve o momento da leitura e não é diagnóstico.</div>';
+    }else h+='<div class="m">Não disponível: '+esc(tn.reason)+'.</div>';
+    h+='<div class="vfg">Qualidade</div><div class="vfm">'+(q?'':tile('FC média',Math.round(t.hr)+' bpm'))+tile('Batimentos',r.nBeats)+tile('Corrigidos (cúbica)',f(r.artifactsPct*100)+'%')+tile('Modo',esc(HR.VFC.MODES[r.mode].nome))+'</div>';
   }else h+='<div class="rbn bad">'+(r.aborted?'Leitura interrompida':'Leitura invalidada: repita a medição')+'</div><ul class="rlist">'+r.reasons.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
   h+='<div class="m" style="margin-top:10px">'+esc(HR.POSTURE_TXT[r.posture]||'')+' · respiração '+(r.breathing==='cadenciada'?'cadenciada a '+r.paceRpm+'/min':'espontânea')+' · estabilização de '+Math.round(r.stabSec/60)+' min</div>';
   if(r.valid&&r.breathing==='cadenciada'&&r.paceRpm<9)h+='<div class="m" style="margin-top:6px">Respiração abaixo de 9/min cai na banda LF: não compare LF e HF com leituras em respiração espontânea.</div>';
-  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura; o app não classifica os valores como normais ou alterados nem define limiares, e não é diagnóstico. Compare apenas leituras no mesmo horário, postura e modo.</p>';
+  h+='<p class="m" style="margin-top:12px"><b>Aviso:</b> a VFC descreve a resposta autonômica no momento da leitura; o app não classifica os valores como normais ou alterados nem define limiares, e não é diagnóstico. A classificação do equilíbrio simpato-vagal é só uma descrição pela razão LF/HF (critério de trabalho, sem validação clínica). Compare apenas leituras no mesmo horário, postura e modo.</p>';
   $('vf-res').innerHTML=h;
   $('vf-rep').hidden=!!r.aborted;$('vf-sv').hidden=!!r.aborted;$('vf-sv').disabled=vf.saved;$('vf-sv').textContent=vf.saved?'Salvo no Histórico':'Salvar no Histórico';
 }
@@ -2075,7 +2135,7 @@ setInterval(vfTick,250);
 $('go-v').onclick=()=>{toggleMenu(false);enterMode('vfc')};
 $('go-v2').onclick=()=>enterMode('vfc');
 $('add6').onclick=()=>$('add').click();
-$('vf-ok').onchange=vfCheck;$('vf-dev').onchange=vfCheck;$('vf-br').onchange=vfCheck;
+$('vf-ok').onchange=vfCheck;$('vf-dev').onchange=vfCheck;$('vf-br').onchange=vfCheck;$('vf-mode').onchange=vfCheck;
 $('vf-go').onclick=()=>{
   const c=cards.get($('vf-dev').value);if(!c)return;
   vf=Object.assign(vfNew(),{step:2,c,loaded:true,label:$('vf-id').value.trim(),mode:$('vf-mode').value,posture:$('vf-pos').value,breathing:$('vf-br').value,pace:+$('vf-pace').value,stabSec:+$('vf-stab').value,t2:Date.now(),breathT0:Date.now()});
@@ -2470,7 +2530,7 @@ function csStopMenu(open,mode){
   const sub=mode==='other';
   const items=sub?HR.CST_STOP.filter(x=>x[0]!=='conclusao'&&!SP_MAIN.includes(x[0])).map(x=>({k:x[0],t:SP_SHORT[x[0]]||x[1]})).concat([{k:'__main',t:'‹ Voltar'}])
     :SP_MAIN.map(k=>({k,t:SP_LABEL[k]})).concat([{k:'__other',t:'Outro'}]);
-  const n=items.length,h=sub?42:54,w=sub?150:156,step=sub?48:62,d0=sub?70:80,A=sub?166:176;
+  const n=items.length,h=sub?34:40,w=sub?190:200,step=sub?36:44,d0=sub?56:62,A=sub?120:110;   // leque compacto, junto do botão
   items.forEach((it,i)=>{
     const k=n-1-i,d=d0+k*step,tt=n>1?k/(n-1):0,off=A*Math.cos(tt*Math.PI/2);   // k=0 é a opção mais baixa (junto do botão)
     const r=document.createElement('div');r.className='spi'+(sub?' sub':'')+(cs.crit[it.k]?' hit':'')+(it.k==='__main'||it.k==='__other'?' mais':'');
