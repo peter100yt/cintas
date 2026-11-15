@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
 <title>Pulsys</title>
 <meta name="theme-color" content="#0f766e">
 <script>try{var t=localStorage.getItem('pulsys.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -255,6 +255,33 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px var(--badbg)}
 #cs-steps.miss{outline:2px solid var(--bad);outline-offset:3px;border-radius:10px}
 #cs-hint.bad{color:var(--bad);font-weight:600}
+/* sem zoom: duplo toque, pinça e zoom automático ao focar campos (o iOS dá zoom em campos com fonte menor que 16 px) */
+html,body{touch-action:manipulation}
+input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}
+/* Histórico */
+.hr{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.hr:first-child{border-top:0}
+.hr-i{flex:none;font-size:22px;line-height:1.25}.hr-b{flex:1;min-width:0}
+.hr-1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.hr-t{font-size:16px}
+.hr-2{font-size:14px;margin-top:2px;overflow-wrap:anywhere}.hr-3{font-size:13px;color:var(--mut);margin-top:1px}.hr-4{font-size:14px;margin-top:4px}
+.hr-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--warnbg);color:var(--warn)}
+.hmenu{position:relative;flex:none}.kb{width:38px;height:38px;min-height:38px;padding:0;border:0;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mut)}
+.kb svg{width:22px;height:22px;fill:currentColor}
+.kl{position:absolute;right:0;top:40px;z-index:8;min-width:156px;background:var(--sf);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:4px}.kl[hidden]{display:none}
+.kl button{display:block;width:100%;text-align:left;border:0;background:transparent;min-height:42px;font-weight:600;font-size:14px;border-radius:8px}.kl button.danger{color:var(--bad)}
+/* atalho de volta à atividade em andamento */
+.rtn{position:fixed;left:12px;bottom:92px;z-index:30;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:999px;border:0;background:var(--acc);color:var(--accfg);font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}.rtn[hidden]{display:none}
+.rtn .d{width:9px;height:9px;border-radius:50%;background:currentColor;animation:rp 1.2s infinite}.rtn .tm{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){.rtn .d{animation:none}}
+.bpm::before,.vfhr span::before{content:"";display:inline-block;width:.3em;height:.3em;margin-right:.12em;vertical-align:.3em;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e11d48' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+/* menu de parar (sobe acima do botão, como o menu do "+") */
+.spscrim{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.38);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility 0s linear .22s}.spscrim.open{opacity:1;visibility:visible;transition:opacity .22s ease}
+.spm{position:fixed;right:16px;bottom:calc(166px + env(safe-area-inset-bottom));z-index:49;width:min(88vw,330px);max-height:calc(100vh - 230px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.spi{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.28);padding-right:10px;opacity:0;visibility:hidden;transform:translateY(16px) scale(.96);transition:opacity .15s ease,transform .2s ease,visibility 0s linear .2s}
+.spm.open{pointer-events:auto}.spm.open .spi{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease,transform .32s cubic-bezier(.2,.9,.3,1.25)}
+.spk{flex:1;text-align:left;border:0;background:transparent;min-height:50px;padding:8px 6px 8px 14px;font-size:15px;font-weight:600;line-height:1.25}
+.spi.hit{border-color:var(--bad)}.spi.hit .spk{color:var(--bad)}.spi.mais .spk{color:var(--mut)}
+.csfab .x{display:none}.csfab.on .x{display:block}.csfab.on .sq{display:none}
+@media(prefers-reduced-motion:reduce){.spscrim,.spi{transition:none!important}}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -389,14 +416,15 @@ input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px va
 </div>
 </section>
 
-<button id="cs-fab" class="csfab" type="button" hidden aria-label="Interromper o teste" title="Interromper o teste"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg></button>
+<button id="rtn" class="rtn" type="button" hidden aria-label="Voltar para a atividade em andamento"><span class="d" aria-hidden="true"></span><span id="rtn-l"></span><span class="tm" id="rtn-t"></span></button>
+<button id="cs-fab" class="csfab" type="button" hidden aria-label="Interromper o teste" title="Interromper o teste" aria-haspopup="menu" aria-expanded="false"><svg class="sq" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></svg><svg class="x" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg></button>
+<div id="spscrim" class="spscrim"></div><div id="spm" class="spm" role="menu" aria-label="Interromper o teste"></div>
 <div id="bgd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="bg-t" style="z-index:44"><div class="dbox"><h3 id="bg-t"></h3><div class="m" id="bg-hr" style="margin-bottom:8px"></div>
 <div class="sl">Borg (0 a 10) · obrigatório <button type="button" class="ib" data-i="borg" aria-label="Informações: Borg">i</button></div><div class="borg" id="bg-borg"></div>
 <div class="sl" style="margin-top:12px">SpO2 (opcional) <button type="button" class="ib" data-i="spo2" aria-label="Informações: SpO2">i</button></div>
 <label class="ckr" style="border-top:0;padding:4px 0"><input type="checkbox" id="bg-sp-on"><span>Registrar SpO2</span></label>
 <select id="bg-sp" class="spsel" disabled aria-label="SpO2 em porcentagem"><option value="100">100%</option><option value="99">99%</option><option value="98">98%</option><option value="97">97%</option><option value="96">96%</option><option value="95">95%</option><option value="94">94%</option><option value="93">93%</option><option value="92">92%</option><option value="91">91%</option><option value="90">90%</option><option value="89">89%</option><option value="88">88%</option><option value="87">87%</option><option value="86">86%</option><option value="85">85%</option><option value="84">84%</option><option value="83">83%</option><option value="82">82%</option><option value="81">81%</option><option value="80">80%</option><option value="79">79%</option><option value="78">78%</option><option value="77">77%</option><option value="76">76%</option><option value="75">75%</option><option value="74">74%</option><option value="73">73%</option><option value="72">72%</option><option value="71">71%</option><option value="70">70%</option><option value="69">69%</option><option value="68">68%</option><option value="67">67%</option><option value="66">66%</option><option value="65">65%</option><option value="64">64%</option><option value="63">63%</option><option value="62">62%</option><option value="61">61%</option><option value="60">60%</option><option value="59">59%</option><option value="58">58%</option><option value="57">57%</option><option value="56">56%</option><option value="55">55%</option><option value="54">54%</option><option value="53">53%</option><option value="52">52%</option><option value="51">51%</option><option value="50">50%</option></select>
 <div class="dacts"><button class="pri" id="bg-ok" disabled>Registrar</button><button id="bg-skip" hidden>Pular</button></div></div></div>
-<div id="spd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="sp-t" style="z-index:55"><div class="dbox ifbox"><h3 id="sp-t">Interromper o teste <button type="button" class="ib" data-i="motivo" aria-label="Informações: motivo de interrupção">i</button></h3><p class="m">Selecione o critério. Ao selecionar, o teste é encerrado. A decisão clínica final é do profissional.</p><div id="sp-list"></div><div class="dacts"><button class="pri" id="sp-back">Voltar ao teste</button></div></div></div>
 <div id="ifd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ift" style="z-index:60"><div class="dbox ifbox"><span class="iftag" id="ifg"></span><h3 id="ift" style="margin-top:8px"></h3><div id="ifb"></div><div class="dacts"><button class="pri" id="if-ok">Fechar</button></div></div></div>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
@@ -490,7 +518,7 @@ input.miss,select.miss{border-color:var(--bad)!important;box-shadow:0 0 0 2px va
 
 <section class="view" id="v-hist" aria-label="Histórico">
 <div class="vh"><h2>Histórico</h2></div>
-<div class="card2"><div class="m" style="margin:0 0 8px">Sessões salvas só neste aparelho; nada é enviado à internet. Use um código na identificação, não o nome completo. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
+<div class="card2"><div class="m" style="margin:0 0 8px">Sessões salvas só neste aparelho; nada é enviado à internet. O navegador pode apagar estes dados sozinho: exporte o CSV do que for importante.</div><div id="hl"></div><div class="acts" style="margin-top:10px"><button id="hx" class="danger">Apagar todo o histórico</button></div></div>
 </section>
 
 <section class="view" id="v-ajustes" aria-label="Ajustes">
@@ -1582,20 +1610,39 @@ function sessionOf(c){
 function saveText(name,text,type){const f=new File([text],name,{type});
   const go=async()=>{try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(_){}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;a.click()};return go()}
+const fmtDT=ms=>{const d=new Date(ms);return d.toLocaleDateString('pt-BR')+' · '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};
+let hmenu=null;
+function closeHM(){if(hmenu){hmenu.hidden=true;hmenu.parentNode.querySelector('.kb').setAttribute('aria-expanded','false');hmenu=null}}
+document.addEventListener('click',e=>{if(hmenu&&!e.target.closest('.hmenu'))closeHM()});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeHM()});
 async function renderHist(){
+  closeHM();
   const box=$('hl');box.textContent='';let all=[];
   try{all=await tx('readonly',s=>s.getAll())}catch(e){box.textContent='Histórico indisponível neste navegador: '+(e&&e.message||e);return}
   if(!all.length){box.textContent='Nenhuma sessão salva.';return}
+  const esc=HR.esc;
   all.sort((a,b)=>b.id-a.id).forEach(s=>{
-    const r=document.createElement('div');r.className='r';
-    const isE=s.kind==='ecg',isV=s.kind==='vfc',isC=s.kind==='cst';   // exame de ECG de repouso, leitura de VFC ou sessão de exercício
-    const t=document.createElement('span');
-    t.textContent=isC?new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(s.cstKind==='adaptado'?'CST adaptado/clínico':'Chester Step Test')+' · '+(s.label||'sem nome')+(s.vo2max==null?' · sem estimativa':' · VO2máx est. '+s.vo2max.toFixed(1).replace('.',',')+' ml/kg/min (estimativa)'):isV?new Date(s.endedAt).toLocaleString('pt-BR')+' · Leitura de VFC · '+(s.label||'sem identificação')+' · '+(HR.VFC.MODES[s.mode]?HR.VFC.MODES[s.mode].nome:'')+(s.valid?' · RMSSD '+(s.rmssd==null?'—':s.rmssd.toFixed(1)+' ms'):' · invalidada'):
-      new Date(s.endedAt).toLocaleString('pt-BR')+' · '+(isE?'ECG de repouso · ':'')+(s.label||'sem identificação')+' · '+(isE?Math.round(s.durSec)+' s':(s.startedAt?dur(s.endedAt-s.startedAt):'—'))+' · FC média '+(s.meanBpm==null?'—':Math.round(s.meanBpm))+(isE&&!s.valid?' · inconclusivo':'');r.appendChild(t);
-    const b=(txt,fn)=>{const x=document.createElement('button');x.textContent=txt;x.onclick=fn;r.appendChild(x)};
-    b('Relatório',()=>isC?openRep(HR.cstReportHtml(s.exam),false):isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
-    if(!isE&&!isV&&!isC)b('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
-    b('Apagar',async()=>{if(!confirm('Apagar esta sessão deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()});
+    const isE=s.kind==='ecg',isV=s.kind==='vfc',isC=s.kind==='cst';   // ECG de repouso, leitura de VFC, CST ou sessão de exercício
+    const nome=esc(s.label||(isC?'sem nome':'sem identificação'));
+    let ico,tipo,tag='',linha;
+    if(isC){ico='📈';tipo=s.cstKind==='adaptado'?'CST adaptado/clínico':'Chester Step Test';
+      linha=s.vo2max==null?'':'VO2máx estimado <b>'+s.vo2max.toFixed(1).replace('.',',')+' ml/kg/min</b>';if(s.vo2max==null)tag='sem estimativa'}
+    else if(isV){ico='〰️';tipo='Leitura de VFC';const m=HR.VFC.MODES[s.mode];
+      linha=(m?esc(m.nome):'')+(s.valid?' · RMSSD <b>'+(s.rmssd==null?'—':s.rmssd.toFixed(1).replace('.',',')+' ms')+'</b>':'');if(!s.valid)tag='invalidada'}
+    else if(isE){ico='🩺';tipo='ECG de repouso';
+      linha='Duração <b>'+Math.round(s.durSec)+' s</b> · FC média <b>'+(s.meanBpm==null?'—':Math.round(s.meanBpm)+' bpm')+'</b>';if(!s.valid)tag='inconclusivo'}
+    else{ico='🏃';tipo='Sessão de exercício';
+      linha='Duração <b>'+(s.startedAt?dur(s.endedAt-s.startedAt):'—')+'</b> · FC média <b>'+(s.meanBpm==null?'—':Math.round(s.meanBpm)+' bpm')+'</b>'}
+    const r=document.createElement('div');r.className='hr';
+    r.innerHTML='<span class="hr-i" aria-hidden="true">'+ico+'</span><div class="hr-b"><div class="hr-1"><b class="hr-t">'+tipo+'</b>'+(tag?'<span class="hr-tag">'+tag+'</span>':'')+'</div>'
+      +'<div class="hr-2">Paciente: <b>'+nome+'</b></div><div class="hr-3">'+fmtDT(s.endedAt)+'</div>'+(linha?'<div class="hr-4">'+linha+'</div>':'')+'</div>'
+      +'<div class="hmenu"><button type="button" class="kb" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button><div class="kl" role="menu" hidden></div></div>';
+    const kb=r.querySelector('.kb'),kl=r.querySelector('.kl');
+    const item=(txt,fn,cls)=>{const x=document.createElement('button');x.type='button';x.setAttribute('role','menuitem');x.textContent=txt;if(cls)x.className=cls;x.onclick=()=>{closeHM();fn()};kl.appendChild(x)};
+    item('Relatório',()=>isC?openRep(HR.cstReportHtml(s.exam),false):isV?openRep(HR.vfcReportHtml(s.exam),false):isE?openRep(HR.ecgReportHtml(s.exam),true):openRep(HR.reportHtml(s),false));
+    if(!isE&&!isV&&!isC)item('CSV',()=>saveText('pulsys-sessao-'+s.id+'.csv',['hora_iso,paciente,bpm,contato,valido,rr_ms'].concat(s.log.map(l=>[new Date(l[0]).toISOString(),'"'+String(s.label).replace(/"/g,'""')+'"',l[1],l[2],l[3],l[4]].join(','))).join('\n'),'text/csv'));
+    item('Apagar',async()=>{if(!confirm('Apagar este registro deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',st=>st.delete(s.id))}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()},'danger');
+    kb.onclick=e=>{e.stopPropagation();const abrir=kl.hidden;closeHM();if(abrir){kl.hidden=false;kb.setAttribute('aria-expanded','true');hmenu=kl}};
     box.appendChild(r)});
 }
 $('hx').onclick=async()=>{if(!confirm('Apagar TODO o histórico deste aparelho? Não dá para desfazer.'))return;try{await tx('readwrite',s=>s.clear());msg('Histórico apagado.')}catch(e){msg('Falha ao apagar: '+(e&&e.message||e))}renderHist()};
@@ -1653,7 +1700,7 @@ function setView(v){
   b.classList.toggle('mod-sessao',v==='sessao');b.classList.toggle('mod-proto',v==='proto');
   markTab();
   if(SUB[v])$('run-t').textContent=SUB[v];   // sem o cabeçalho, o título da tela diz o modo atual
-  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='proto')csShow();csFab();if(v!=='proto'){$('bgd').hidden=true;$('spd').hidden=true}if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
+  msg('');applyMode();if(v==='hist')renderHist();if(v==='agora')renderAgora();if(v==='home'){homeLastAt=0;renderHome()}if(v==='proto')csShow();csFab();renderRtn();if(v!=='proto'){$('bgd').hidden=true;csStopMenu(false)}if(v==='ecgr')exShow();if(v==='vfc')vfShow();window.scrollTo(0,0);
 }
 // Sessão de exercício: Iniciar / Encerrar (com opção de salvar no Histórico).
 function renderSess(){
@@ -1714,7 +1761,8 @@ function discardActive(){
   if(ex.step===2||ex.step===3){if(ex.c)ecgOff(ex.c,'Desligado.');ex=exNew()}
   renderSess();markTab();
 }
-function goMode(m){if(m==='proto')askProto();else setView(m)}
+// O aviso de estimativa experimental só aparece ao ENTRAR no protocolo (lista); ao voltar para um teste já iniciado não repete.
+function goMode(m){if(m==='proto'&&cs.step===0)askProto();else setView(m)}
 let chTarget=null;
 function enterMode(m){
   const a=activeMode();
@@ -2286,6 +2334,7 @@ function csShow(){
 }
 function csReset(){
   const c=cs.c;if(c&&c.proto&&c.proto.on)c.proto={on:false,t0:0,end:0,pts:[]};
+  $('bgd').hidden=true;csStopMenu(false);   // pop-ups do teste anterior não podem sobrar na tela
   cs=csNew();csShow();
 }
 // ---- etapa 2: preparação ----
@@ -2337,7 +2386,7 @@ function csTick(){
   const zn=HR.cstHrZone(cs.cur,cs.hrMax);
   $('cs-hr').textContent=cs.cur===null?'—':cs.cur;$('cs-hr').className=zn==='limit'?'hr-lim':zn==='near'?'hr-near':'';
   $('cs-cd').classList.toggle('low',s.endSec-el<=20);   // últimos 20 s do estágio
-  $('cs-hrm').textContent=cs.cur===null?'FC não registrada (sem leitura)':Math.round(cs.cur/cs.hrMax*100)+'% da FCmáx prevista ('+cs.hrMax+' bpm) · limite de 80%: '+Math.round(cs.hrStop)+' bpm'+(zn==='near'?' · PRÓXIMA DO LIMITE':zn==='limit'?' · LIMITE ATINGIDO':'');
+  $('cs-hrm').innerHTML=(cs.cur===null?'<div><b>FC não registrada (sem leitura)</b></div>':'')+'<div>FCmáx prevista: <b>'+cs.hrMax+' bpm</b></div><div>Limite de 80%: <b>'+Math.round(cs.hrStop)+' bpm</b>'+(zn==='near'?' · <b>próxima do limite</b>':zn==='limit'?' · <b>limite atingido</b>':'')+'</div>';
   // alertas ativos
   const al=[];
   if(cs.crit.fc80)al.push(['bad','FC ≥ 80% da FCmáx prevista ('+cs.crit.fc80.hr+' bpm) aos '+dur(cs.crit.fc80.t*1000)+': critério de interrupção atingido. Interrompa o teste.']);
@@ -2361,7 +2410,7 @@ function csEnd(key,text){
   cs.continued=[['fc80','FC ≥ 80% da FCmáx prevista'],['borg8','Borg ≥ 8'],['spo2','SpO2 abaixo do mínimo do serviço']].filter(([k])=>cs.crit[k]&&key!==k&&el-cs.crit[k].t>5).map(x=>x[1]).join('; ');
   cs.stop={key,text:text||HR.cstStopText(key)};
   const c=cs.c;if(c.proto&&c.proto.on){c.proto.on=false;c.proto.end=now}
-  $('spd').hidden=true;cs.step=4;cs.critSig='';$('cs-al').textContent='';csShow();csFab();
+  csStopMenu(false);cs.step=4;cs.critSig='';$('cs-al').textContent='';csShow();csFab();
   msg(key==='conclusao'?'Teste concluído: cinco estágios.':'Teste encerrado: '+cs.stop.text+'.');
   if(key!=='conclusao')csTone(500,0,.4,.3,true);
 }
@@ -2397,15 +2446,22 @@ function csBorgDlg(s){
   $('bgd').hidden=false;
 }
 // botão de parar flutuante: abre a lista de critérios; selecionar um critério encerra o teste
-function csFab(){$('cs-fab').hidden=!(cs.step===3&&view==='proto')}
-function csStopDlg(){
-  const box=$('sp-list');box.textContent='';
-  HR.CST_STOP.filter(x=>x[0]!=='conclusao').forEach(([k,txt])=>{
-    const r=document.createElement('div');r.className='sprow';
-    const b=document.createElement('button');b.type='button';b.className='spb'+(cs.crit[k]?' hit':'');b.textContent=txt+(cs.crit[k]?' · ATINGIDO':'');b.onclick=()=>{$('spd').hidden=true;csEnd(k)};
-    const i=document.createElement('button');i.type='button';i.className='ib';i.dataset.i='crit_'+k;i.setAttribute('aria-label','Informações: '+txt);i.textContent='i';
-    r.appendChild(b);r.appendChild(i);box.appendChild(r)});
-  $('spd').hidden=false;
+function csFab(){const h=!(cs.step===3&&view==='proto');$('cs-fab').hidden=h;if(h&&$('spm').classList.contains('open'))csStopMenu(false)}
+const SP_MAIN=['fc80','borg8','cadencia'],SP_LABEL={fc80:'FC atingiu 80% da FCmáx prevista',borg8:'Borg atingiu 8/10',cadencia:'Incapaz de manter a cadência'};
+function csStopMenu(open,mode){
+  const m=$('spm'),fab=$('cs-fab');
+  if(!open){m.classList.remove('open');$('spscrim').classList.remove('open');fab.classList.remove('on');fab.setAttribute('aria-expanded','false');return}
+  m.classList.remove('open');m.textContent='';
+  const items=mode==='other'?HR.CST_STOP.filter(x=>x[0]!=='conclusao'&&!SP_MAIN.includes(x[0])).map(x=>({k:x[0],t:x[1]})).concat([{k:'__main',t:'‹ Voltar'}])
+    :SP_MAIN.map(k=>({k,t:SP_LABEL[k]})).concat([{k:'__other',t:'Outro'}]);
+  items.forEach((it,i)=>{
+    const r=document.createElement('div');r.className='spi'+(cs.crit[it.k]?' hit':'')+(it.k==='__main'||it.k==='__other'?' mais':'');r.style.transitionDelay=((items.length-1-i)*0.045)+'s';
+    const b=document.createElement('button');b.type='button';b.className='spk';b.setAttribute('role','menuitem');b.textContent=it.t+(cs.crit[it.k]?' · ATINGIDO':'')+(it.k==='__other'?'  ›':'');
+    b.onclick=()=>{if(it.k==='__other')csStopMenu(true,'other');else if(it.k==='__main')csStopMenu(true,'main');else{csStopMenu(false);csEnd(it.k)}};
+    r.appendChild(b);
+    if(it.k.slice(0,2)!=='__'){const ib=document.createElement('button');ib.type='button';ib.className='ib';ib.dataset.i='crit_'+it.k;ib.setAttribute('aria-label','Informações: '+it.t);ib.textContent='i';r.appendChild(ib)}
+    m.appendChild(r)});
+  void m.offsetWidth;m.classList.add('open');$('spscrim').classList.add('open');fab.classList.add('on');fab.setAttribute('aria-expanded','true');
 }
 // ---- metrônomo (som agendado pelo relógio de áudio) e feedback visual ----
 function csSched(){
@@ -2505,9 +2561,9 @@ $('cs-start').onclick=()=>{
 };
 $('cs-ev-ritmo').onclick=()=>csEvent('Perdeu o ritmo');$('cs-ev-pausa').onclick=()=>csEvent('Pausa');$('cs-ev-trop').onclick=()=>csEvent('Tropeço');
 $('cs-ev-sym').onclick=()=>csEvent('Sintoma: '+$('cs-sym').value);
-$('cs-fab').onclick=csStopDlg;$('sp-back').onclick=()=>{$('spd').hidden=true};
+$('cs-fab').onclick=()=>csStopMenu(!$('spm').classList.contains('open'),'main');$('spscrim').onclick=()=>csStopMenu(false);
 $('cs-pend-open').onclick=()=>csRenderPend(true);
-document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('spd').hidden)$('spd').hidden=true});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')csStopMenu(false)});
 $('cs-fin').onclick=()=>{if($('cs-fin').disabled)return;cs.result=null;cs.step=5;csShow()};
 $('cs-disc').onclick=()=>{if(confirm('Descartar este teste? Os dados não salvos serão perdidos.'))csReset()};
 $('cs-new').onclick=()=>csReset();
@@ -2520,6 +2576,25 @@ $('cs-sv').onclick=async()=>{
 csBuildSteps();csTable();
 setInterval(csTick,250);setInterval(csSched,40);requestAnimationFrame(csRaf);
 
+// Sem zoom por pinça (o Safari/iOS ignora user-scalable=no; os eventos de gesto precisam ser cancelados)
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+// ===== Atalho de volta à atividade em andamento (aparece fora da tela dela, com o cronômetro) =====
+function rtnInfo(){
+  const a=activeMode();if(!a)return null;const now=Date.now();
+  if(a==='sessao')return{view:'sessao',l:'Sessão',t:dur(now-sess.t0)};
+  if(a==='proto'){const el=(now-cs.t0)/1000;return{view:'proto',l:'Protocolo',t:cs.step===3?(el<0?'início em '+Math.ceil(-el)+' s':dur(el*1000)):'em andamento'}}
+  if(a==='vfc'){const t=vf.step===2?dur(Math.max(0,vf.stabSec-(now-vf.t2)/1000)*1000):dur(vf.rrSum);return{view:'vfc',l:vf.step===2?'VFC · estabilização':'VFC · gravando',t}}
+  if(a==='ecgr'){const t=ex.step===2?dur(Math.max(0,ex.restSec-(now-ex.t2)/1000)*1000):dur(now-(ex.capStart||now));return{view:'ecgr',l:ex.step===2?'ECG · acomodação':'ECG · gravando',t}}
+  return null;
+}
+let rtnView=null;
+function renderRtn(){
+  const x=rtnInfo(),b=$('rtn');
+  if(!x||x.view===view){b.hidden=true;rtnView=null;return}
+  rtnView=x.view;b.hidden=false;$('rtn-l').textContent=x.l;$('rtn-t').textContent=x.t;
+}
+$('rtn').onclick=()=>{if(rtnView)setView(rtnView)};   // direto para a tela (sem repetir o aviso experimental)
 // ===== Home =====
 // Sem dados de paciente na Home: só contagens, atalhos, tipo/data da última atividade salva (sem identificação) e dicas.
 const TIPS=[
@@ -2597,7 +2672,7 @@ setInterval(()=>{
   renderSess();markTab();
   $('add').hidden=cards.size===0;const temDados=[...cards.values()].some(c=>c.cnt>0);$('exp').hidden=$('cp').hidden=!temDados;
   cards.forEach(c=>{if(HR.needsRecovery({state:c.state,ageSec:c.t?(now-c.t)/1000:0,busy:c.busy}))recover(c)});  // dados parados: reconecta sozinho
-  applyMode();cards.forEach(draw);renderAgora();renderHome();
+  applyMode();cards.forEach(draw);renderAgora();renderHome();renderRtn();
 },1000);
 setView('home');
 </script></body></html>
