@@ -251,6 +251,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 .spsel{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf2);font:inherit;color:var(--fg)}.spsel:disabled{opacity:.5}
 .vo2big{text-align:center;margin:4px 0 12px}.vo2big .vk{font-size:13px;font-weight:700;color:var(--mut)}.vo2big .n{font-size:76px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums}.vo2big .u{font-size:16px;font-weight:700;color:var(--mut);margin-bottom:10px}
 .lvl{display:inline-block;padding:8px 22px;border-radius:999px;font-weight:800;font-size:16px;color:var(--accfg)}.lv0{background:var(--bad)}.lv1{background:var(--warn)}.lv2{background:var(--ok)}.lv3{background:var(--acc)}.lv4{background:var(--z1)}
+.vt{display:flex;align-items:center;gap:6px;min-width:0}.bk{flex:none;width:36px;height:36px;min-height:36px;padding:0;border-radius:50%;border:0;background:var(--sf2);font-size:26px;line-height:1;font-weight:700;color:var(--fg);display:inline-flex;align-items:center;justify-content:center;padding-bottom:3px}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -298,7 +299,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </section>
 
 <section class="view" id="v-prt" aria-label="Protocolo progressivo">
-<div class="vh"><h2>Protocolo progressivo</h2><span class="stp" id="cs-stp"></span></div>
+<div class="vh"><div class="vt"><button type="button" class="bk" aria-label="Voltar para a seleção de modos" title="Voltar para a seleção de modos">‹</button><h2>Protocolo progressivo</h2></div><span class="stp" id="cs-stp"></span></div>
 
 <div id="cs-0">
 <p class="m" style="margin:0 0 12px">Escolha o protocolo. Em todos, o app também estima limiares pelo DFA-α1 (experimental, sempre rotulado "estimado por VFC").</p>
@@ -308,7 +309,6 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div class="prrow"><button class="pri" id="cs-o">CST original</button><button type="button" class="ib" data-i="modo" aria-label="Informações: CST original ou adaptado">i</button></div>
 <div class="prrow"><button id="cs-a">CST adaptado/clínico</button><button type="button" class="ib" data-i="modo" aria-label="Informações: CST adaptado">i</button></div>
 </div>
-<button class="chip" id="cs-back0">‹ Modos</button>
 </div>
 
 <div id="cs-1" class="card2" hidden>
@@ -333,7 +333,6 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div class="exf">
 <label class="f"><span>Cadência inicial <button type="button" class="ib" data-i="cad0" aria-label="Informações: cadência inicial">i</button></span><select id="cs-cad0"><option value="10">10 subidas/min</option><option value="15">15 subidas/min</option></select></label>
 <label class="f"><span>Duração de cada estágio <button type="button" class="ib" data-i="stagesec" aria-label="Informações: duração do estágio">i</button></span><select id="cs-sec"><option value="120">2 min</option><option value="180">3 min</option></select></label>
-<label class="f"><span>Justificativa da adaptação (obrigatória) <button type="button" class="ib" data-i="adaptwhy" aria-label="Informações: justificativa">i</button></span><input id="cs-why" maxlength="160" autocomplete="off"></label>
 </div></div>
 <label class="f" style="margin-top:12px"><span>SpO2 mínima aceita, critério do serviço (opcional) <button type="button" class="ib" data-i="spo2min" aria-label="Informações: SpO2 mínima">i</button></span><input id="cs-spo2min" type="number" inputmode="numeric" min="50" max="100" step="1" placeholder="Em branco = sem comparação automática"></label>
 <div class="sl" style="margin-top:14px">Estágios <button type="button" class="ib" data-i="estagio" aria-label="Informações: estágio">i</button> e cadência <button type="button" class="ib" data-i="cadencia" aria-label="Informações: cadência">i</button></div>
@@ -398,16 +397,16 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 <div id="ifd" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="ift" style="z-index:60"><div class="dbox ifbox"><span class="iftag" id="ifg"></span><h3 id="ift" style="margin-top:8px"></h3><div id="ifb"></div><div class="dacts"><button class="pri" id="if-ok">Fechar</button></div></div></div>
 
 <section class="view" id="v-run" aria-label="Monitoramento">
-<div class="vh"><h2 id="run-t">Sessão de exercício</h2><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div></div>
+<div class="vh"><div class="vt"><button type="button" class="bk" aria-label="Voltar para a seleção de modos" title="Voltar para a seleção de modos">‹</button><h2 id="run-t">Sessão de exercício</h2></div><div id="s-run" hidden role="group" aria-label="Sessão em andamento"><span class="rec" aria-hidden="true"><i></i></span><span class="stime" id="s-time">00:00</span><button class="stop" id="s-end" aria-label="Encerrar sessão" title="Encerrar sessão"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor"/></svg></button></div></div>
 <div id="sbar" hidden><button class="pri sbtn" id="s-start">▶ Iniciar sessão</button></div>
-<div class="tools"><button class="chip" id="add" hidden>＋ Adicionar monitor</button><button class="chip" id="sw">‹ Modos</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
+<div class="tools"><button class="chip" id="add" hidden>＋ Adicionar monitor</button><button class="chip" id="vm" hidden>▦ Visão de grupo</button><button class="chip swr" id="snd" role="switch" aria-checked="false"><span>Sons de alerta</span><span class="tg" aria-hidden="true"><i></i></span></button><button class="chip" id="exp" hidden>⬇ Exportar CSV</button><button class="chip" id="cp" hidden>⧉ Copiar CSV</button></div>
 <div id="empty"><h2>Nenhum monitor conectado</h2><div class="m">Pareie o primeiro monitor para começar a monitorar.</div><ol><li>Coloque o monitor no corpo (na cinta de peito, com os eletrodos úmidos).</li><li>Desconecte-o de relógios e de outros aplicativos.</li><li>Toque em <b>Adicionar monitor</b> e escolha o monitor na lista.</li></ol><button class="pri" id="add2">＋ Adicionar monitor</button></div>
 <div id="g"></div>
 <p class="m foot">Ferramenta de apoio ao monitoramento. Não substitui avaliação clínica, ECG, supervisão profissional nem protocolos de emergência. A ausência de alerta não significa que o paciente está bem. O DFA-α1 é experimental e não é um limiar ventilatório.</p>
 </section>
 
 <section class="view" id="v-ecgr" aria-label="ECG de repouso">
-<div class="vh"><h2>ECG de repouso</h2><span class="stp" id="ex-stp">Etapa 1 de 4</span></div>
+<div class="vh"><div class="vt"><button type="button" class="bk" aria-label="Voltar para a seleção de modos" title="Voltar para a seleção de modos">‹</button><h2>ECG de repouso</h2></div><span class="stp" id="ex-stp">Etapa 1 de 4</span></div>
 <div id="ex-none" class="emptyv" hidden><div class="ei">🩺</div><h3>Nenhum monitor conectado</h3><p class="m">Conecte um monitor com ECG (cinta de peito) para fazer o exame.</p><button class="pri" id="add5">＋ Conectar monitor</button></div>
 <div id="ex-1" class="card2" hidden>
 <div class="sl">Antes de começar</div>
@@ -448,7 +447,7 @@ details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
 </section>
 
 <section class="view" id="v-vfc" aria-label="Leitura de VFC">
-<div class="vh"><h2>Leitura de VFC</h2><span class="stp" id="vf-stp">Etapa 1 de 4</span></div>
+<div class="vh"><div class="vt"><button type="button" class="bk" aria-label="Voltar para a seleção de modos" title="Voltar para a seleção de modos">‹</button><h2>Leitura de VFC</h2></div><span class="stp" id="vf-stp">Etapa 1 de 4</span></div>
 <div id="vf-none" class="emptyv" hidden><div class="ei">〰️</div><h3>Nenhum monitor conectado</h3><p class="m">Conecte um monitor que envie intervalos RR (cinta de peito) para fazer a leitura.</p><button class="pri" id="add6">＋ Conectar monitor</button></div>
 <div id="vf-1" class="card2" hidden>
 <div class="sl">Padronize a coleta</div>
@@ -1274,7 +1273,7 @@ const HR = (() => {
     o += row('Protocolo', esc(ad ? 'CST adaptado/clínico' : 'CST original') + ' · versão ' + esc(x.version || CST.VERSION));
     o += row('Altura do degrau', x.stepCm + ' cm (fixa durante todo o teste)');
     o += row('Motivo da escolha da altura', esc(x.stepReason) || 'não informado');
-    if (ad) { o += row('Adaptação (cadência inicial · duração do estágio)', x.cad0 + ' subidas/min · ' + (x.stageSec / 60) + ' min, +5 subidas/min por estágio'); o += row('Justificativa da adaptação', esc(x.adaptWhy) || '—'); }
+    if (ad) { o += row('Adaptação (cadência inicial · duração do estágio)', x.cad0 + ' subidas/min · ' + (x.stageSec / 60) + ' min, +5 subidas/min por estágio'); }
     o += row('FC de repouso', x.hrRest + ' bpm');
     o += row('FCmáx prevista', x.hrMax + ' bpm (fórmula: 220 − idade; estimativa populacional)');
     o += row('Equipamento', esc(x.device || '—'));
@@ -1727,7 +1726,8 @@ $('ch-go').onclick=()=>{$('chd').hidden=true;const m=chTarget;chTarget=null;disc
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!$('chd').hidden){$('chd').hidden=true;chTarget=null}});
 $('go-p').onclick=()=>{toggleMenu(false);enterMode('proto')};
 $('go-s2').onclick=()=>enterMode('sessao');$('go-p2').onclick=()=>enterMode('proto');
-$('sw').onclick=()=>setView('novo');   // "‹ Modos": volta à tela "O que você quer fazer?", com a descrição de cada modo
+// "‹" ao lado do título (sessão, protocolo, leitura de VFC e ECG de repouso): volta à tela "O que você quer fazer?". Nada é descartado.
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.bk'))setView('novo')});
 function applyMode(){
   // Visão de grupo e o botão que alterna só existem com 2 ou mais cintas (com uma só, sempre a visão detalhada)
   const g=view==='sessao'&&cards.size>=2&&mode!=='det';if(!g)closeAllX();
@@ -2055,9 +2055,9 @@ const INFO={
   modo:{t:'CST original ou adaptado/clínico',tag:'Decisão do avaliador',rows:IR(
     'Original: 5 estágios de 2 min, 15 a 35 subidas/min, degrau de 15, 20, 25 ou 30 cm. Adaptado/clínico: modo separado em que o profissional reduz a cadência inicial e/ou alonga os estágios, com degrau de 15 ou 20 cm.',
     'O CST adaptado NÃO é equivalente ao original: seus resultados não devem ser comparados diretamente com os do CST original.',
-    'Escolha considerando segurança, tolerabilidade, SpO2, equilíbrio, dor e capacidade de manter o ritmo. O profissional deve justificar a adaptação.',
+    'Escolha considerando segurança, tolerabilidade, SpO2, equilíbrio, dor e capacidade de manter o ritmo.',
     'Evite o original em baixa capacidade funcional, DPOC, idosos frágeis, limitação osteomuscular ou risco elevado; nesses casos avalie o adaptado.',
-    'Toda adaptação (degrau, cadência inicial, duração do estágio e justificativa) é registrada no relatório. O VO2 e a regressão usam a mesma fórmula, mas com as cargas do modo escolhido.')},
+    'Toda adaptação (degrau, cadência inicial, duração do estágio) é registrada no relatório. O VO2 e a regressão usam a mesma fórmula, mas com as cargas do modo escolhido.')},
   nome:{t:'Nome',tag:'Decisão do avaliador',rows:[
     ['O que significa','O nome é opcional e serve apenas para identificação do registro.'],
     ['Se ficar em branco','O teste pode ser salvo sem nome (registro anônimo).'],
@@ -2158,10 +2158,6 @@ const INFO={
     ['O que significa','Duração de cada um dos cinco estágios no CST adaptado (2 ou 3 min).'],
     ['Quando alongar','Para dar mais tempo de adaptação da FC em cada carga.'],
     ['Importante','É adaptação: não equivale ao CST original. Registrada no relatório.']]},
-  adaptwhy:{t:'Justificativa da adaptação',tag:'Decisão do avaliador',rows:[
-    ['O que significa','Motivo clínico da adaptação (por exemplo: DPOC com baixa tolerância a 15 subidas/min).'],
-    ['Por que importa','Toda adaptação deve ser justificada e registrada para reprodutibilidade e para evitar comparação indevida.'],
-    ['Uso no relatório','Aparece no relatório. Obrigatória no modo adaptado.']]},
   som:{t:'Metrônomo sonoro',tag:'Protocolo original',rows:[
     ['O que significa','Um bip a cada movimento (4 por subida): 2 bips agudos para a subida dos pés e 2 bips médios para a descida dos pés, mais o feedback visual na tela.'],
     ['Limites','No iPhone o som pode não tocar com o modo silencioso ligado ou com a tela bloqueada. Use o feedback visual como apoio.'],
@@ -2201,7 +2197,7 @@ const INFO={
 // Teste submáximo: o VO2máx é ESTIMADO. O app também estima limiares por DFA-α1 (experimental) a partir dos RR do mesmo monitor.
 // O app NÃO mede a cadência real, NÃO decide a segurança do paciente e NUNCA preenche FC ou SpO2 sem leitura real.
 // Parâmetros de confiança e critérios de FC plausível são de trabalho, sem validação clínica.
-const csNew=()=>({step:0,kind:'original',c:null,label:'',age:0,sex:'',hrRest:0,stepCm:0,cad0:15,stageSec:120,why:'',spo2Min:null,popN:0,
+const csNew=()=>({step:0,kind:'original',c:null,label:'',age:0,sex:'',hrRest:0,stepCm:0,cad0:15,stageSec:120,spo2Min:null,popN:0,
   stages:[],t0:0,started:false,ended:false,ac:null,sound:true,nb:{i:0,k:0},cdLast:99,recent:[],lastPk:0,cur:null,events:[],crit:{},stop:null,endEl:0,endHr:null,continued:'',
   hrMax:0,hrStop:0,result:null,saved:false,pendSig:'',critSig:''});
 let cs=csNew();
@@ -2254,7 +2250,7 @@ function csCheck(){
   const sel=document.querySelector('#cs-steps input:checked'),ageOk=Number.isInteger(age)&&age>=10&&age<=100,hrrOk=Number.isInteger(hrr)&&hrr>=30&&hrr<=200;
   $('cs-fcmax').textContent=ageOk?'FCmáx prevista: '+HR.cstHrMax(age)+' bpm (220 − idade) · critério de 80%: '+Math.round(.8*HR.cstHrMax(age))+' bpm':'FCmáx prevista: informe a idade.';
   csTable();
-  const why=$('cs-why').value.trim(),raw=$('cs-spo2min').value.trim(),sp=raw===''?null:parseInt(raw,10),spOk=raw===''||(Number.isInteger(sp)&&sp>=50&&sp<=100);
+  const raw=$('cs-spo2min').value.trim(),sp=raw===''?null:parseInt(raw,10),spOk=raw===''||(Number.isInteger(sp)&&sp>=50&&sp<=100);
   let m;
   if(!dev)m='Selecione um monitor (use "＋ Adicionar monitor").';
   else if(!live)m='Aguardando a FC do monitor selecionado…';
@@ -2262,7 +2258,6 @@ function csCheck(){
   else if(!sex)m='Informe o sexo (usado na classificação do nível de capacidade).';
   else if(!hrrOk)m='Informe a FC de repouso (30 a 200 bpm).';
   else if(!sel)m='Escolha a altura do degrau.';
-  else if(ad&&!why)m='Justifique a adaptação.';
   else if(!spOk)m='SpO2 mínima inválida (50 a 100) ou deixe em branco.';
   else m=dev.rrSeen?'Tudo pronto.':'Tudo pronto. Este monitor não envia RR: o VO2máx será estimado, mas o DFA-α1 (limiares) não estará disponível.';
   $('cs-hint').textContent=m;$('cs-go').disabled=!m.startsWith('Tudo pronto');
@@ -2285,7 +2280,7 @@ function csReset(){
 function csSummary(){
   const ad=cs.kind==='adaptado';
   $('cs-sum').innerHTML='<b>'+(ad?'CST adaptado/clínico':'CST original')+'</b> · degrau de '+cs.stepCm+' cm · idade '+cs.age+' · FC de repouso '+cs.hrRest+' bpm · FCmáx prevista '+cs.hrMax+' bpm (critério de 80%: '+Math.round(cs.hrStop)+' bpm) · monitor: '+HR.esc(cs.c.lab.value||'#'+cs.c.n)
-    +'<br>Estágios: '+cs.stages.map(s=>s.cad).join(' · ')+' subidas/min, '+(cs.stages[0].durSec/60)+' min cada. '+(ad?'Adaptação: '+HR.esc(cs.why)+'.':'');
+    +'<br>Estágios: '+cs.stages.map(s=>s.cad).join(' · ')+' subidas/min, '+(cs.stages[0].durSec/60)+' min cada. '+(ad?'Adaptação: cadência inicial '+cs.cad0+' subidas/min e estágios de '+(cs.stageSec/60)+' min.':'');
 }
 // ---- etapa 3: teste ----
 function csStageNow(el){const i=cs.stages.findIndex(s=>el<s.endSec);return i<0?cs.stages.length-1:i}
@@ -2439,7 +2434,7 @@ function csBuild(){
   const lastOk=[...cs.stages].reverse().find(s=>s.hrOk);
   const rest=cs.stages.map(s=>({n:s.n,cad:s.cad,durSec:s.durSec,subidas:s.subidas,completed:s.completed,effectiveSec:s.effectiveSec,hr:s.hr,hrOk:s.hrOk,hrNote:s.hrNote,borg:s.borg,spo2:s.spo2}));
   return{version:HR.CST.VERSION,kind:cs.kind,label:cs.label,age:cs.age,startedAt:cs.t0,professional:$('cs-prof').value.trim(),stepCm:cs.stepCm,stepReason:$('cs-reason').value.trim(),
-    cad0:cs.cad0,stageSec:cs.stageSec,adaptWhy:cs.why,hrRest:cs.hrRest,hrMax:cs.hrMax,device:c.dev&&c.dev.name||'monitor',sex:cs.sex,stages:rest,
+    cad0:cs.cad0,stageSec:cs.stageSec,hrRest:cs.hrRest,hrMax:cs.hrMax,device:c.dev&&c.dev.name||'monitor',sex:cs.sex,stages:rest,
     totalSec:cs.endEl,stopText:cs.stop?cs.stop.text:'',continuedAfterCriterion:cs.continued,lastHr:cs.endHr!==null?cs.endHr:(lastOk?lastOk.hr:null),
     estimate:e,cls:e&&e.state==='estimated'?HR.cstClass(e.vo2max,cs.sex,cs.age):null,dfa,events:cs.events.slice(),quality,obs:$('cs-obs').value.trim(),
     repeatNote:why.length?'Considere repetir o teste ('+why.join('; ')+'). A decisão é do profissional.':''};
@@ -2466,17 +2461,16 @@ function csResult(){
 // ---- eventos de tela ----
 $('cs-o').onclick=()=>{cs=csNew();cs.kind='original';cs.step=1;csShow()};
 $('cs-a').onclick=()=>{cs=csNew();cs.kind='adaptado';cs.step=1;csShow()};
-$('cs-back0').onclick=()=>setView('novo');
 $('cs-back1').onclick=()=>{cs=csNew();csShow()};
 $('cs-back2').onclick=()=>{cs.step=1;csShow()};
 $('cs-addm').onclick=()=>$('add').click();
-['cs-dev','cs-name','cs-age','cs-sex','cs-hrr','cs-cad0','cs-sec','cs-why','cs-spo2min'].forEach(id=>{$(id).addEventListener('input',csCheck);$(id).addEventListener('change',csCheck)});
+['cs-dev','cs-name','cs-age','cs-sex','cs-hrr','cs-cad0','cs-sec','cs-spo2min'].forEach(id=>{$(id).addEventListener('input',csCheck);$(id).addEventListener('change',csCheck)});
 $('cs-go').onclick=()=>{
   if($('cs-go').disabled)return;
   const c=cards.get($('cs-dev').value),ad=cs.kind==='adaptado';if(!c)return;
   const raw=$('cs-spo2min').value.trim();
   Object.assign(cs,{c,label:$('cs-name').value.trim(),age:parseInt($('cs-age').value,10),sex:$('cs-sex').value,hrRest:parseInt($('cs-hrr').value,10),stepCm:+document.querySelector('#cs-steps input:checked').value,
-    cad0:ad?+$('cs-cad0').value:15,stageSec:ad?+$('cs-sec').value:120,why:ad?$('cs-why').value.trim():'',spo2Min:raw===''?null:parseInt(raw,10)});
+    cad0:ad?+$('cs-cad0').value:15,stageSec:ad?+$('cs-sec').value:120,spo2Min:raw===''?null:parseInt(raw,10)});
   cs.hrMax=HR.cstHrMax(cs.age);cs.hrStop=HR.CST.STOP_HR_FRAC*cs.hrMax;
   cs.stages=HR.cstStages(ad?{kind:'adaptado',cad0:cs.cad0,stageSec:cs.stageSec}:{kind:'original'}).map(s=>({...s,completed:false,effectiveSec:0,hr:null,hrOk:false,hrNote:'',borg:null,spo2:null,closed:false}));
   cs.step=2;csSummary();csShow();
