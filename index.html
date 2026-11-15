@@ -293,6 +293,10 @@ input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!impo
 .zbc{display:flex;flex-direction:column;gap:6px}   /* não usa .zb: o modo protocolo esconde .zb (barra do cartão da sessão) */
 #cs-zb .zc{align-self:center}.zbar[hidden],.zl[hidden]{display:none}
 #cs-zb[data-z="1"] .zc{background:var(--z1bg);color:var(--z1)}#cs-zb[data-z="2"] .zc{background:var(--z2bg);color:var(--z2t)}#cs-zb[data-z="3"] .zc{background:var(--z3bg);color:var(--z3t)}
+.cstt{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px}
+.cstt th{font-size:10.5px;color:var(--mut);font-weight:700;padding:6px 1px;text-align:center;border-bottom:1px solid var(--line)}
+.cstt td{padding:8px 1px;text-align:center;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cstt tr:last-child td{border-bottom:0}.cstt td.s{font-weight:800}.cstt td.ok{color:var(--ok);font-weight:700;font-size:12px}.cstt td.warn{color:var(--warn);font-weight:700;font-size:12px}.cstt .mu,.cstt td.mu{color:var(--mut)}
 </style></head><body data-view="home">
 <header class="top"><h1><svg class="logo" viewBox="0 0 28 20" width="28" height="20" aria-hidden="true"><path d="M1 11h6l3-8 5 15 3-7h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Pulsys</h1></header>
 <main class="wrap">
@@ -2672,7 +2676,10 @@ function csResult(){
       +'<div class="m" style="margin-top:6px">Estimativa, não medida direta.</div></div>'
       +'<div class="vfm">'+tile('Confiabilidade',e.confidence)+tile('Estágios usados',e.n)+tile('R² do ajuste',csF(e.r2,2))+tile('FC final / % da FCmáx',x.lastHr?Math.round(x.lastHr)+' bpm · '+csF(x.lastHr/x.hrMax*100,0)+'%':'—')+'</div>';
   }else h+='<div class="rbn bad">VO2máx não estimado</div><ul class="rlist"><li>'+esc(e?e.reason:'sem dados')+'</li></ul>';
-  h+='<div class="vfs">Estágios</div><div class="m">'+x.stages.map(s=>'E'+s.n+': '+(s.completed?'concluído':s.effectiveSec>0?'interrompido':'não realizado')+(s.hrOk?' · '+Math.round(s.hr)+' bpm':'')+(s.borg!==null&&s.borg!==undefined?' · Borg '+s.borg:'')+(s.spo2!==null&&s.spo2!==undefined?' · SpO2 '+s.spo2+'%':'')).join('<br>')+'</div>';
+  { const dash='<span class="mu">—</span>',n1=v=>v===null||v===undefined?dash:v;   // tabela dos estágios: cabe em 390 px (colunas em %)
+    const rows=x.stages.map(s=>{const st=s.completed?['Concluído','ok']:s.effectiveSec>0?['Interrompido','warn']:['Não feito','mu'];
+      return '<tr><td class="s">E'+s.n+'</td><td>'+s.cad+'</td><td>'+(s.hrOk?Math.round(s.hr):dash)+'</td><td>'+n1(s.borg)+'</td><td>'+(s.spo2===null||s.spo2===undefined?dash:s.spo2+'%')+'</td><td>'+csF(HR.cstLoad(x.stepCm,s.cad))+'</td><td class="'+st[1]+'">'+st[0]+'</td></tr>'}).join('');
+    h+='<div class="vfs">Estágios</div><table class="cstt"><colgroup><col style="width:9%"><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:12%"><col style="width:14%"><col style="width:33%"></colgroup><thead><tr><th>Est.</th><th>Cad.</th><th>FC</th><th>Borg</th><th>SpO2</th><th>VO2</th><th>Situação</th></tr></thead><tbody>'+rows+'</tbody></table><div class="m" style="margin-top:4px;font-size:11px">Cad. = subidas/min · FC = bpm · VO2 estimado da carga em ml/kg/min · "—" = sem registro.</div>'; }
   h+='<div class="vfs">Término</div><div class="m">'+esc(x.stopText)+' · '+dur(x.totalSec*1000)+(x.continuedAfterCriterion?'<br><b>O teste continuou após critério de interrupção ('+esc(x.continuedAfterCriterion)+').</b>':'')+'</div>';
   { const ch=HR.cstChartSvg(x);if(ch)h+='<div class="vfg">FC e DFA-alfa1 no tempo (experimental)</div>'+ch+'<div class="m" style="margin-top:6px">'+HR.cstChartNote(x)+'</div>' }
   h+='<div class="vfs">Limiares (indireto, experimental)</div><div class="m">'+HR.cstDfaHtml(x.dfa)+'</div>';
