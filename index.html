@@ -2355,6 +2355,7 @@ const INFO={
     ['Limites','São hipóteses de pesquisa, sem validação clínica. Não é limiar ventilatório medido. Exige monitor que envie RR.'],
     ['Uso no relatório','Resultado "estimado por VFC", "não identificado" ou "inconclusivo", sempre separado do VO2máx.']]},
   // critérios de interrupção
+  crit_outro:{t:'Outro motivo de interrupção',tag:'Decisão do avaliador',rows:CR('Cobre qualquer motivo de interrupção que não esteja entre as opções ao lado.','Decisão do profissional, por observação direta do paciente ou do ambiente.','Ao selecionar, encerra o teste imediatamente e registra "Outro motivo (não especificado)".','Motivo genérico, instante e estágio. Descreva os detalhes nas observações do fechamento, se houver.')},
   crit_fc80:{t:'Critério: FC ≥ 80% da FCmáx prevista',tag:'Protocolo original',rows:CR('É o critério clássico do CST para encerrar um teste submáximo.','O app compara a FC válida com 80% da FCmáx prevista (220 − idade). '+OBS,'Mostra alerta vermelho persistente e emite sinal sonoro; não oferece continuar. Registra o instante e se o teste seguiu depois.','Instante, FC e se houve continuação após o critério.')},
   crit_borg8:{t:'Critério: Borg ≥ 8/10',tag:'Protocolo original',rows:CR('Esforço percebido intenso a muito intenso indica proximidade do limite do paciente.','Acontece quando o Borg informado ao final de um estágio é 8 ou mais.','Mostra alerta de interrupção e registra o valor.','Borg e instante.')},
   crit_cadencia:{t:'Critério: incapacidade de manter a cadência',tag:'Protocolo original',rows:CR('Sem a cadência correta a carga real deixa de corresponder ao protocolo e a estimativa perde validade.','Observação direta: o paciente perde o ritmo do metrônomo e não consegue retomá-lo.','Ao registrar, encerra o teste e marca o estágio como incompleto. Não altere a cadência para compensar.','Motivo, tempo efetivo do estágio e eventos de ritmo.')},
@@ -2595,25 +2596,22 @@ function csBorgDlg(s){
 }
 // botão de parar flutuante: abre a lista de critérios; selecionar um critério encerra o teste
 function csFab(){const h=!(cs.step===3&&view==='proto');$('cs-fab').hidden=h;if(h&&$('spm').classList.contains('open'))csStopMenu(false)}
-const SP_MAIN=['fc80','borg8','cadencia'],SP_LABEL={fc80:'FC atingiu 80% da FCmáx prevista',borg8:'Borg atingiu 8/10',cadencia:'Incapaz de manter a cadência'};
-const SP_SHORT={pedido:'Pedido do paciente',dor_toracica:'Dor torácica ou angina',tontura:'Tontura ou síncope',dispneia:'Dispneia desproporcional',spo2:'Dessaturação relevante',arritmia:'Arritmia ou ECG alterado',musculo:'Dor muscular ou risco de queda'};
-// As opções ficam em leque (quarto de elipse) ao redor do botão: a mais alta alinha com o botão e as de baixo vão para a esquerda dele.
-function csStopMenu(open,mode){
+const SP_ITEMS=[['fc80','FC atingiu 80% da FCmáx prevista'],['borg8','Borg atingiu 8/10'],['cadencia','Incapaz de manter a cadência'],['outro','Outro']],SP_OUTRO_TXT='Outro motivo (não especificado)';
+// As opções ficam em leque (quarto de elipse) junto do botão: a mais alta alinha com ele e as de baixo vão para a esquerda.
+// "Outro" é uma opção direta (encerra o teste com motivo genérico): não há subcategorias.
+function csStopMenu(open){
   const m=$('spm'),fab=$('cs-fab');
   if(!open){m.classList.remove('open');$('spscrim').classList.remove('open');fab.classList.remove('on');fab.setAttribute('aria-expanded','false');return}
   m.classList.remove('open');m.textContent='';
-  const sub=mode==='other';
-  const items=sub?HR.CST_STOP.filter(x=>x[0]!=='conclusao'&&!SP_MAIN.includes(x[0])).map(x=>({k:x[0],t:SP_SHORT[x[0]]||x[1]})).concat([{k:'__main',t:'‹ Voltar'}])
-    :SP_MAIN.map(k=>({k,t:SP_LABEL[k]})).concat([{k:'__other',t:'Outro'}]);
-  const n=items.length,h=sub?34:40,w=sub?190:200,step=sub?36:44,d0=sub?56:62,A=sub?120:110;   // leque compacto, junto do botão
+  const items=SP_ITEMS.map(([k,t])=>({k,t})),n=items.length,h=36,w=190,step=40,d0=54,A=96;
   items.forEach((it,i)=>{
     const k=n-1-i,d=d0+k*step,tt=n>1?k/(n-1):0,off=A*Math.cos(tt*Math.PI/2);   // k=0 é a opção mais baixa (junto do botão)
-    const r=document.createElement('div');r.className='spi'+(sub?' sub':'')+(cs.crit[it.k]?' hit':'')+(it.k==='__main'||it.k==='__other'?' mais':'');
+    const r=document.createElement('div');r.className='spi'+(cs.crit[it.k]?' hit':'')+(it.k==='outro'?' mais':'');
     r.style.cssText='right:'+(29+off)+'px;bottom:'+(29+d-h/2)+'px;width:'+w+'px;height:'+h+'px;--fx:'+(off+w/2)+'px;--fy:'+d+'px;transition-delay:'+(k*0.04)+'s';
     const b=document.createElement('button');b.type='button';b.className='spk';b.setAttribute('role','menuitem');b.textContent=it.t+(cs.crit[it.k]?' · ATINGIDO':'');
-    b.onclick=()=>{if(it.k==='__other')csStopMenu(true,'other');else if(it.k==='__main')csStopMenu(true,'main');else{csStopMenu(false);csEnd(it.k)}};
+    b.onclick=()=>{csStopMenu(false);csEnd(it.k,it.k==='outro'?SP_OUTRO_TXT:undefined)};
     r.appendChild(b);
-    if(it.k.slice(0,2)!=='__'){const ib=document.createElement('button');ib.type='button';ib.className='ib';ib.dataset.i='crit_'+it.k;ib.setAttribute('aria-label','Informações: '+(HR.CST_STOP.find(x=>x[0]===it.k)||[0,it.t])[1]);ib.textContent='i';r.appendChild(ib)}
+    const ib=document.createElement('button');ib.type='button';ib.className='ib';ib.dataset.i='crit_'+it.k;ib.setAttribute('aria-label','Informações: '+it.t);ib.textContent='i';r.appendChild(ib);
     m.appendChild(r)});
   void m.offsetWidth;m.classList.add('open');$('spscrim').classList.add('open');fab.classList.add('on');fab.setAttribute('aria-expanded','true');
 }
@@ -2721,7 +2719,7 @@ $('cs-start').onclick=()=>{
 };
 $('cs-ev-ritmo').onclick=()=>csEvent('Perdeu o ritmo');$('cs-ev-pausa').onclick=()=>csEvent('Pausa');$('cs-ev-trop').onclick=()=>csEvent('Tropeço');
 $('cs-ev-sym').onclick=()=>csEvent('Sintoma: '+$('cs-sym').value);
-$('cs-fab').onclick=()=>csStopMenu(!$('spm').classList.contains('open'),'main');$('spscrim').onclick=()=>csStopMenu(false);
+$('cs-fab').onclick=()=>csStopMenu(!$('spm').classList.contains('open'));$('spscrim').onclick=()=>csStopMenu(false);
 $('cs-pend-open').onclick=()=>csRenderPend(true);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')csStopMenu(false)});
 $('cs-fin').onclick=()=>{if($('cs-fin').disabled)return;cs.result=null;cs.step=5;csShow()};
